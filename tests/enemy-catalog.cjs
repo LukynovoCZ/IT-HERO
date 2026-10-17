@@ -7,12 +7,12 @@ const assert=require('node:assert/strict');
   const p=await b.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));
   await p.route('**/game.js*',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame = new Phaser.Game({')});});
   await p.goto('http://127.0.0.1:8000');await p.locator('#game-action').waitFor({state:'visible'});
-  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemyTrio.enemies.length),8);
-  assert.ok(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemyTrio.enemies.every(e=>['security_guard','hr_manager','design_manager'].includes(e.kind))));
+  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemyTrio.enemies.length),9);
+  assert.ok(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemyTrio.enemies.every(e=>['security_guard','hr_manager','design_manager','sap_integrator'].includes(e.kind))));
   await p.keyboard.press('Enter');
   await p.evaluate(()=>{
    const s=window.__testGame.scene.getScene('ITGame');s.enemies.clear(true,true);
-   const profiles=Object.fromEntries(Object.entries(ITHeroEnemyCatalog.profiles).map(([id,p])=>[id,{...p,attackType:'default',enabled:true,art:{sourceKey:'character-art',poses:{idle:[40,16,245,342]}}}]));
+   const profiles=Object.fromEntries(Object.entries(ITHeroEnemyCatalog.profiles).filter(([id])=>id!=='sap_integrator').map(([id,p])=>[id,{...p,attackType:'default',enabled:true,art:{sourceKey:'character-art',poses:{idle:[40,16,245,342]}}}]));
    s.enemyTrio=ITHeroEnemyCatalog.create(s,[4320],{profiles,placements:Object.keys(profiles).map((id,i)=>({id,floor:1,x:[200,440,800][i]}))});
   });
   for(let i=0;i<3;i++){

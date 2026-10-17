@@ -13,11 +13,12 @@
       this.player = {x: -9999, body: {bottom: 0}};
       this.tone = () => {}; this.takeDamage = () => {};
       ITHeroTrioAttacks.textures(this);
+      ITHeroSAP.textures(this);
       this.paused = false;
       this.animationTime = 0;
       const graphics = this.add.graphics();
-      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 1260);
-      for (const baseline of [260, 660, 1060]) {
+      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 1660);
+      for (const baseline of [260, 660, 1060, 1460]) {
         graphics.lineStyle(1, 0x24453e);
         for (let y = baseline - 240; y < baseline; y += 20) graphics.lineBetween(0, y, 960, y);
         graphics.fillStyle(0x78867b).fillRect(0, baseline, 960, 24);
@@ -79,7 +80,7 @@
         let frame = pose === 'contact' ? entry.contactPose : pose === 'attack' ? entry.attackPose : pose;
         if (pose === 'walk' && Math.floor(this.animationTime / 180) % 2 === 0) frame = 'idle';
         entry.sprite.setTexture(entry.frames[frame] || entry.frames.idle).setScale(zoom);
-        if (entry.id) {
+        if (entry.id && entry.behavior !== 'sap') {
           if (pose === 'contact') {
             // Effect coordinates use game pixels; scale the graphics with the sprite.
             if (!entry.sprite.contactEffect) { ITHeroTrioAttacks.contact(this, entry.sprite); entry.sprite.effectUntil = this.animationTime + 650; }
@@ -101,7 +102,7 @@
     }
   }
   new Phaser.Game({
-    type: Phaser.AUTO, parent: 'game', width: 960, height: 1260,
+    type: Phaser.AUTO, parent: 'game', width: 960, height: 1660,
     pixelArt: true, roundPixels: true, antialias: false,
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [CharacterPreview]

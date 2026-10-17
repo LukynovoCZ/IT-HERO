@@ -4,23 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>IT HERO – porovnání postav</title>
-  <link rel="stylesheet" href="style.css?v=0.7.2">
+  <link rel="stylesheet" href="style.css?v=0.8.0">
   <script defer src="vendor/phaser.min.js"></script>
-  <script defer src="trio-attacks.js?v=0.7.2"></script>
-  <script defer src="enemy-catalog.js?v=0.7.2"></script>
-  <script defer src="character-preview.js?v=0.7.2"></script>
+  <script defer src="trio-attacks.js?v=0.8.0"></script>
+  <script defer src="enemy-catalog.js?v=0.8.0"></script>
+  <script defer src="sap-integrator.js?v=0.8.0"></script>
+  <script defer src="character-preview.js?v=0.8.0"></script>
 </head>
 <body>
   <main class="layout">
     <h1>Porovnání postav</h1>
-    <p>Všech devět postav ze hry ve skutečných herních proporcích. Každá řada má společnou podlahu.</p>
+    <p>Všech deset postav ze hry ve skutečných herních proporcích. Každá řada má společnou podlahu.</p>
     <div class="controls">
       <label>Póza <select id="pose"><option value="idle">Klid</option><option value="walk">Chůze</option><option value="contact">Zastavení hráče</option><option value="attack">Útok</option></select></label>
       <label>Zvětšení <select id="zoom"><option value="1">1× – herní velikost</option><option value="2" selected>2× – detail</option></select></label>
       <button id="pause" type="button" aria-pressed="false">Pozastavit animaci</button>
       <label><input id="bodies" type="checkbox"> Ukázat zásahové oblasti</label>
     </div>
-    <div style="aspect-ratio:960/1260" id="game" aria-label="Zkušební scéna postav"></div>
+    <div style="aspect-ratio:960/1660" id="game" aria-label="Zkušební scéna postav"></div>
     <p>Pod postavami jsou jejich střely. Póza „Zastavení hráče“ ukazuje kontaktní efekty. Chůze střídá dostupné pózy. Zvětšení mění pouze náhled; rozměry postav se přebírají přímo z herní konfigurace.</p>
     <a href="index.html">Zpět do hry</a>
   </main>

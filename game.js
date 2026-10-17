@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.7.2 – mini plošinovka v Phaser 3.
+ * IT HERO 0.8.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -856,7 +856,7 @@
       this.tone(245, 0.045);
       if (enemy.hp <= 0) {
         this.score += enemy.profile ? enemy.profile.score : enemy.kind === 'manager' ? 250 : 100;
-        this.popText(enemy.x, enemy.y - 27, enemy.kind === 'manager' ? '+250 ŠÉF' : '+100', '#91ffe0');
+        this.popText(enemy.x, enemy.y - 27, enemy.profile ? `+${enemy.profile.score}` : enemy.kind === 'manager' ? '+250 ŠÉF' : '+100', '#91ffe0');
         if (enemy.profile) this.enemyTrio.defeat(enemy);
         else enemy.destroy();
         this.updateHUD();

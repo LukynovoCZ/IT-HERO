@@ -127,3 +127,9 @@ po třech. Každá řada má společnou základnu, zoom je pro všechny stejný.
 postavy používají stejné ořezy, výšky a kotvy jako `makeTextures()` v `game.js`.
 U chybějících póz se zachová klidová póza. Starý ajťák je pomocník bez zásahového
 těla, proto se u něj nezobrazuje hitbox. Původní rozměry ve hře se nemění.
+
+## Šéf SAP (0.8.0, samostatná větev)
+
+Desátá postava v porovnání, miniboss v 8. patře, 8 životů a odměna 500 bodů.
+Vlastní modul `sap-integrator.js` přidává profil a chování do katalogu;
+parametry, grafika, útoky a testování jsou popsány v `SAP_INTEGRATOR.md`.

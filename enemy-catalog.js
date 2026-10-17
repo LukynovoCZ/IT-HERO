@@ -116,6 +116,7 @@
     };
     const manager={enemies,
       update(e,time){
+        if(e.profile.behavior==='sap'){window.ITHeroSAP.update(scene,e,time,pose);return;}
         window.ITHeroTrioAttacks.update(scene,e,time);
         if(e.defeated)return;
         if(e.floorIndex!==scene.floor){e.setVelocityX(0);return;}
@@ -133,6 +134,7 @@
       },
       attack(e){
         if(scene.gameState!=='playing'||e.defeated||e.floorIndex!==scene.floor||Math.abs(e.y-scene.player.y)>=100)return;
+        if(e.profile.behavior==='sap'){window.ITHeroSAP.attack(scene,e,pose);return;}
         const attack=attacks.get(e.profile.attackType);
         if(!attack)throw new Error(`Unknown attack: ${e.profile.attackType}`);
         e.facingDirection=scene.player.x>=e.x?1:-1;
@@ -141,17 +143,19 @@
       },
       contact(e){
         if(scene.gameState!=='playing'||e.defeated||e.floorIndex!==scene.floor)return;
+        if(e.profile.behavior==='sap'){window.ITHeroSAP.attack(scene,e,pose,'melee');return;}
         scene.takeDamage(e.x,e.profile.damage);
         if(scene.time.now<e.contactUntil)return;
         e.facingDirection=scene.player.x>=e.x?1:-1;
         e.contactUntil=scene.time.now+650;e.setVelocityX(0);pose(e,e.profile.contactPose);
         window.ITHeroTrioAttacks.contact(scene,e);
       },
-      hit(e){e.hitUntil=scene.time.now+160;pose(e,'hit');},
+      hit(e){e.hitUntil=scene.time.now+160;if(e.profile.behavior==='sap')window.ITHeroSAP.hit(scene,e);pose(e,'hit');},
       defeat(e){
+        if(e.profile.behavior==='sap')window.ITHeroSAP.defeat(scene,e);
         window.ITHeroTrioAttacks.clear(e);
         e.defeated=true;e.setVelocity(0,0);e.body.enable=false;pose(e,'defeat');
-        scene.tweens.add({targets:e,alpha:0,duration:260,onComplete:()=>e.destroy()});
+        scene.tweens.add({targets:e,alpha:0,...(e.profile.behavior==='sap'?{scaleY:0.5,angle:18}:{}),duration:260,onComplete:()=>e.destroy()});
       }
     };
     return manager;

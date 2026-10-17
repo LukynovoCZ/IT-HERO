@@ -7,3 +7,7 @@ Transparent three-pose atlases prepared from the user's supplied pixel-art lineu
 - `design_manager.png`: hands folded, raised finger/tablet, walking with car design sheets; sterner expression requested by the user.
 
 No new illustrated weapon was added. All three use the existing default folder projectile. `enemy-catalog.js` defines source rectangles, per-pose foot anchors, facing, common per-character scale and physics bodies. Runtime CanvasTextures isolate and normalize the poses without stretching their proportions. Missing hit/defeat illustrations use the existing flash and a fade-out. See `ENEMY_CATALOG.md` for configuration, placements and browser checks.
+
+`sap_integrator.png`: transparentní atlas malého štíhlého Šéfa SAP podle dodané
+reference (1774 × 887). Klid, nápřah pumpičkou a hod. Ořezy a kotvy jsou
+v `sap-integrator.js`; chůze, zásah a smrt používají jednoduchou Phaser animaci.
