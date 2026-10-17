@@ -16,9 +16,9 @@ První hratelný prototyp kancelářské 2D pixelové plošinovky v JavaScriptu 
 |---|---|
 | `A`, `D` nebo šipky `←`, `→` | Pohyb |
 | `W`, `↑`, `mezerník` | Skok |
-| `S`, `↓` | Skrčení / snížení zásahové plochy |
+| `S`, `↓` | Skrčení; u schodů postup do dalšího patra |
 | `J`, `Ctrl` | Střelba disketami / CD |
-| `E` u dveří | Vstup na schodiště / cíl |
+| `E` u dveří | Volitelná záložní obsluha schodů / cíle |
 | `Esc` | Pauza / pokračování |
 | `M` | Zapnout / vypnout zvuky |
 | `R` nebo `Enter` po konci hry | Nová hra |
@@ -102,3 +102,19 @@ Modrovlasá specialistka se objevuje ve 3., 5., 7. a 8. patře. Má silnější 
 ## Úvod a hlášky verze 0.4.1
 
 Menu zobrazuje „NO MORE MEETING“ a krátké zadání mise. Pod hrou je rozbalovací úplný příběh „Operace poslední záloha“. Při smrti se losuje z deseti hlášek, každá se objeví jednou za kolo; pořadí přetrvává přes restarty scény a poslední hláška se neopakuje na začátku nového kola. Po obnovení celé stránky začíná nové losování. HTML načítá JS a CSS s verzí v URL kvůli cache. Při dalším vydání aktualizuj query verzi i BUILD společně. `node tests/intro-death.cjs` kontroluje úvod, příběh, načítanou verzi a 11 skutečných úmrtí/restartů včetně rozměrů textu.
+
+## Patra a ovládání verze 0.5.0
+
+U aktivních schodů se skrč pomocí S nebo ↓. V posledním patře se stejným způsobem vstupuje do cíle. Jedno podržení skrčení nespouští opakované přechody; mimo schody se jen skrčíš. E zůstává jako volitelná starší obsluha.
+
+1. Recepce a návštěvy — vstupní lobby.
+2. Administrativa — openspace za sklem.
+3. Účtárna — samostatné kanceláře.
+4. Projekty — chodba se zasedačkami.
+5. Odbory — jednací místnosti.
+6. HR — druhý openspace.
+7. Právní — archivní chodba.
+8. Management — kanceláře vedoucích.
+9. Vedení — cílové patro.
+
+Každé patro má vlastní rozmístění herních stolů, které respektuje i pomocník. Zadní nábytek má menší měřítko. Kávu představuje bílý hrnek se stylizovaným zeleným okřídleným symbolem; jemná pára se animuje při hraní a po sebrání zmizí. `node tests/floors.cjs` ověřuje přechody přes S a ↓ všemi patry, držení klávesy, cílovou obrazovku, skutečné sebrání kávy a animaci/úklid páry; snímky pater zapisuje do /tmp/it-hero-tests.

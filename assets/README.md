@@ -9,3 +9,5 @@ Local generated artwork based on the approved visual concept. Reference photogra
 Source rectangles in `game.js` isolate character poses and render them onto 64 × 80 textures with a shared baseline and preserved aspect ratio. Update those rectangles when replacing the atlas. Character body sizes and crouch offsets must stay consistent with the new textures. Nearest-neighbor rendering is enabled throughout.
 
 - `support.png`: transparent 1536 × 1024 atlas of old IT helper (standing, crouching, offering) and blue-haired specialist (idle, flag swing, spray). Poses are normalized to 136 × 80 textures with a shared body anchor; source coordinates live in `supportPoses` in `game.js`. Food and projectile textures are generated in the game.
+
+- `floors.png`: three stacked detailed room backdrops (openspace, individual offices, meeting corridor). `drawRoomBackdrop` splits each row into architecture and rear-furniture bands, scales rear furniture down, and adds floor-specific reception/meeting/archive/executive details. These are render-time frames; the original source illustration remains intact.

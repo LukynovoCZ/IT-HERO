@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.4.1 – mini plošinovka v Phaser 3.
+ * IT HERO 0.5.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -30,6 +30,18 @@
     blue: 0x75bdfb
   };
 
+  const FLOOR_PLANS = [
+    {name:'RECEPCE & NÁVŠTĚVY',type:'reception',desks:[330,700]},
+    {name:'ADMINISTRATIVA • OPENSPACE',type:'open',desks:[305,680]},
+    {name:'ÚČTÁRNA • KANCELÁŘE',type:'office',desks:[360,700]},
+    {name:'PROJEKTY • ZASEDACÍ CHODBA',type:'corridor',desks:[305,720]},
+    {name:'ODBORY • JEDNACÍ MÍSTNOSTI',type:'meeting',desks:[320,700]},
+    {name:'HR • OPENSPACE',type:'open',desks:[300,680]},
+    {name:'PRÁVNÍ • ARCHIVNÍ CHODBA',type:'archive',desks:[350,700]},
+    {name:'MANAGEMENT • KANCELÁŘE',type:'office',desks:[305,720]},
+    {name:'VEDENÍ • POSLEDNÍ ZÁLOHA',type:'executive',desks:[340,690]}
+  ];
+
   const DEATH_LINES = [
     'Jdeš na povinné školení řízení vysokozdvižných vozíků v serverovnách s vodním chlazením. Plavky s sebou.',
     'Vyplníš dotazník „Nechceme jíst maso v závodní jídelně“. Má 94 otázek. Všechny jsou povinné.',
@@ -49,6 +61,7 @@
     preload() {
       this.load.image('support-art', 'assets/support.png');
       this.load.image('character-art', 'assets/characters.png');
+      this.load.image('floor-art', 'assets/floors.png');
       this.load.image('office-art', 'assets/office.png');
       this.load.image('exterior-art', 'assets/exterior.png');
     }
@@ -67,6 +80,7 @@
       this.lastOnGroundAt = -1000;
       this.transitioning = false;
       this.wasCrouching = false;
+      this.stairsCrouchHeld = false;
       this.isMuted = false;
       this.audioCtx = null;
       this.enemies = this.physics.add.group();
@@ -221,11 +235,71 @@
         rect(g, 0xa36540, 1, 2, 13, 8); rect(g, 0xf4be6e, 1, 4, 13, 5);
         rect(g, 0xf6d58d, 2, 1, 6, 3); rect(g, 0xcc9155, 6, 5, 6, 1);
       });
-      texture('coffee', 17, 22, g => {
-        rect(g, 0xffe8b4, 3, 6, 11, 14); rect(g, 0xa85b4d, 4, 9, 9, 8);
-        rect(g, 0xffffff, 2, 5, 13, 3); rect(g, 0xe5f4ee, 13, 10, 3, 6);
-        rect(g, 0xc0dddc, 5, 1, 2, 4); rect(g, 0xc0dddc, 10, 0, 2, 4);
+      texture('coffee', 26, 27, g => {
+        // Bílý porcelán, zelený okřídlený geometrický symbol, bez loga značky.
+        rect(g,0x233d35,3,3,16,22); rect(g,0xb7d0c9,4,5,14,18);
+        rect(g,0xf5f6e9,4,4,13,17); rect(g,0xffffff,5,4,3,15);
+        rect(g,0xd8e5dd,18,7,7,11); rect(g,0xffffff,18,7,6,2);
+        rect(g,0x213c31,19,10,3,5); rect(g,0xffffff,18,16,5,2);
+        rect(g,0x987050,5,3,11,4); rect(g,0x503327,6,4,9,2);
+        rect(g,0x176344,7,10,7,7); rect(g,0x4c9862,8,11,5,5);
+        rect(g,0xf7f5e1,9,12,4,1); rect(g,0xf7f5e1,8,13,3,1);
+        rect(g,0xf7f5e1,10,14,2,2); rect(g,0x12482f,12,11,1,1);
+        rect(g,0xb9cfc3,1,24,21,2); rect(g,0xf7f5e1,3,23,17,1);
       });
+    }
+
+    drawRoomBackdrop(y, level) {
+      const plan = FLOOR_PLANS[level];
+      const kind = ['open','reception'].includes(plan.type) ? 0 : ['office','executive'].includes(plan.type) ? 1 : 2;
+      const texture = this.textures.get('floor-art');
+      const source = texture.getSourceImage();
+      const row = Math.floor(source.height / 3);
+      // Preserve detailed architecture, but compress the rear furniture band so
+      // desks behind glass read smaller than the foreground gameplay tables.
+      const split = Math.round(row * 0.57);
+      if (!texture.has(`upper-${kind}`)) {
+        texture.add(`upper-${kind}`,0,0,kind*row,source.width,split);
+        texture.add(`lower-${kind}`,0,0,kind*row+split,source.width,row-split);
+      }
+      const flip = [5,7].includes(level);
+      const tint = level === 8 ? 0xf5e7c5 : level === 6 ? 0xcdd8df : level === 5 ? 0xdff5e3 : 0xffffff;
+      this.add.image(0,y-414,'floor-art',`upper-${kind}`).setOrigin(0).setDisplaySize(WIDTH,304).setFlipX(flip).setTint(tint).setDepth(-10);
+      this.add.image(0,y-110,'floor-art',`lower-${kind}`).setOrigin(0).setDisplaySize(WIDTH,110).setFlipX(flip).setTint(tint).setDepth(-10);
+      const g = this.add.graphics().setDepth(-9);
+      const r = (c,x,dy,w,h) => g.fillStyle(c).fillRect(x,y+dy,w,h);
+      const sign = (x,text,color=0x174b3c) => {
+        r(color,x-90,-155,180,26);
+        this.add.text(x,y-142,text,{font:'bold 11px monospace',color:'#f3eed5'}).setOrigin(0.5).setDepth(-8);
+      };
+      if(plan.type==='reception') {
+        sign(265,'RECEPCE • NÁVŠTĚVY');
+        r(0x406b4e,180,-55,165,40);r(0xc6bd96,176,-61,174,7);
+        r(0x9acc8e,192,-40,32,4);r(0xb9caaf,240,-40,83,2);
+      } else if(plan.type==='meeting') {
+        sign(250,'PORADA • 09:00–17:00');sign(740,'BRIEFING • OBSAZENO');
+        for(const x of [180,650]) {
+          r(0x3b5041,x,-42,145,5);r(0xbaaa7c,x,-47,145,5);
+          for(let i=0;i<3;i++){r(0x28543d,x+12+i*44,-29,24,17);r(0x62745e,x+20+i*44,-12,3,11);}
+        }
+      } else if(plan.type==='archive') {
+        sign(250,'ARCHIV • SMLUVNÍ DOKUMENTACE');
+        for(const x of [180,650]) {
+          r(0x707b64,x,-90,130,77);
+          for(let shelf=0;shelf<2;shelf++)for(let folder=0;folder<9;folder++) {
+            r((folder+shelf)%3?0x235d42:0xb6ab77,x+5+folder*13,-84+shelf*34,10,28);
+            r(0xe0dfb9,x+8+folder*13,-78+shelf*34,4,7);
+          }
+        }
+      } else if(plan.type==='executive') {
+        sign(250,'VEDENÍ • NERUŠIT',0x5d583a);
+        r(0x39734e,170,-23,200,12);r(0xc6b978,170,-23,200,2);
+        r(0xb3a66b,650,-148,110,72);r(0x275d45,654,-144,102,64);
+        this.add.text(705,y-112,'POSLEDNÍ\nZÁLOHA',{font:'bold 12px monospace',align:'center',color:'#e9ddb7'}).setOrigin(0.5).setDepth(-8);
+      } else if(plan.type==='office') sign(250,level===2?'ÚČTÁRNA • TICHÁ ZÓNA':'MANAGEMENT • KANCELÁŘE');
+      else if(plan.type==='open') sign(250,level===1?'ADMINISTRATIVA • OPENSPACE':'HR • SDÍLENÁ PRACOVIŠTĚ');
+      else sign(250,'PROJEKTY • ZASEDACÍ CHODBA');
+      return plan;
     }
 
     addStatic(group, x, y, w, h, color, depth = 8) {
@@ -238,16 +312,13 @@
     buildOffice() {
       const g = this.add.graphics().setDepth(-12);
       g.fillStyle(COLORS.dark).fillRect(0, 0, WIDTH, WORLD_HEIGHT);
-      const names = ['RECEPCE', 'ADMINISTRATIVA', 'ÚČTÁRNA', 'PROJEKTY', 'ODBORY', 'PERSONÁLNÍ', 'PRÁVNÍ', 'MANAGEMENT', 'VEDENÍ'];
+
       FLOORS.forEach((y, level) => {
-        const top = y - 414;
-        const office = this.textures.get('office-art');
-        if (!office.has('floor')) office.add('floor', 0, 0, 382, 1942, 355);
-        this.add.image(0, top, 'office-art', 'floor').setOrigin(0).setDisplaySize(WIDTH, 414).setDepth(-10);
+        const plan = this.drawRoomBackdrop(y, level);
         g.fillStyle(0x253b36).fillRect(0, y, WIDTH, 38);
         g.fillStyle(0xa7b1a5).fillRect(0, y, WIDTH, 6);
         for (let x = 0; x < WIDTH; x += 32) g.fillStyle(0x4d6058).fillRect(x, y + 14, 28, 2);
-        this.add.text(24, y - 348, `${String(level + 1).padStart(2, '0')}  /  ${names[level]}`, {
+        this.add.text(24, y - 348, `${String(level + 1).padStart(2, '0')}  /  ${plan.name}`, {
           fontFamily: 'monospace', fontSize: '14px', color: '#f4f0df',
           backgroundColor: '#064c37', padding: { x: 12, y: 7 }
         }).setDepth(-8);
@@ -255,7 +326,7 @@
       });
 
       // Stoly – překážky, které je potřeba přeskočit.
-      FLOORS.flatMap((_, level) => [[level, 305], [level, 700]]).forEach(([level, x]) => {
+      FLOOR_PLANS.flatMap((plan, level) => plan.desks.map(x => [level, x])).forEach(([level, x]) => {
         const y = FLOORS[level];
         this.addStatic(this.obstacles, x, y - 19, 88, 38, 0x174b3c, 10);
         this.add.rectangle(x, y - 42, 96, 9, 0xc4a27a).setDepth(11);
@@ -312,7 +383,7 @@
       g.fillStyle(0xdde9da).fillRect(x + 21, y - 49, 5, 10);
       for (let k = 0; k < 5; k++) g.fillStyle(0xa6ef5d).fillRect(x - 20 + k * 8, y - 21 - k * 9, 9, 5);
       g.fillStyle(0x0b1926).fillRect(x - 44, y - 123, 88, 23);
-      const label = isExit ? 'CÍL' : entry ? 'VÝSTUP' : 'SCHODY ↑';
+      const label = isExit ? 'CÍL ↓' : entry ? 'VÝSTUP' : 'SCHODY ↓';
       this.add.text(x, y - 111, label, {
         font: 'bold 12px monospace', color: isExit ? '#ffdb8c' : '#b2ffee'
       }).setOrigin(0.5).setDepth(6);
@@ -349,10 +420,11 @@
         e.attackDelay = spec.delay;
       });
       FLOORS.flatMap((_, floor) => [[floor, 192], [floor, 790]]).forEach(([floor, x]) => {
-        const coffee = this.coffees.create(x, FLOORS[floor] - 24, 'coffee');
-        coffee.setScale(1.6).setDepth(19).refreshBody();
+        const coffee = this.coffees.create(x, FLOORS[floor] - 17, 'coffee');
+        coffee.setScale(1.2).setDepth(19).refreshBody();
         coffee.setData('floor', floor);
-        this.tweens.add({ targets: coffee, y: coffee.y - 7, duration: 700 + 100 * floor, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
+        const steam = this.add.graphics().setDepth(20);
+        coffee.setData('steam',steam);
       });
       [2, 5, 7].forEach(floor => {
         this.upgrades.create(220, FLOORS[floor] - 35, 'cd').setScale(2).setDepth(20).refreshBody();
@@ -363,7 +435,7 @@
     spawnHelper(source = Phaser.Math.Between(0, 1) ? 'lift' : 'desk', kind = Phaser.Math.Between(0, 1) ? 'beer' : 'hotdog') {
       if (this.helperVisit || this.gameState !== 'playing') return;
       const floor = this.floor;
-      const x = source === 'lift' ? 500 : (this.player.x < 480 ? 305 : 700);
+      const x = source === 'lift' ? 500 : FLOOR_PLANS[this.floor].desks[this.player.x < 480 ? 0 : 1];
       const dropX = source === 'lift' ? (this.player.x < 500 ? 435 : 565) : x - 68;
       const sprite = this.add.sprite(x, FLOORS[floor], source === 'desk' ? 'old-it-crouch' : 'old-it').setOrigin(0.5,1).setDepth(source === 'desk' ? 9 : 20);
       const doorway = source === 'lift' ? this.add.rectangle(x,FLOORS[floor]-73,82,146,0x152a25).setDepth(7) : null;
@@ -560,6 +632,7 @@
     }
 
     createHUD() {
+      this.add.rectangle(480,510,960,64,0x102b24).setDepth(100).setScrollFactor(0);
       this.add.rectangle(480, 27, 960, 54, 0x0b1627, 0.94).setDepth(101).setScrollFactor(0);
       this.add.rectangle(480, 54, 960, 2, 0x3c526e).setDepth(101).setScrollFactor(0);
       this.add.text(22, 9, 'IT HERO', {font: 'bold 20px monospace', color: '#a9ed63'}).setScrollFactor(0).setDepth(102);
@@ -672,6 +745,8 @@
 
     collectCoffee(coffee) {
       if (this.gameState !== 'playing' || !coffee.active) return;
+      const steam = coffee.getData('steam');
+      if (steam) steam.destroy();
       coffee.destroy();
       this.energy = Math.min(this.maxEnergy, this.energy + 1);
       this.score += 50;
@@ -904,7 +979,27 @@
         this.lastShot = time;
         this.fire();
       }
+      const crouchHeld = down('crouch');
+      const stairs = this.doors[this.floor];
+      const atStairs = Math.abs(this.player.x-stairs.x)<74 && Math.abs(this.player.y-(stairs.y-25))<110;
+      if (crouching && atStairs && !this.stairsCrouchHeld) {
+        this.stairsCrouchHeld = true;
+        this.interact();
+      }
+      if (!crouchHeld) this.stairsCrouchHeld = false;
+      // E remains an optional alternative for older controls.
       if (pressed('interact')) this.interact();
+      this.coffees.getChildren().forEach(coffee => {
+        const steam = coffee.getData('steam');
+        if (!steam) return;
+        steam.clear();
+        for(let i=0;i<3;i++) {
+          const phase = ((this.playTime+i*480)%1500)/1500;
+          const x = coffee.x-5+i*5+Math.round(Math.sin(phase*7+i)*2);
+          steam.fillStyle(0xf0f5e7,(1-phase)*0.45);
+          steam.fillRect(x,coffee.y-19-phase*18,2,5);
+        }
+      });
 
       this.enemies.getChildren().forEach(e => {
         if (!e.active) return;
@@ -937,9 +1032,9 @@
       const door = this.doors[this.floor];
       const nearDoor = Math.abs(this.player.x - door.x) < 74 && Math.abs(this.player.y - (door.y - 25)) < 110;
       this.promptText.setVisible(nearDoor);
-      this.promptText.setText(nearDoor ? (door.kind === 'exit' ? '[ E ]  VSTUP DO VEDENÍ' : '[ E ]  PO SCHODECH NAHORU') : '');
+      this.promptText.setText(nearDoor ? (door.kind === 'exit' ? '[ S / ↓ ]  VSTUP DO VEDENÍ' : '[ S / ↓ ]  DALŠÍ PATRO') : '');
       if (!this.isMuted || !this.tipText.text.startsWith('ZVUK')) {
-        this.tipText.setText(nearDoor ? 'Použij schody • výtah je mimo provoz' : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD');
+        this.tipText.setText(nearDoor ? 'U schodů se skrč: S nebo ↓' : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD');
       }
       if (time - this.lastHit < 1250) this.player.alpha = Math.floor(time / 90) % 2 ? 0.4 : 1;
       else this.player.alpha = 1;
