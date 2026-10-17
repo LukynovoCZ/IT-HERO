@@ -1,16 +1,4 @@
-# Oprava verze 0.1.1 (17. 10. 2026)
-
-Opravena nespolehlivá reakce úvodní obrazovky na `Enter` a kliknutí.
-Spuštění i pauza nyní fungují přímo přes prohlížeč (DOM), nikoli pouze přes Phaser.
-Klávesy během hraní mají zároveň záložní obsluhu přes `document`.
-Tlačítko na obrazovce je skutečný HTML element. Kliknutí kdekoliv na herní plochu rovněž spustí hru.
-
-**Důležité:** Nahraď celou starou složku, ne pouze `index.html`. Verze 0.1.1 potřebuje nové `game.js` a `style.css`.
-Neotvírej původní soubor 0.1.0. Vpravo nahoře musí být `BUILD 0.1.1`.
-
----
-
-# IT HERO 0.1.1 — Výstup do vedení
+# IT HERO 0.2.0 — Výstup do vedení
 
 První hratelný prototyp kancelářské 2D pixelové plošinovky v JavaScriptu a **Phaseru 3.90.0**.
 
@@ -21,7 +9,6 @@ První hratelný prototyp kancelářské 2D pixelové plošinovky v JavaScriptu 
 3. **Připojení k internetu není potřeba.** Phaser 3.90.0 je přiložený ve složce `vendor`, společně s MIT licencí. Při kopírování hry zachovej i tuto složku.
 4. Na úvodní obrazovce stiskni **ENTER** nebo klikni do hry.
 
-Jako alternativu lze použít jediný soubor `IT_HERO_0.1_JEDEN_SOUBOR.html` — rozbalování není nutné, ale také vyžaduje internet kvůli Phaseru.
 
 ## Ovládání
 
@@ -30,7 +17,7 @@ Jako alternativu lze použít jediný soubor `IT_HERO_0.1_JEDEN_SOUBOR.html` —
 | `A`, `D` nebo šipky `←`, `→` | Pohyb |
 | `W`, `↑`, `mezerník` | Skok |
 | `S`, `↓` | Skrčení / snížení zásahové plochy |
-| `J`, `Ctrl` | Střelba datovými pakety |
+| `J`, `Ctrl` | Střelba disketami / CD |
 | `E` u dveří | Vstup na schodiště / cíl |
 | `Esc` | Pauza / pokračování |
 | `M` | Zapnout / vypnout zvuky |
@@ -38,7 +25,9 @@ Jako alternativu lze použít jediný soubor `IT_HERO_0.1_JEDEN_SOUBOR.html` —
 
 ## Co je implementováno
 
-- tři kancelářská patra, postup zleva doprava / zprava doleva / zleva doprava;
+- devět kancelářských pater s nefunkčními výtahy, střídavý postup po schodech;
+- pixelová budova inspirovaná referenční fotografií;
+- diskety a sbíratelné CD vylepšení ve 3., 6. a 8. patře (dvojnásobné poškození do konce hry);
 - IT hrdina s pohybem, skokem, skrčením a střelbou;
 - stoly jako fyzické překážky;
 - sekretářky vrhající šanony, odborář a silnější manažer;
@@ -85,3 +74,7 @@ Oprava také používá `body.setAllowGravity(false)` pro střely hráče a nep�
 - Grafika je záměrně provizorní a snadno nahraditelná.
 
 **Technologie:** Phaser v3.90.0 (https://phaser.io/download/release/v3.90.0).
+
+## Ověření v prohlížeči
+
+Spusť `python3 -m http.server 8000 --bind 127.0.0.1`. S dostupným Node.js, balíčkem `playwright` a Chromium v `/usr/bin/chromium` spusť `node tests/browser.cjs`. Test ověřuje Enter, tlačítko, kliknutí na plátno, pohyb, střelbu, pauzu, přechody všemi devíti patry, nefunkční výtahy, sběr CD, sílu CD střely, vítězství a reset zbraně. Pro test přechodů hráče přemísťuje ke dveřím a odstraní nepřátele; nejde o kompletní dohrání soubojů.

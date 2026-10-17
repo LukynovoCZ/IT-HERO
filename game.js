@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.1.1 – mini plošinovka v Phaser 3.
+ * IT HERO 0.2.0 – mini plošinovka v Phaser 3.
  * Bez externích obrázků: všechny textury jsou generované pomocí Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -15,8 +15,9 @@
 
   const WIDTH = 960;
   const HEIGHT = 540;
-  const WORLD_HEIGHT = 1530;
-  const FLOORS = [1410, 925, 440]; // přízemí, 2. patro, 3. patro
+  const FLOOR_COUNT = 9;
+  const WORLD_HEIGHT = 4440;
+  const FLOORS = Array.from({ length: FLOOR_COUNT }, (_, i) => 4320 - i * 485);
   const COLORS = {
     dark: 0x0c1727,
     wall: 0x23334c,
@@ -37,6 +38,7 @@
       this.energy = 4;
       this.maxEnergy = 5;
       this.score = 0;
+      this.weapon = 'floppy';
       this.floor = 0;
       this.facing = 1;
       this.lastHit = -3000;
@@ -53,6 +55,7 @@
       this.platforms = this.physics.add.staticGroup();
       this.obstacles = this.physics.add.staticGroup();
       this.coffees = this.physics.add.staticGroup();
+      this.upgrades = this.physics.add.staticGroup();
 
       this.makeTextures();
       this.buildOffice();
@@ -71,7 +74,7 @@
       this.cameras.main.fadeIn(350, 6, 13, 26);
       this.updateHUD();
       this.showOverlay('IT HERO', 'VÝSTUP DO VEDENÍ',
-        'Jsi poslední ajťák, který ještě neztratil heslo.\nProjdi 3 kancelářská patra. Šanony bolí.\nKáva uzdravuje. Manažeři překážejí.',
+        'Jsi poslední ajťák, který ještě neztratil heslo.\nProjdi 9 pater. Výtahy jsou mimo provoz.\nDiskety střílíš J. Najdi vylepšení na CD.',
         'ENTER nebo kliknutí = HRÁT');
     }
 
@@ -128,9 +131,16 @@
         rect(g, 0x141f30, 12, 9, 4, 2); rect(g, 0xff647e, 9, 14, 3, 9);
         rect(g, 0xf1b18f, 17, 13, 3, 9);
       });
-      texture('packet', 13, 8, g => {
-        rect(g, 0x81fff0, 1, 1, 11, 6); rect(g, 0x205d79, 3, 2, 7, 4);
-        rect(g, 0xffffff, 5, 3, 3, 2);
+      texture('floppy', 14, 14, g => {
+        rect(g, 0x242e66, 0, 0, 14, 14); rect(g, 0x7e8cc9, 2, 0, 9, 6);
+        rect(g, 0x18243e, 7, 1, 3, 4); rect(g, 0xf3e5be, 2, 8, 10, 5);
+        rect(g, 0xd16d84, 3, 9, 8, 1);
+      });
+      texture('cd', 16, 16, g => {
+        for (const [x, y, w, h] of [[4,0,8,2],[2,2,12,2],[0,4,16,8],[2,12,12,2],[4,14,8,2]])
+          rect(g, 0xcbdde8, x, y, w, h);
+        rect(g, 0x83f1da, 2, 4, 4, 5); rect(g, 0xdca5ed, 10, 7, 4, 5);
+        rect(g, 0x263750, 6, 6, 4, 4); rect(g, 0xfaffff, 7, 7, 2, 2);
       });
       texture('folder', 15, 11, g => {
         rect(g, 0xa36540, 1, 2, 13, 8); rect(g, 0xf4be6e, 1, 4, 13, 5);
@@ -153,10 +163,10 @@
     buildOffice() {
       const g = this.add.graphics().setDepth(-12);
       g.fillStyle(COLORS.dark).fillRect(0, 0, WIDTH, WORLD_HEIGHT);
-      const names = ['01  /  RECEPCE & ADMINISTRATIVA', '02  /  ODBORY & PROJEKTY', '03  /  TOP MANAGEMENT'];
+      const names = ['RECEPCE', 'ADMINISTRATIVA', 'ÚČTÁRNA', 'PROJEKTY', 'ODBORY', 'PERSONÁLNÍ', 'PRÁVNÍ', 'MANAGEMENT', 'VEDENÍ'];
       FLOORS.forEach((y, level) => {
         const top = y - 414;
-        const wall = level % 2 ? COLORS.wallAlt : COLORS.wall;
+        const wall = level % 2 ? 0x68777d : 0x748187;
         g.fillStyle(wall).fillRect(0, top, WIDTH, 420);
         g.fillStyle(0x142539).fillRect(0, top + 10, WIDTH, 9);
         g.fillStyle(0x3b526a).fillRect(0, top + 22, WIDTH, 4);
@@ -192,7 +202,7 @@
         g.fillStyle(0x9ed5dc).fillRect(352, top + 268, 12, 28);
         g.fillStyle(0xe2cc77).fillRect(373, top + 256, 12, 40);
         g.fillStyle(0xd17b8b).fillRect(394, top + 273, 12, 23);
-        this.add.text(24, y - 383, names[level], {
+        this.add.text(24, y - 383, `${String(level + 1).padStart(2, '0')}  /  ${names[level]}`, {
           fontFamily: 'monospace', fontSize: '14px', color: '#c2d2e6',
           backgroundColor: '#152139', padding: { x: 12, y: 7 }
         }).setDepth(-8);
@@ -200,7 +210,7 @@
       });
 
       // Stoly – překážky, které je potřeba přeskočit.
-      [[0, 305], [0, 720], [1, 765], [1, 395], [2, 292], [2, 627]].forEach(([level, x]) => {
+      FLOORS.flatMap((_, level) => [[level, 305], [level, 700]]).forEach(([level, x]) => {
         const y = FLOORS[level];
         this.addStatic(this.obstacles, x, y - 19, 88, 38, 0x2d5363, 10);
         this.add.rectangle(x, y - 42, 96, 9, 0xc4a27a).setDepth(11);
@@ -211,14 +221,24 @@
       });
 
       // Schodišťové dveře; každé další patro začíná u stejné šachty.
-      this.doors = [
-        { floor: 0, x: 879, y: FLOORS[0], kind: 'stairs' },
-        { floor: 1, x: 81, y: FLOORS[1], kind: 'stairs' },
-        { floor: 2, x: 879, y: FLOORS[2], kind: 'exit' }
-      ];
-      this.doors.forEach(({ x, y, kind }) => this.drawDoor(x, y, kind === 'exit'));
-      this.drawDoor(879, FLOORS[1], false, true);
-      this.drawDoor(81, FLOORS[2], false, true);
+      this.doors = FLOORS.map((y, floor) => ({
+        floor, y, x: floor % 2 ? 81 : 879,
+        kind: floor === FLOOR_COUNT - 1 ? 'exit' : 'stairs'
+      }));
+      this.doors.forEach(({ x, y, kind }, floor) => {
+        this.drawDoor(x, y, kind === 'exit');
+        if (floor > 0) this.drawDoor(x === 879 ? 81 : 879, y, false, true);
+        // Prosklená centrální šachta a nefunkční výtah na každém patře.
+        const lift = this.add.graphics().setDepth(4);
+        lift.fillStyle(0x354954).fillRect(440, y - 210, 120, 210);
+        lift.fillStyle(0x92a4a8).fillRect(447, y - 158, 106, 158);
+        lift.fillStyle(0x526974).fillRect(453, y - 151, 94, 151);
+        lift.fillStyle(0x243b49).fillRect(498, y - 151, 4, 151);
+        lift.fillStyle(0xd5e3d7).fillRect(449, y - 205, 102, 28);
+        lift.fillStyle(0xe97568).fillRect(563, y - 92, 8, 8);
+        this.add.text(500, y - 192, `${floor + 1}  VÝTAH`, {font:'bold 12px monospace',color:'#243342'}).setOrigin(0.5).setDepth(5);
+        this.add.text(500, y - 110, 'MIMO\nPROVOZ', {font:'bold 13px monospace',color:'#ffce83',align:'center',backgroundColor:'#283b49',padding:{x:5,y:5}}).setOrigin(0.5).setDepth(5);
+      });
     }
 
     drawDoor(x, y, isExit, entry = false) {
@@ -246,13 +266,10 @@
       this.player.setCollideWorldBounds(true).setDragX(1050).setBounce(0);
       this.player.body.setSize(15, 27).setOffset(2, 1);
 
-      this.enemySpecs = [
-        { kind: 'secretary', floor: 0, x: 524, hp: 3, patrol: 44, delay: 1680 },
-        { kind: 'union', floor: 1, x: 365, hp: 4, patrol: 34, delay: 1950 },
-        { kind: 'secretary', floor: 1, x: 634, hp: 3, patrol: 38, delay: 1480 },
-        { kind: 'secretary', floor: 2, x: 453, hp: 3, patrol: 28, delay: 1430 },
-        { kind: 'manager', floor: 2, x: 759, hp: 6, patrol: 24, delay: 1190 }
-      ];
+      this.enemySpecs = FLOORS.flatMap((_, floor) => [
+        {kind: floor === 8 ? 'manager' : floor % 3 === 1 ? 'union' : 'secretary', floor, x: 590, hp: floor === 8 ? 8 : 3 + Math.floor(floor / 3), patrol: 30, delay: 1800 - floor * 65},
+        ...(floor > 1 ? [{kind:'secretary', floor, x:350, hp:3, patrol:25, delay:1900 - floor * 45}] : [])
+      ]);
       this.enemySpecs.forEach((spec, i) => {
         const e = this.enemies.create(spec.x, FLOORS[spec.floor] - 36, spec.kind);
         e.setScale(1.8).setDepth(22).setCollideWorldBounds(true);
@@ -266,12 +283,25 @@
         e.lastAttack = 0;
         e.attackDelay = spec.delay;
       });
-      [[0, 192], [0, 656], [1, 792], [1, 228], [2, 190], [2, 576]].forEach(([floor, x]) => {
+      FLOORS.flatMap((_, floor) => [[floor, 192], [floor, 790]]).forEach(([floor, x]) => {
         const coffee = this.coffees.create(x, FLOORS[floor] - 24, 'coffee');
         coffee.setScale(1.6).setDepth(19).refreshBody();
         coffee.setData('floor', floor);
         this.tweens.add({ targets: coffee, y: coffee.y - 7, duration: 700 + 100 * floor, ease: 'Sine.InOut', yoyo: true, repeat: -1 });
       });
+      [2, 5, 7].forEach(floor => {
+        this.upgrades.create(220, FLOORS[floor] - 35, 'cd').setScale(2).setDepth(20).refreshBody();
+        this.add.text(220, FLOORS[floor] - 75, 'CD UPGRADE', {font:'bold 11px monospace',color:'#ffe0ff'}).setOrigin(0.5).setDepth(20);
+      });
+    }
+
+    collectUpgrade(upgrade) {
+      if (this.gameState !== 'playing' || !upgrade.active) return;
+      upgrade.destroy();
+      this.weapon = 'cd';
+      this.updateHUD();
+      this.popText(this.player.x, this.player.y - 65, 'CD UPGRADE • 2× SÍLA', '#dca5ed');
+      this.tone(880, 0.2, 'triangle');
     }
 
     configurePhysics() {
@@ -283,6 +313,7 @@
       this.physics.add.collider(this.playerShots, this.obstacles, shot => shot.destroy());
       this.physics.add.collider(this.enemyShots, this.platforms, shot => shot.destroy());
       this.physics.add.collider(this.enemyShots, this.obstacles, shot => shot.destroy());
+      this.physics.add.overlap(this.player, this.upgrades, (_, upgrade) => this.collectUpgrade(upgrade));
       this.physics.add.overlap(this.player, this.coffees, (_, coffee) => this.collectCoffee(coffee));
       this.physics.add.overlap(this.playerShots, this.enemies, (shot, enemy) => this.hitEnemy(shot, enemy));
       this.physics.add.overlap(this.player, this.enemyShots, (_, shot) => {
@@ -363,7 +394,7 @@
       };
       const onKeyUp = (event) => {
         this.browserHeld.delete(event.code);
-        this.browserPressed.delete(event.code);
+        // Krátké stisknutí musí zůstat ve frontě do příštího herního snímku.
       };
       const onBlur = () => { this.browserHeld.clear(); this.browserPressed.clear(); };
       const onSurfaceClick = () => {
@@ -420,6 +451,7 @@
         this.energyCells.push(cell);
       }
       this.floorText = this.add.text(438, 14, '', {font: 'bold 16px monospace', color: '#f4e0ab'}).setScrollFactor(0).setDepth(102);
+      this.weaponText = this.add.text(660, 17, 'DISKETY', {font:'bold 12px monospace',color:'#dca5ed'}).setScrollFactor(0).setDepth(102);
       this.scoreText = this.add.text(937, 14, '', {font: 'bold 15px monospace', color: '#ecf4ff'}).setOrigin(1, 0).setScrollFactor(0).setDepth(102);
       this.promptText = this.add.text(480, 479, '', {
         font: 'bold 17px monospace', color: '#fef0c0', backgroundColor: '#16263e',
@@ -433,24 +465,72 @@
       });
     }
 
+    drawExterior() {
+      // Pixelová silueta podle reference: dvě křídla, pásy oken,
+      // prosklená spojovací věž a nízká vstupní hala.
+      const art = this.add.graphics();
+      const r = (color, x, y, w, h) => art.fillStyle(color).fillRect(x, y, w, h);
+      r(0x243f55, 608, 86, 312, 364);
+      for (let y = 100; y < 440; y += 8) r(0x29465a, 608, y, 312, 2);
+      r(0x142b3a, 608, 418, 312, 32);
+      r(0x89928e, 626, 155, 116, 254);
+      r(0xa6aaa0, 778, 109, 122, 300);
+      r(0x63736e, 900, 109, 12, 300);
+      for (let floor = 0; floor < 9; floor++) {
+        const y = 117 + floor * 31;
+        r(0xd0ccaf, 778, y + 21, 122, 6);
+        for (let col = 0; col < 6; col++) {
+          r(0xd5d6c4, 783 + col * 19, y, 17, 22);
+          r((floor + col) % 4 ? 0x425e6e : 0x93a6aa, 785 + col * 19, y + 2, 13, 18);
+          r(0x849799, 785 + col * 19, y + 2, 2, 18);
+        }
+        if (floor > 0) {
+          const ly = 157 + (floor - 1) * 28;
+          r(0xb7b8a5, 626, ly + 19, 116, 5);
+          for (let col = 0; col < 6; col++) {
+            r(0xccd0bf, 630 + col * 18, ly, 16, 19);
+            r(0x4a6570, 632 + col * 18, ly + 2, 12, 15);
+          }
+        }
+      }
+      r(0x6d807d, 742, 100, 36, 309);
+      r(0x324f5c, 748, 107, 24, 300);
+      for (let y = 110; y < 404; y += 21) {
+        r(0x91a7a4, 746, y, 30, 2); r(0x74918e, 759, y, 2, 20);
+      }
+      r(0x1d383a, 751, 84, 22, 16); r(0xa5bca0, 757, 87, 10, 10);
+      r(0x364a4d, 616, 348, 120, 61);
+      for (let x = 620; x < 736; x += 28) r(0x96a8a0, x, 348, 2, 61);
+      r(0x90a6a1, 616, 377, 120, 3);
+      r(0x536d70, 626, 386, 96, 23);
+      r(0xb4c4b7, 626, 386, 96, 3);
+      r(0xb4c4b7, 672, 386, 3, 23);
+      r(0x6e7d77, 612, 410, 300, 8);
+      r(0x1d3838, 880, 382, 18, 35); r(0x496a52, 876, 370, 26, 22);
+      r(0x263d41, 641, 423, 46, 10); r(0x83999b, 650, 416, 25, 8);
+      r(0x131f2b, 646, 432, 8, 5); r(0x131f2b, 675, 432, 8, 5);
+      return art;
+    }
+
     createOverlay() {
       const shade = this.add.rectangle(480, 270, 960, 540, 0x06101e, 0.82);
-      const panel = this.add.rectangle(480, 266, 658, 366, 0x17253b);
+      const panel = this.add.rectangle(308, 266, 556, 366, 0x17253b);
+      const exterior = this.drawExterior();
       panel.setStrokeStyle(4, 0x5accc7);
-      this.overlayTitle = this.add.text(480, 121, '', {
+      this.overlayTitle = this.add.text(308, 121, '', {
         font: 'bold 48px monospace', color: '#82f7df'
       }).setOrigin(0.5);
-      this.overlaySub = this.add.text(480, 170, '', {
+      this.overlaySub = this.add.text(308, 170, '', {
         font: 'bold 17px monospace', color: '#ffdf82'
       }).setOrigin(0.5);
-      this.overlayBody = this.add.text(480, 261, '', {
-        font: '15px monospace', color: '#d9e4f6', align: 'center', lineSpacing: 11
+      this.overlayBody = this.add.text(308, 261, '', {
+        font: '14px monospace', color: '#d9e4f6', align: 'center', lineSpacing: 11
       }).setOrigin(0.5);
       this.overlayAction = this.add.text(480, 378, '', {
         font: 'bold 17px monospace', color: '#101d2a', backgroundColor: '#75f1dc',
         padding: { x: 18, y: 12 }
       }).setOrigin(0.5);
-      this.overlay = this.add.container(0, 0, [shade, panel, this.overlayTitle, this.overlaySub, this.overlayBody]);
+      this.overlay = this.add.container(0, 0, [shade, panel, exterior, this.overlayTitle, this.overlaySub, this.overlayBody]);
       this.overlayAction.destroy(); // Tlačítko je nyní skutečný HTML element s nativní obsluhou kliknutí.
       this.overlayAction = null;
       this.overlay.setDepth(400).setScrollFactor(0);
@@ -507,7 +587,8 @@
 
     updateHUD() {
       this.energyCells.forEach((rect, i) => rect.setFillStyle(i < this.energy ? 0x66f0d7 : 0x30435a));
-      this.floorText.setText(`PATRO ${this.floor + 1} / 3`);
+      if (this.weaponText) this.weaponText.setText(this.weapon === 'cd' ? 'CD • 2×' : 'DISKETY');
+      this.floorText.setText(`PATRO ${this.floor + 1} / ${FLOOR_COUNT}`);
       this.scoreText.setText(`SKÓRE ${String(this.score).padStart(5, '0')}`);
     }
 
@@ -533,9 +614,11 @@
     fire() {
       const x = this.player.x + this.facing * 22;
       const y = this.player.y - 5;
-      const bullet = this.playerShots.create(x, y, 'packet');
+      const bullet = this.playerShots.create(x, y, this.weapon);
       bullet.setDepth(26).setScale(1.6).setVelocityX(this.facing * 560);
       bullet.body.setAllowGravity(false);
+      bullet.setData('damage', this.weapon === 'cd' ? 2 : 1);
+      bullet.setAngularVelocity(this.weapon === 'cd' ? 720 : 300);
       bullet.setData('expires', this.time.now + 1250);
       if (this.facing < 0) bullet.setFlipX(true);
       this.tone(510, 0.045);
@@ -555,8 +638,9 @@
 
     hitEnemy(shot, enemy) {
       if (this.gameState !== 'playing' || !shot.active || !enemy.active) return;
+      const damage = shot.getData('damage') || 1;
       shot.destroy();
-      enemy.hp--;
+      enemy.hp -= damage;
       enemy.setTintFill(0xffffff);
       this.time.delayedCall(90, () => { if (enemy.active) enemy.clearTint(); });
       this.tone(245, 0.045);
@@ -588,7 +672,11 @@
 
     interact() {
       const door = this.doors[this.floor];
-      if (Math.abs(this.player.x - door.x) > 74 || this.transitioning) return;
+      if (Math.abs(this.player.x - 500) < 65) {
+        this.popText(500, this.player.y - 65, 'VÝTAH NEFUNGUJE • POUŽIJ SCHODY', '#ffce83');
+        return;
+      }
+      if (Math.abs(this.player.x - door.x) > 74 || Math.abs(this.player.y - (door.y - 25)) > 110 || this.transitioning) return;
       if (door.kind === 'exit') {
         this.gameState = 'win';
         this.score += this.energy * 100 + 500;
@@ -604,7 +692,7 @@
       this.cameras.main.fadeOut(220, 7, 15, 28);
       this.time.delayedCall(230, () => {
         this.floor++;
-        const spawnX = this.floor === 1 ? 872 : 88;
+        const spawnX = this.floor % 2 ? 872 : 88;
         this.player.setPosition(spawnX, FLOORS[this.floor] - 50);
         this.player.setVelocity(0, 0);
         this.player.body.reset(spawnX, FLOORS[this.floor] - 50);
@@ -694,7 +782,7 @@
       const nearDoor = Math.abs(this.player.x - door.x) < 74 && Math.abs(this.player.y - (door.y - 25)) < 110;
       this.promptText.setText(nearDoor ? (door.kind === 'exit' ? '[ E ]  VSTUP DO VEDENÍ' : '[ E ]  PO SCHODECH NAHORU') : '');
       if (!this.isMuted || !this.tipText.text.startsWith('ZVUK')) {
-        this.tipText.setText(nearDoor ? 'Použij dveře k přechodu do dalšího patra' : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • STŘELBA');
+        this.tipText.setText(nearDoor ? 'Použij schody • výtah je mimo provoz' : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD');
       }
       if (time - this.lastHit < 1250) this.player.alpha = Math.floor(time / 90) % 2 ? 0.4 : 1;
       else this.player.alpha = 1;
