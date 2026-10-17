@@ -118,3 +118,7 @@ U aktivních schodů se skrč pomocí S nebo ↓. V posledním patře se stejný
 9. Vedení — cílové patro.
 
 Každé patro má vlastní rozmístění herních stolů, které respektuje i pomocník. Zadní nábytek má menší měřítko. Kávu představuje bílý hrnek se stylizovaným zeleným okřídleným symbolem; jemná pára se animuje při hraní a po sebrání zmizí. `node tests/floors.cjs` ověřuje přechody přes S a ↓ všemi patry, držení klávesy, cílovou obrazovku, skutečné sebrání kávy a animaci/úklid páry; snímky pater zapisuje do /tmp/it-hero-tests.
+
+## Plakáty a stoly verze 0.6.0
+
+Herní stoly mají šedé podstavce a krémově bílé desky. Modul `posters.js` generuje 12 korporátních plakátů přímo v prohlížeči; po patrech jich je rozmístěno 17, vždy 1–2 na patro. Při přiblížení se ve spodní liště zobrazí celý slogan a podtext. Texty, barvy, rozměry a pozice lze měnit v konfiguraci modulu. Postup pro přidání dalšího plakátu a testování je v `POSTERS.md`.

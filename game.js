@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.5.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.6.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -103,6 +103,7 @@
       this.installReliableControls();
       this.createHUD();
       this.createOverlay();
+      this.posters = window.ITHeroPosters.mount(this, FLOORS);
 
       this.cameras.main.setBounds(0, 0, WIDTH, WORLD_HEIGHT);
       this.cameras.main.setRoundPixels(true);
@@ -328,8 +329,8 @@
       // Stoly – překážky, které je potřeba přeskočit.
       FLOOR_PLANS.flatMap((plan, level) => plan.desks.map(x => [level, x])).forEach(([level, x]) => {
         const y = FLOORS[level];
-        this.addStatic(this.obstacles, x, y - 19, 88, 38, 0x174b3c, 10);
-        this.add.rectangle(x, y - 42, 96, 9, 0xc4a27a).setDepth(11);
+        this.addStatic(this.obstacles, x, y - 19, 88, 38, 0x858d89, 10);
+        this.add.rectangle(x, y - 42, 96, 9, 0xf1eedb).setDepth(11);
         this.add.rectangle(x - 19, y - 63, 45, 31, 0x132a3c).setDepth(12);
         this.add.rectangle(x - 19, y - 65, 38, 24, 0x42809b).setDepth(13);
         this.add.rectangle(x + 26, y - 42, 12, 7, 0xffdf82).setDepth(13);
@@ -337,11 +338,11 @@
         const detail = this.add.graphics().setDepth(14);
         detail.fillStyle(0xa7e970).fillRect(x - 35, y - 73, 19, 2);
         detail.fillStyle(0x9bb7b1).fillRect(x - 35, y - 68, 10, 2);
-        detail.fillStyle(0x314b43).fillRect(x - 38, y - 35, 76, 2);
-        detail.fillStyle(0x1c382d).fillRect(x + 5, y - 31, 2, 28);
+        detail.fillStyle(0x6c7773).fillRect(x - 38, y - 35, 76, 2);
+        detail.fillStyle(0x596661).fillRect(x + 5, y - 31, 2, 28);
         for (let line = 0; line < 3; line++) {
-          detail.fillStyle(0x70917d).fillRect(x + 12, y - 26 + line * 9, 20, 1);
-          detail.fillStyle(0xd1d6bd).fillRect(x + 21, y - 24 + line * 9, 4, 1);
+          detail.fillStyle(0xc4cbc3).fillRect(x + 12, y - 26 + line * 9, 20, 1);
+          detail.fillStyle(0xe8ebde).fillRect(x + 21, y - 24 + line * 9, 4, 1);
         }
       });
 
@@ -937,6 +938,7 @@
         this.isMuted = !this.isMuted;
         this.tipText.setText(this.isMuted ? 'ZVUK VYPNUT (M)' : 'ZVUK ZAPNUT (M)');
       }
+      this.posters.update(this.player, this.floor, this.gameState === 'playing' && !this.transitioning);
       // START/PAUZA/RESTART mají přímou DOM obsluhu, nezávislou na Phaser input.
       if (this.gameState !== 'playing' || this.transitioning) {
         if (this.gameState !== 'playing') this.promptText.setText('');
@@ -1033,6 +1035,7 @@
       const nearDoor = Math.abs(this.player.x - door.x) < 74 && Math.abs(this.player.y - (door.y - 25)) < 110;
       this.promptText.setVisible(nearDoor);
       this.promptText.setText(nearDoor ? (door.kind === 'exit' ? '[ S / ↓ ]  VSTUP DO VEDENÍ' : '[ S / ↓ ]  DALŠÍ PATRO') : '');
+      this.tipText.setVisible(!this.posters.tooltip.visible);
       if (!this.isMuted || !this.tipText.text.startsWith('ZVUK')) {
         this.tipText.setText(nearDoor ? 'U schodů se skrč: S nebo ↓' : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD');
       }
