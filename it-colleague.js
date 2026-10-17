@@ -68,7 +68,9 @@
     function bubble(v){
       const x=Phaser.Math.Clamp(v.dropX,135,825),y=floors[v.floor]-115;
       const container=scene.add.container(x,y).setDepth(106);
-      const text=scene.add.text(0,0,Phaser.Utils.Array.GetRandom(quotes[v.kind]),{font:'bold 11px monospace',color:'#18313a',backgroundColor:'#fff4db',wordWrap:{width:200},align:'center',padding:{x:8,y:6}}).setOrigin(0.5,1);
+      const line=Phaser.Utils.Array.GetRandom(quotes[v.kind]);
+      scene.posters.showMessage(`IT KOLEGA\n${line}`,7000);
+      const text=scene.add.text(0,0,line,{font:'bold 11px monospace',color:'#18313a',backgroundColor:'#fff4db',wordWrap:{width:200},align:'center',padding:{x:8,y:6}}).setOrigin(0.5,1);
       const tail=scene.add.graphics().fillStyle(0xfff4db).fillTriangle(-5,0,5,0,0,8);
       container.add([text,tail]);return container;
     }

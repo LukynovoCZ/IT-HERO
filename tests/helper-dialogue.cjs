@@ -1,0 +1,26 @@
+const {chromium}=require('playwright');const assert=require('node:assert/strict');
+(async()=>{const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});try{
+ const p=await b.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await p.route('**/game.js*',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame=new Phaser.Game({')});});
+ await p.goto('http://127.0.0.1:8000');await p.locator('#game-action').waitFor({state:'visible'});await p.keyboard.press('Enter');
+ await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.enemies.clear(true,true);s.colleague.state.nextAt=Infinity;s.player.body.reset(s.posters.posters[0].placement.x,4280);s.player.setVelocity(0);});
+ await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').posters.tooltip.visible);
+ const poster=await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').posters.tooltip.text);
+ const result=await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.spawnHelper('lift','beer');s.updateHelper(1200);return {dropped:s.helperVisit.dropped,speech:s.helperVisit.speech.text};});
+ assert.equal(result.dropped,false);
+ await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').posters.tooltip.text.startsWith('STARÝ AJŤÁK'));
+ await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.updateHelper(650);});
+ assert(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').helperVisit.dropped));
+ // Freeze world physics to test UI clocks with deterministic active delta.
+ const checks=await p.evaluate(poster=>{const s=window.__testGame.scene.getScene('ITGame'),v=s.helperVisit;
+ const active=(delta)=>s.posters.update(s.player,s.floor,true,delta);
+ active(0);const matching=s.posters.tooltip.text===`STARÝ AJŤÁK\n${v.speech.text}`;
+ s.updateHelper(2200);const prolonged=!!s.helperVisit?.speech.active;
+ const text=s.posters.tooltip.text;s.posters.update(s.player,s.floor,false,9000);active(0);const paused=s.posters.tooltip.text===text;
+ active(7100);const restored=s.posters.tooltip.text===poster&&s.posters.tooltip.visible;
+ s.posters.showMessage('IT KOLEGA\nZkouška spodního panelu',7000);active(0);const colleague=s.posters.tooltip.text.startsWith('IT KOLEGA');
+ s.posters.update(s.player,1,true,0);const cleared=!s.posters.tooltip.text.startsWith('IT KOLEGA')||!s.posters.tooltip.visible;
+ return {matching,prolonged,paused,restored,colleague,cleared};},poster);
+ assert(Object.values(checks).every(Boolean),JSON.stringify(checks));assert.deepEqual(errors,[]);
+ console.log('PASS helper dialogue: longer peek and offer, matching lower panel, paused duration, poster restored after expiry, shared colleague messages and floor cleanup.');
+}finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});

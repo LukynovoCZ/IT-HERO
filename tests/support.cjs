@@ -44,15 +44,15 @@ const assert = require('node:assert/strict');
       });
       await page.waitForFunction(() => window.__testGame.scene.getScene('ITGame').energy === 5);
       assert.equal(await page.evaluate(() => window.__testGame.scene.getScene('ITGame').aidItems.countActive()), 0);
-      await page.evaluate(() => window.__testGame.scene.getScene('ITGame').updateHelper(3600));
-      assert.equal(await page.evaluate(() => window.__testGame.scene.getScene('ITGame').helperVisit), null);
+      await page.evaluate(() => window.__testGame.scene.getScene('ITGame').updateHelper(6600));
+      assert.equal(await page.evaluate(() => window.__testGame.scene.getScene('ITGame').helperVisit === null), true);
       console.log(`PASS ${source}/${kind}: appearance, delayed drop, pause freeze, actual pickup restores full health, helper leaves`);
     }
     await page.evaluate(() => {
       const s = window.__testGame.scene.getScene('ITGame');
       s.player.body.reset(82, 4280);
       s.spawnHelper('desk', 'hotdog');
-      s.updateHelper(901);
+      s.updateHelper(1801);
       const item = s.aidItems.getChildren()[0];
       window.__giftLabel = item.getData('label');
       s.updateHelper(11001);

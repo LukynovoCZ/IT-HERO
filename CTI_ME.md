@@ -133,3 +133,9 @@ Texty jsou v `game.js` v tabulce `OLD_HELPER_LINES`: `beer` pro nabídku piva,
 `hotdog` pro párek a `peek` při vykouknutí. Výběr je náhodný. Hláška se při
 nabídce vymění, dlouhé texty se zalamují a při odchodu postavy zmizí.
 Léčení, předměty i časování návštěv zůstávají stejné.
+
+Od 0.9.2 má starý ajťák delší čtení: nabídku položí po 1,8 s a návštěva končí
+po 6,5 s. Hodnoty jsou v `OLD_HELPER_TIMING` v `game.js`. Jeho hlášky i hlášky
+IT kolegy se zároveň zobrazí na 7 s ve spodním panelu. `posters.showMessage()`
+dočasně překryje detail plakátu, po doznění se vrátí původní obsah podle polohy
+hráče. Pauza čas hlášky zastaví a změna patra ji vyčistí.

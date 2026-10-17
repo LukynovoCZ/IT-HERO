@@ -122,10 +122,17 @@
       font:'12px monospace',color:'#f4f0df',backgroundColor:'#123e2d',
       padding:{x:12,y:8},wordWrap:{width:450},lineSpacing:4
     }).setOrigin(0.5,1).setDepth(150).setScrollFactor(0).setVisible(false);
-    let destroyed=false;
+    let destroyed=false, message=null;
     const manager={posters,tooltip,
-      update(player,floor,active){
+      showMessage(text,duration=7000){message={text,remaining:duration,floor:scene.floor};},
+      update(player,floor,active,delta=0){
         if(destroyed)return;
+        if(message&&message.floor!==floor)message=null;
+        if(message&&active){
+          message.remaining-=delta;
+          if(message.remaining>0){tooltip.setText(message.text).setVisible(true);return;}
+          message=null;
+        }
         const nearest=active?posters.filter(p=>p.placement.floor===floor+1)
           .filter(p=>Math.abs(player.y-(floors[floor]-40))<120)
           .sort((a,b)=>Math.abs(a.placement.x-player.x)-Math.abs(b.placement.x-player.x))[0]:null;
