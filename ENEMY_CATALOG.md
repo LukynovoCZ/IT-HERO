@@ -120,15 +120,15 @@ každou postavou a kontaktní efekty přes volbu „Zastavení hráče“.
 
 Ověření: `node tests/trio-weapons.cjs`, `node tests/trio-collisions.cjs`.
 
-## Kompletní porovnání (0.7.2)
+## Kompletní porovnání (0.10.1)
 
-`character-preview.html` zobrazuje všech devět herních postav ve třech řadách
+`character-preview.html` zobrazuje všech dvanáct herních postav ve čtyřech řadách
 po třech. Každá řada má společnou základnu, zoom je pro všechny stejný. Starší
 postavy používají stejné ořezy, výšky a kotvy jako `makeTextures()` v `game.js`.
 U chybějících póz se zachová klidová póza. Starý ajťák je pomocník bez zásahového
 těla, proto se u něj nezobrazuje hitbox. Původní rozměry ve hře se nemění.
 
-## Šéf SAP (0.8.0, samostatná větev)
+## Šéf SAP (od verze 0.8.0)
 
 Desátá postava v porovnání, miniboss v 5. patře, 8 životů a odměna 500 bodů.
 Vlastní modul `sap-integrator.js` přidává profil a chování do katalogu;

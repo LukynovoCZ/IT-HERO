@@ -25,8 +25,9 @@ const assert=require('node:assert/strict');
  },{direction,distance});
  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemyShots.countActive()),0);
  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').energy),5);
- await p.waitForFunction(()=>!window.__sap.sapBusy);
- const result=await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');return {energy:s.energy,shots:s.enemyShots.getChildren().map(s=>({key:s.texture.key,vx:s.body.velocity.x,gravity:s.body.allowGravity,height:s.body.height}))};});
+ // Snapshot in the same browser tick that ends the burst, before short-lived pens expire.
+ const snapshot=await p.waitForFunction(()=>{if(window.__sap.sapBusy)return false;const s=window.__testGame.scene.getScene('ITGame');return {energy:s.energy,shots:s.enemyShots.getChildren().map(s=>({key:s.texture.key,vx:s.body.velocity.x,gravity:s.body.allowGravity,height:s.body.height}))};});
+ const result=await snapshot.jsonValue();
  assert.equal(result.shots.length,count);
  if(type==='melee')assert.equal(result.energy,3);
  else {assert(result.shots.every(s=>s.key===type&&Math.sign(s.vx)===direction));if(type==='sap-helmet')assert(result.shots[0].gravity);else assert(result.shots.every(s=>s.height===5));}

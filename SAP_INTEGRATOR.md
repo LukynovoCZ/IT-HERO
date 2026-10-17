@@ -1,6 +1,6 @@
 # Šéf SAP – Globální integrátor (0.8.1)
 
-Samostatná větev `feature/sap-integrator`; veřejná hra se touto větví nemění.
+Součást společné verze 0.10.1 v hlavní větvi hry.
 Nový miniboss je v 5. patře, x=650, vedle stávajících nepřátel.
 Finální šéf v 9. patře zůstává zachovaný.
 

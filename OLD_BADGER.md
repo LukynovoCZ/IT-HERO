@@ -1,7 +1,7 @@
 # Starý Jezevec (0.10.0)
 
-Samostatná větev `feature/old-badger` navazuje na připravené změny SAP minibosse,
-čitelnějších manažerů, IT kolegy a delších hlášek. Veřejná větev se nemění.
+Součást společné verze 0.10.1 spolu se SAP minibossem, čitelnějšími manažery,
+IT kolegou a delšími hláškami.
 
 ## Soubory
 

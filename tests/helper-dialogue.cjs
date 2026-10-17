@@ -21,6 +21,10 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
  s.posters.showMessage('IT KOLEGA\nZkouška spodního panelu',7000);active(0);const colleague=s.posters.tooltip.text.startsWith('IT KOLEGA');
  s.posters.update(s.player,1,true,0);const cleared=!s.posters.tooltip.text.startsWith('IT KOLEGA')||!s.posters.tooltip.visible;
  return {matching,prolonged,paused,restored,colleague,cleared};},poster);
- assert(Object.values(checks).every(Boolean),JSON.stringify(checks));assert.deepEqual(errors,[]);
- console.log('PASS helper dialogue: longer peek and offer, matching lower panel, paused duration, poster restored after expiry, shared colleague messages and floor cleanup.');
+ assert(Object.values(checks).every(Boolean),JSON.stringify(checks));
+ const deadline=await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.player.body.reset(s.doors[0].x,4280);s.player.setVelocity(0);return s.nextHelperAt;});
+ await p.keyboard.down('s');await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').floor===1);await p.keyboard.up('s');
+ assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').nextHelperAt),deadline,'Stairs must not shorten the old helper interval');
+ assert.deepEqual(errors,[]);
+ console.log('PASS helper dialogue: longer peek and offer, matching lower panel, paused duration, poster restored after expiry, shared colleague messages, floor cleanup and unchanged helper interval across stairs.');
 }finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});

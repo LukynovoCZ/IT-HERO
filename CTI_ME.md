@@ -139,3 +139,11 @@ po 6,5 s. Hodnoty jsou v `OLD_HELPER_TIMING` v `game.js`. Jeho hlášky i hláš
 IT kolegy se zároveň zobrazí na 7 s ve spodním panelu. `posters.showMessage()`
 dočasně překryje detail plakátu, po doznění se vrátí původní obsah podle polohy
 hráče. Pauza čas hlášky zastaví a změna patra ji vyčistí.
+
+## Společné vydání 0.10.1 a kontrola mechanismů
+
+Toto vydání spojuje dříve připravené postavy a opravy do hlavní veřejné verze:
+IT kolega, Starý Jezevec, čitelnější HR/design manažer, Šéf SAP v 5. patře a delší
+hlášky se spodním panelem. Porovnání ukazuje 12 postav. Zrušen je přepis termínu
+návštěvy starého ajťáka na 5 sekund při každém přechodu patra. Výsledky úplné
+kontroly a test přirozených příchodů jsou v `GAME_AUDIT.md`.

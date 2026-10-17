@@ -1,8 +1,6 @@
 # IT KOLEGA (0.9.0)
 
-Druhý přátelský pomocník vedle původního starého ajťáka. Samostatná větev
-`feature/it-colleague` navazuje na rozpracovanou větev s minibossem SAP v 5. patře;
-veřejný web se touto větví nemění.
+Druhý přátelský pomocník vedle původního starého ajťáka. Součást společné verze 0.10.1 se SAP minibossem v 5. patře a Starým Jezevcem.
 
 ## Soubory a konfigurace
 
