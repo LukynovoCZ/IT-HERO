@@ -161,7 +161,7 @@
     shot.setData('expires',scene.time.now+1900).setData('damage',e.profile.damage);
     scene.tone(170,0.06,'triangle');
   });
-  window.ITHeroEnemyCatalog={profiles,placements,preload,create,
+  window.ITHeroEnemyCatalog={profiles,placements,preload,create,createTextures,
     registerAttack(type,handler){attacks.set(type,handler);}
   };
 })();

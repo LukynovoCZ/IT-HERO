@@ -86,3 +86,17 @@ Výchozí šanon nových postav vzniká 34 pixelů nad spodní hranou jejich fyz
 `node tests/trio-collisions.cjs` testuje skutečné fyzikální zásahy každého finálního hitboxu přes hráčovo `fire()`: jedna CD střela a dvě diskety protivníka porazí a přidělí skóre. Pro izolovaný test zastaví jeho pohyb a útoky ostatních nepřátel; nenahrazuje detekci kolizí přímým voláním zásahu. Regresní `tests/browser.cjs` kontroluje Enter, kliknutí, ovládání, všechna patra i původní postavy.
 
 Pracovní větev je připravena jako verze 0.7.0. Verzované URL skriptů zabrání načtení starého `game.js` po případném sloučení. Toto samo o sobě veřejnou hru nepublikuje.
+
+## Zkušební scéna velikostí
+
+Otevřete `character-preview.html` přes stejný statický server jako hru, nebo klikněte
+na „Zkušební scéna: porovnání postav“ pod hrou. Scéna ukazuje ajťáka a všechny tři
+nové postavy vedle sebe na stejné podlaze. Nabízí pózy, pozastavení animace,
+zvětšení 1×/2× a zásahové oblasti. Neobsahuje souboje.
+
+`character-preview.js` přebírá rozměry, hitboxy a normalizované textury přímo
+z `enemy-catalog.js` přes sdílenou funkci `createTextures`. Herní rozměry měňte
+v profilech katalogu (`renderHeight`, `frameWidth`, `frameHeight`, `body`),
+nikoliv v náhledu. Výška ajťáka odpovídá hernímu ořezu 76 px.
+
+Ověření náhledu: `node tests/character-preview.cjs` (server na portu 8000).
