@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.9.2 – mini plošinovka v Phaser 3.
+ * IT HERO 0.10.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -68,6 +68,7 @@
     preload() {
       window.ITHeroEnemyCatalog.preload(this);
       window.ITHeroColleague.preload(this);
+      window.ITHeroOldBadger.preload(this);
       this.load.image('support-art', 'assets/support.png');
       this.load.image('character-art', 'assets/characters.png');
       this.load.image('floor-art', 'assets/floors.png');
@@ -431,6 +432,7 @@
       });
       this.enemyTrio = window.ITHeroEnemyCatalog.create(this, FLOORS);
       this.colleague = window.ITHeroColleague.create(this, FLOORS, FLOOR_PLANS);
+      this.oldBadger = window.ITHeroOldBadger.create(this, FLOORS);
       FLOORS.flatMap((_, floor) => [[floor, 192], [floor, 790]]).forEach(([floor, x]) => {
         const coffee = this.coffees.create(x, FLOORS[floor] - 17, 'coffee');
         coffee.setScale(1.2).setDepth(19).refreshBody();
@@ -530,6 +532,7 @@
       this.physics.add.overlap(this.player, this.aidItems, (_, item) => this.collectAid(item));
       this.physics.add.overlap(this.player, this.upgrades, (_, upgrade) => this.collectUpgrade(upgrade));
       this.physics.add.overlap(this.player, this.coffees, (_, coffee) => this.collectCoffee(coffee));
+      this.oldBadger.configurePhysics();
       this.physics.add.overlap(this.playerShots, this.enemies, (shot, enemy) => this.hitEnemy(shot, enemy));
       this.physics.add.overlap(this.player, this.enemyShots, (_, shot) => {
         if (!shot.active) return;
@@ -867,6 +870,7 @@
 
     hitEnemy(shot, enemy) {
       if (this.gameState !== 'playing' || !shot.active || !enemy.active || enemy.defeated) return;
+      if (this.oldBadger.intercept(shot)) return;
       const damage = shot.getData('damage') || 1;
       shot.destroy();
       enemy.hp -= damage;
@@ -937,6 +941,7 @@
       this.time.delayedCall(230, () => {
         this.floor++;
         this.colleague.changeFloor();
+        this.oldBadger.clear();
         this.aidItems.getChildren().slice().forEach(item => this.removeAid(item));
         this.nextHelperAt = Math.min(this.nextHelperAt,this.playTime+5000);
         const spawnX = this.floor % 2 ? 872 : 88;
@@ -969,6 +974,7 @@
       }
       this.posters.update(this.player, this.floor, this.gameState === 'playing' && !this.transitioning, delta);
       this.colleague.update(delta);
+      this.oldBadger.update(delta);
       // START/PAUZA/RESTART mají přímou DOM obsluhu, nezávislou na Phaser input.
       if (this.gameState !== 'playing' || this.transitioning) {
         if (this.gameState !== 'playing') this.promptText.setText('');

@@ -19,3 +19,7 @@ obrysy a kontrast, nahrazuje původní jemné atlasy v konfiguraci verze 0.8.1.
 `it_colleague.png` (1774 × 887): nezranitelný pomocník IT KOLEGA, čtyři pózy
 podle reference. Jeho vlastní ořezy, kotvy, návštěvy a předměty jsou v
 `it-colleague.js`, konfigurace a testování v `IT_COLLEAGUE.md`.
+
+`old_badger.png` (2048 × 768): komická nezničitelná překážka Starý Jezevec.
+Čtyři transparentní pózy, ořezy a normalizace v `old-badger.js`, popis a
+konfigurace v `OLD_BADGER.md`. Propadnutí je animované s maskou podlahy.
