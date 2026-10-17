@@ -147,3 +147,11 @@ IT kolega, Starý Jezevec, čitelnější HR/design manažer, Šéf SAP v 5. pat
 hlášky se spodním panelem. Porovnání ukazuje 12 postav. Zrušen je přepis termínu
 návštěvy starého ajťáka na 5 sekund při každém přechodu patra. Výsledky úplné
 kontroly a test přirozených příchodů jsou v `GAME_AUDIT.md`.
+
+## Mobilní a PC ovládání (0.11.0)
+
+Dotykové zařízení automaticky zobrazí ovládání pod hrou. Na PC zůstává
+klávesnice, panel lze zapnout tlačítkem „Dotykové ovládání“. Podporuje více
+prstů (pohyb + skok + střelba), ▼ pro skrčení/schody, pauzu, zvuk a volitelnou
+celou obrazovku. Rozložení funguje na výšku i na šířku. Podrobnosti a výsledky
+ověření jsou v `TOUCH_CONTROLS.md`.

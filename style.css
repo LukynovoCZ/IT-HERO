@@ -24,3 +24,58 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
 .mission-story{margin-top:22px;padding:14px 18px;border:1px solid #3d6851;background:#0c3028;color:#d9e4d9;font-size:13px;line-height:1.8}
 .mission-story summary{cursor:pointer;color:#a4e963;font-weight:700;letter-spacing:1px}
 .mission-story p{max-width:850px}.mission-story strong{color:#f4e3a2}
+
+/* Touch controls sit outside the game canvas, so thumbs never cover enemies. */
+.play-area{position:relative}
+.touch-toolbar[hidden],.touch-controls[hidden],.touch-hint[hidden]{display:none}
+.touch-toolbar{display:flex;gap:6px;justify-content:flex-end;margin:10px 0 6px}
+.touch-toolbar button,.touch-toggle{border:1px solid #527c61;background:#173d31;color:#eaf4e7;font:12px ui-monospace,monospace;min-height:44px;padding:8px 10px;touch-action:manipulation;border-radius:5px;cursor:pointer}
+.touch-toggle{margin-top:16px;min-height:44px}
+.touch-controls{display:flex;justify-content:space-between;gap:12px;padding:4px 0;touch-action:none;user-select:none;-webkit-user-select:none}
+.touch-movement,.touch-actions{display:flex;gap:8px}
+.touch-controls button{width:62px;min-height:62px;padding:4px;border:2px solid #73965f;border-bottom-width:5px;border-radius:8px;background:#214d3b;color:#e5f2df;font:700 24px/1 ui-monospace,monospace;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.touch-controls button small{display:block;font-size:10px;margin-top:6px;font-weight:400}
+.touch-actions button{background:#38512b;border-color:#a4d76f}
+.touch-controls button.held{background:#a4e963;color:#102b24;border-color:#d3ffa1;transform:translateY(2px)}
+.touch-controls button:disabled,.touch-toolbar button:disabled{opacity:.42}
+.touch-controls button:focus-visible,.touch-toolbar button:focus-visible,.touch-toggle:focus-visible{outline:3px solid #ffdc83;outline-offset:2px}
+.touch-hint{font-size:11px;line-height:1.5;color:#b4cbb8;margin:8px 0 0}
+.touch-layout #game{touch-action:none}
+@media(max-width:650px){
+ .touch-layout .layout{width:calc(100% - 16px);padding-top:max(10px,env(safe-area-inset-top))}
+ .touch-layout .heading{gap:6px}.touch-layout h1{font-size:27px}.touch-layout h1 small{font-size:11px}
+ .touch-layout .version{display:block;font-size:9px;padding:6px}
+ .touch-controls button{width:clamp(46px,14vw,62px);min-height:58px}
+ .touch-movement,.touch-actions{gap:5px}.touch-controls{gap:8px}
+ .touch-layout .controls{display:none}
+ .touch-toolbar button{min-height:44px;font-size:11px}
+}
+@media(max-height:540px) and (orientation:landscape){
+ .touch-layout .layout{padding:4px max(8px,env(safe-area-inset-right)) 20px;width:100%}
+ .touch-layout .heading{display:none}
+ .touch-layout .play-area{height:calc(100vh - 8px);height:calc(100dvh - 8px);display:flex;flex-direction:column;gap:5px}
+ .touch-layout .game-shell{flex:1;min-height:0;width:100%;box-shadow:none}
+ .touch-layout #game{aspect-ratio:auto;height:100%}
+ .touch-layout .touch-toolbar{position:absolute;top:4px;right:4px;z-index:30;margin:0}
+ .touch-layout .touch-toolbar button{min-height:32px;padding:4px 7px;font-size:10px}
+ .touch-layout .touch-controls{flex-shrink:0;padding:0 max(4px,env(safe-area-inset-left)) max(2px,env(safe-area-inset-bottom))}
+ .touch-layout .touch-controls button{width:62px;min-height:60px}
+ .touch-layout .touch-hint{display:none}
+}
+.play-area:fullscreen{width:100%;height:100%;padding:max(4px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom));background:#071e19;display:flex;flex-direction:column;gap:6px}
+.play-area:fullscreen .game-shell{flex:1;min-height:0;box-shadow:none}
+.play-area:fullscreen #game{height:100%;aspect-ratio:auto}
+.play-area:fullscreen .touch-controls{flex-shrink:0}
+.play-area:fullscreen .touch-toolbar{margin:0}
+.play-area:fullscreen .touch-hint{display:none}
+/* Phaser and flexbox must not each add their own centering margins. */
+#game canvas{margin:0!important}
+@media(max-height:540px) and (orientation:landscape){
+ .touch-layout .touch-toolbar{top:auto;bottom:12px;left:calc(50% + 24px);right:auto;transform:translateX(-50%);gap:4px}
+ .touch-layout .touch-toolbar button{width:44px;min-height:44px;padding:4px;font-size:0}
+ .touch-layout #touch-pause::after{content:'||';font-size:18px}
+ .touch-layout #touch-pause[data-paused="true"]::after{content:'▶'}
+ .touch-layout #touch-sound::after{content:'Zvuk';font-size:10px}
+ .touch-layout #touch-sound[aria-pressed="false"]::after{content:'Zvuk ×'}
+ .touch-layout #touch-fullscreen::after{content:'[ ]';font-size:15px}
+}

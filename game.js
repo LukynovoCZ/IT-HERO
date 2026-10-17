@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.10.1 – mini plošinovka v Phaser 3.
+ * IT HERO 0.11.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -111,6 +111,7 @@
       this.configurePhysics();
       this.configureKeyboard();
       this.installReliableControls();
+      this.touchControls = window.ITHeroTouchControls?.attach(this);
       this.createHUD();
       this.createOverlay();
       this.posters = window.ITHeroPosters.mount(this, FLOORS);
@@ -636,14 +637,15 @@
     }
 
     browserDown(action) {
-      return (this.browserMap[action] || []).some(code => this.browserHeld.has(code));
+      return (this.browserMap[action] || []).some(code => this.browserHeld.has(code)) || !!this.touchControls?.isDown(action);
     }
 
     browserJustPressed(action) {
       const codes = this.browserMap[action] || [];
       const result = codes.some(code => this.browserPressed.has(code));
       codes.forEach(code => this.browserPressed.delete(code));
-      return result;
+      const touch = this.touchControls?.justPressed(action);
+      return result || !!touch;
     }
 
     togglePause() {
@@ -651,7 +653,7 @@
         this.gameState = 'paused';
         this.physics.world.pause();
         this.showOverlay('PAUZA', 'VÝPADEK NA FIREWALLU',
-          'Můžeš pokračovat klávesou ESC.\nRychlost, střelba i šanony zůstávají stejné.', 'ESC / KLIK = POKRAČOVAT');
+          this.touchControls?.enabled ? 'Pokračuj tlačítkem pauzy nebo klepnutím.\nPohyb i střelba teď odpočívají.' : 'Můžeš pokračovat klávesou ESC.\nRychlost, střelba i šanony zůstávají stejné.', 'ESC / KLIK = POKRAČOVAT');
       } else if (this.gameState === 'paused') {
         this.gameState = 'playing';
         this.physics.world.resume();
@@ -960,6 +962,7 @@
 
     update(time, delta) {
       if (!this.keys) return;
+      this.touchControls?.sync();
       const pressed = (action) => {
         // Obě cesty vyhodnotíme bez zkráceného ||, abychom nevyvolali akci dvakrát.
         const browser = this.browserJustPressed(action);
@@ -995,7 +998,9 @@
         this.player.setVelocityX(0);
       }
       const grounded = this.player.body.blocked.down || this.player.body.touching.down;
-      const crouching = grounded && down('crouch');
+      const crouchPressed = pressed('crouch');
+      const crouchHeld = down('crouch') || crouchPressed;
+      const crouching = grounded && crouchHeld;
       if (crouching !== this.wasCrouching) {
         this.player.body.setSize(28, crouching ? 36 : 72);
         this.player.body.setOffset(18, crouching ? 44 : 8);
@@ -1012,11 +1017,11 @@
       if (crouching) this.player.setTexture('hero-duck');
       else if (grounded && moving) this.player.setTexture(Math.floor(time / 130) % 2 ? 'hero' : 'hero-walk');
       else this.player.setTexture('hero');
-      if (down('shoot') && time - this.lastShot > 240) {
+      const shootPressed = pressed('shoot');
+      if ((down('shoot') || shootPressed) && time - this.lastShot > 240) {
         this.lastShot = time;
         this.fire();
       }
-      const crouchHeld = down('crouch');
       const stairs = this.doors[this.floor];
       const atStairs = Math.abs(this.player.x-stairs.x)<74 && Math.abs(this.player.y-(stairs.y-25))<110;
       if (crouching && atStairs && !this.stairsCrouchHeld) {
@@ -1070,10 +1075,11 @@
       const door = this.doors[this.floor];
       const nearDoor = Math.abs(this.player.x - door.x) < 74 && Math.abs(this.player.y - (door.y - 25)) < 110;
       this.promptText.setVisible(nearDoor);
-      this.promptText.setText(nearDoor ? (door.kind === 'exit' ? '[ S / ↓ ]  VSTUP DO VEDENÍ' : '[ S / ↓ ]  DALŠÍ PATRO') : '');
+      const stairsKey = this.touchControls?.enabled ? '▼' : 'S / ↓';
+      this.promptText.setText(nearDoor ? `[ ${stairsKey} ]  ${door.kind === 'exit' ? 'VSTUP DO VEDENÍ' : 'DALŠÍ PATRO'}` : '');
       this.tipText.setVisible(!this.posters.tooltip.visible);
       if (!this.isMuted || !this.tipText.text.startsWith('ZVUK')) {
-        this.tipText.setText(nearDoor ? 'U schodů se skrč: S nebo ↓' : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD');
+        this.tipText.setText(this.touchControls?.enabled ? (nearDoor ? 'U schodů podrž ▼' : '◀ / ▶ • POHYB   ↑ • SKOK   ▼ • SKRČENÍ   ● • STŘELBA') : (nearDoor ? 'U schodů se skrč: S nebo ↓' : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD'));
       }
       if (time - this.lastHit < 1250) this.player.alpha = Math.floor(time / 90) % 2 ? 0.4 : 1;
       else this.player.alpha = 1;
