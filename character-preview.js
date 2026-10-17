@@ -5,6 +5,7 @@
     constructor() { super('CharacterPreview'); }
     preload() {
       ITHeroEnemyCatalog.preload(this);
+      ITHeroColleague.preload(this);
       this.load.image('preview-hero-source', 'assets/characters.png');
       this.load.image('preview-support-source', 'assets/support.png');
     }
@@ -52,6 +53,7 @@
         this.entries.push({ ...profile, height: profile.renderHeight,
           frames: ITHeroEnemyCatalog.createTextures(this, profile) });
       }
+      this.entries.push({name:'IT KOLEGA',height:80,frames:ITHeroColleague.createTextures(this),frameWidth:96,frameHeight:88,body:null,attackPose:'offer_coffee',contactPose:'offer_candy',offerKeys:['colleague-coffee','colleague-candy']});
       this.entries.forEach((entry, i) => {
         const x = 160 + (i % 3) * 320;
         entry.baseline = 260 + Math.floor(i / 3) * 400;
@@ -60,6 +62,7 @@
           Object.assign(entry.sprite, {profile: entry, floorIndex: 0, facingDirection: 1, body: {bottom: entry.baseline}});
           entry.projectiles.forEach((weapon, index) => this.add.image(x - 22 + index * 44, entry.baseline + 115, weapon.key));
         }
+        entry.offerKeys?.forEach((key,index)=>this.add.image(x-22+index*44,entry.baseline+115,key));
         this.add.text(x, entry.baseline + 45, entry.name, { fontFamily: 'monospace', fontSize: '17px', color: '#b0ee78' }).setOrigin(0.5);
         this.add.text(x, entry.baseline + 75, `${entry.height} px`, { fontFamily: 'monospace', fontSize: '16px', color: '#e6eee8' }).setOrigin(0.5);
       });

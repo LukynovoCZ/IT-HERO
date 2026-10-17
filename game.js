@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.8.1 – mini plošinovka v Phaser 3.
+ * IT HERO 0.9.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -60,6 +60,7 @@
 
     preload() {
       window.ITHeroEnemyCatalog.preload(this);
+      window.ITHeroColleague.preload(this);
       this.load.image('support-art', 'assets/support.png');
       this.load.image('character-art', 'assets/characters.png');
       this.load.image('floor-art', 'assets/floors.png');
@@ -422,6 +423,7 @@
         e.attackDelay = spec.delay;
       });
       this.enemyTrio = window.ITHeroEnemyCatalog.create(this, FLOORS);
+      this.colleague = window.ITHeroColleague.create(this, FLOORS, FLOOR_PLANS);
       FLOORS.flatMap((_, floor) => [[floor, 192], [floor, 790]]).forEach(([floor, x]) => {
         const coffee = this.coffees.create(x, FLOORS[floor] - 17, 'coffee');
         coffee.setScale(1.2).setDepth(19).refreshBody();
@@ -916,6 +918,7 @@
       this.cameras.main.fadeOut(220, 7, 15, 28);
       this.time.delayedCall(230, () => {
         this.floor++;
+        this.colleague.changeFloor();
         this.aidItems.getChildren().slice().forEach(item => this.removeAid(item));
         this.nextHelperAt = Math.min(this.nextHelperAt,this.playTime+5000);
         const spawnX = this.floor % 2 ? 872 : 88;
@@ -947,6 +950,7 @@
         this.tipText.setText(this.isMuted ? 'ZVUK VYPNUT (M)' : 'ZVUK ZAPNUT (M)');
       }
       this.posters.update(this.player, this.floor, this.gameState === 'playing' && !this.transitioning);
+      this.colleague.update(delta);
       // START/PAUZA/RESTART mají přímou DOM obsluhu, nezávislou na Phaser input.
       if (this.gameState !== 'playing' || this.transitioning) {
         if (this.gameState !== 'playing') this.promptText.setText('');
