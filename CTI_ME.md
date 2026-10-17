@@ -1,4 +1,4 @@
-# IT HERO 0.2.0 — Výstup do vedení
+# IT HERO 0.2.1 — Výstup do vedení
 
 První hratelný prototyp kancelářské 2D pixelové plošinovky v JavaScriptu a **Phaseru 3.90.0**.
 
@@ -78,3 +78,11 @@ Oprava také používá `body.setAllowGravity(false)` pro střely hráče a nep�
 ## Ověření v prohlížeči
 
 Spusť `python3 -m http.server 8000 --bind 127.0.0.1`. S dostupným Node.js, balíčkem `playwright` a Chromium v `/usr/bin/chromium` spusť `node tests/browser.cjs`. Test ověřuje Enter, tlačítko, kliknutí na plátno, pohyb, střelbu, pauzu, přechody všemi devíti patry, nefunkční výtahy, sběr CD, sílu CD střely, vítězství a reset zbraně. Pro test přechodů hráče přemísťuje ke dveřím a odstraní nepřátele; nejde o kompletní dohrání soubojů.
+
+## Záporáci a útoky
+
+- Sekretářka střídá šanony a hrnky, na krátkou vzdálenost hází hrnky. Při doteku zvedne ruce a ječí.
+- Odborář střídá kladiva a ozubená kola. Při doteku píská na modrou píšťalku.
+- Manažer hází zlaté karty. Při doteku zrudne a dupe.
+
+Kontakt ubírá jeden bod energie; krátká ochrana po zásahu brání ztrátě více bodů během jediného doteku. Reakce trvá jednu sekundu, poté nepřítel pokračuje v hlídce. Zvuky respektují klávesu M.

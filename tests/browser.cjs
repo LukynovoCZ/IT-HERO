@@ -63,7 +63,7 @@ const assert=require('node:assert/strict');
     await gamePage.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');const d=s.doors[s.floor];s.player.body.reset(d.x,d.y-30);s.player.setVelocity(0,0);});
     await gamePage.keyboard.press('e');
     if(floor<8)await gamePage.waitForFunction(f=>{const s=window.__testGame.scene.getScene('ITGame');return s.floor===f+1&&!s.transitioning},floor);
-    else assert.equal(await gamePage.evaluate(()=>window.__testGame.scene.getScene('ITGame').gameState),'win');
+    else await gamePage.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').gameState==='win');
   }
   await gamePage.keyboard.press('Enter');
   await gamePage.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').gameState==='menu');
@@ -71,6 +71,48 @@ const assert=require('node:assert/strict');
   assert.deepEqual(gameErrors,[]);
   console.log('PASS nine floors: broken lifts, stairs, CD pickup/damage, final victory, restart reset');
   await gamePage.close();
+  const combat=await browser.newPage();const combatErrors=[];
+  combat.on('pageerror',e=>combatErrors.push(e.message));
+  await combat.route('**/game.js',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame = new Phaser.Game({')});});
+  await combat.goto('http://127.0.0.1:8000');
+  await combat.waitForFunction(()=>window.__testGame?.scene.getScene('ITGame')?.overlay?.visible);
+  await combat.keyboard.press('Enter');
+  for(const [kind,shots,pose] of [
+    ['secretary',['folder','mug'],'secretary-scream'],
+    ['union',['hammer','gear'],'union-whistle'],
+    ['manager',['gold-card','gold-card'],'manager-stomp-']
+  ]) {
+    const actual=await combat.evaluate(kind=>{
+      const s=window.__testGame.scene.getScene('ITGame');s.physics.world.pause();
+      s.enemyShots.clear(true,true);
+      const e=s.enemies.getChildren().find(e=>e.kind===kind);
+      e.floorIndex=0;e.body.reset(590,4280);e.shotsThrown=0;
+      s.player.body.reset(82,4280);
+      s.enemyAttack(e);s.enemyAttack(e);
+      const shots=s.enemyShots.getChildren().map(shot=>shot.texture.key);
+      s.enemyShots.clear(true,true);
+      s.energy=5;s.lastHit=-3000;e.contactUntil=0;e.attackDelay=Infinity;
+      s.player.body.reset(e.x,e.y);s.player.setVelocity(0,0);
+      window.__contactEnemy=e;s.physics.world.resume();return shots;
+    },kind);
+    assert.deepEqual(actual,shots);
+    await combat.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').energy===4);
+    const contact=await combat.evaluate(()=>{
+      const s=window.__testGame.scene.getScene('ITGame');s.physics.world.pause();
+      s.enemyContact(window.__contactEnemy);
+      return {energy:s.energy,texture:window.__contactEnemy.texture.key};
+    });
+    assert.equal(contact.energy,4,'Repeated contact during protection must not subtract another point');
+    assert.ok(contact.texture.startsWith(pose));
+    await combat.screenshot({path:`/tmp/it-hero-tests/${kind}-contact.png`});
+    await combat.evaluate(()=>{
+      const s=window.__testGame.scene.getScene('ITGame');s.player.body.reset(82,4280);
+      s.physics.world.resume();
+    });
+    await combat.waitForFunction(kind=>window.__contactEnemy.texture.key===kind,kind);
+    console.log(`PASS ${kind}: projectiles, real contact overlap, one damage, reaction and recovery`);
+  }
+  assert.deepEqual(combatErrors,[]);await combat.close();
   const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/vendor/phaser.min.js',r=>r.abort());await page.goto('http://127.0.0.1:8000');
   assert.equal(await page.locator('#offline-message').isVisible(),true);assert.deepEqual(errors,[]);

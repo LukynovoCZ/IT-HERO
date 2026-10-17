@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.2.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.2.1 – mini plošinovka v Phaser 3.
  * Bez externích obrázků: všechny textury jsou generované pomocí Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -130,6 +130,49 @@
         rect(g, 0x29303d, 4, 2, 13, 4); rect(g, 0x141f30, 6, 9, 4, 2);
         rect(g, 0x141f30, 12, 9, 4, 2); rect(g, 0xff647e, 9, 14, 3, 9);
         rect(g, 0xf1b18f, 17, 13, 3, 9);
+      });
+      texture('secretary-scream', 20, 29, g => {
+        rect(g, 0x423044, 4, 23, 5, 6); rect(g, 0x423044, 12, 23, 5, 6);
+        rect(g, 0xdb6188, 3, 11, 14, 14); rect(g, 0xaa3e68, 5, 22, 12, 3);
+        rect(g, 0x8b4e41, 3, 1, 15, 12); rect(g, 0xf1b18f, 5, 5, 11, 10);
+        rect(g, 0x4a2e37, 9, 10, 4, 4);
+        rect(g, 0xf1b18f, 0, 0, 3, 16); rect(g, 0xf1b18f, 17, 0, 3, 16);
+      });
+      texture('union-whistle', 20, 29, g => {
+        rect(g, 0x22293d, 4, 23, 5, 6); rect(g, 0x22293d, 12, 23, 5, 6);
+        rect(g, 0x6f89a4, 3, 11, 14, 14); rect(g, 0x4d667c, 3, 19, 14, 5);
+        rect(g, 0xf5ba8e, 5, 4, 11, 11); rect(g, 0xc6d0df, 3, 1, 15, 5);
+        rect(g, 0x252c3e, 6, 9, 2, 2); rect(g, 0x252c3e, 12, 9, 2, 2);
+        rect(g, 0xf5ba8e, 14, 12, 5, 4);
+        rect(g, 0x3a9bff, 11, 11, 8, 3); rect(g, 0xa6e3ff, 14, 10, 3, 2);
+      });
+      [0, 1].forEach(step => texture(`manager-stomp-${step}`, 20, 29, g => {
+        rect(g, 0x101e2e, 3, step ? 22 : 25, 6, step ? 7 : 4);
+        rect(g, 0x101e2e, 12, step ? 25 : 22, 6, step ? 4 : 7);
+        rect(g, 0x273750, 2, 11, 16, 14); rect(g, 0xed5554, 5, 4, 11, 10);
+        rect(g, 0x29303d, 4, 2, 13, 4); rect(g, 0x141f30, 6, 8, 4, 2);
+        rect(g, 0x141f30, 12, 8, 4, 2); rect(g, 0xff647e, 9, 14, 3, 9);
+        rect(g, 0xed5554, 0, 15, 3, 6); rect(g, 0xed5554, 17, 15, 3, 6);
+      }));
+      texture('mug', 15, 14, g => {
+        rect(g, 0xe4f1f1, 1, 2, 10, 11); rect(g, 0x8e4843, 2, 3, 8, 3);
+        rect(g, 0x86b8cb, 2, 7, 8, 5); rect(g, 0xe4f1f1, 11, 4, 4, 7);
+        rect(g, 0x243750, 11, 6, 2, 3);
+      });
+      texture('hammer', 18, 18, g => {
+        rect(g, 0xa37a4e, 8, 5, 4, 13); rect(g, 0xe0b57e, 8, 7, 1, 11);
+        rect(g, 0x758797, 1, 1, 16, 6); rect(g, 0xd0dce1, 2, 1, 14, 2);
+      });
+      texture('gear', 18, 18, g => {
+        rect(g, 0x9caeba, 3, 3, 12, 12);
+        for (const [x,y,w,h] of [[6,0,6,3],[6,15,6,3],[0,6,3,6],[15,6,3,6]])
+          rect(g, 0x9caeba, x,y,w,h);
+        rect(g, 0x42576b, 6, 6, 6, 6); rect(g, 0xd1e4ea, 7, 7, 4, 4);
+      });
+      texture('gold-card', 20, 12, g => {
+        rect(g, 0xa47626, 0, 0, 20, 12); rect(g, 0xf6d472, 1, 1, 18, 10);
+        rect(g, 0xe6af42, 1, 3, 18, 2); rect(g, 0xfff2b4, 3, 6, 4, 3);
+        rect(g, 0x997027, 10, 8, 7, 1);
       });
       texture('floppy', 14, 14, g => {
         rect(g, 0x242e66, 0, 0, 14, 14); rect(g, 0x7e8cc9, 2, 0, 9, 6);
@@ -281,6 +324,9 @@
         e.patrol = spec.patrol;
         e.direction = i % 2 ? 1 : -1;
         e.lastAttack = 0;
+        e.shotsThrown = 0;
+        e.contactUntil = 0;
+        e.lastStomp = -1000;
         e.attackDelay = spec.delay;
       });
       FLOORS.flatMap((_, floor) => [[floor, 192], [floor, 790]]).forEach(([floor, x]) => {
@@ -322,7 +368,7 @@
         shot.destroy();
         this.takeDamage(sourceX);
       });
-      this.physics.add.overlap(this.player, this.enemies, (_, enemy) => this.takeDamage(enemy.x));
+      this.physics.add.overlap(this.player, this.enemies, (_, enemy) => this.enemyContact(enemy));
     }
 
     configureKeyboard() {
@@ -624,13 +670,38 @@
       this.tone(510, 0.045);
     }
 
+    enemyContact(enemy) {
+      if (this.gameState !== 'playing' || !enemy.active || enemy.floorIndex !== this.floor) return;
+      this.takeDamage(enemy.x);
+      if (this.time.now < enemy.contactUntil) return;
+      enemy.contactUntil = this.time.now + 1000;
+      enemy.setVelocityX(0);
+      if (enemy.kind === 'secretary') {
+        enemy.setTexture('secretary-scream');
+        this.popText(enemy.x, enemy.y - 55, 'ÁÁÁÁ!', '#ffb4d3');
+        this.tone(1250, 0.35, 'sawtooth');
+      } else if (enemy.kind === 'union') {
+        enemy.setTexture('union-whistle');
+        this.popText(enemy.x, enemy.y - 55, 'PÍÍÍÍ!', '#79caff');
+        this.tone(2300, 0.4, 'sine');
+      } else {
+        enemy.setTexture('manager-stomp-0');
+        this.popText(enemy.x, enemy.y - 55, 'DUP! DUP!', '#ff9a85');
+      }
+    }
+
     enemyAttack(enemy) {
       const direction = this.player.x >= enemy.x ? 1 : -1;
-      const item = this.enemyShots.create(enemy.x + 19 * direction, enemy.y - 5, 'folder');
+      const near = Math.abs(this.player.x - enemy.x) < 180;
+      const alternate = enemy.shotsThrown++ % 2;
+      const projectile = enemy.kind === 'manager' ? 'gold-card'
+        : enemy.kind === 'union' ? (alternate ? 'gear' : 'hammer')
+        : (near || alternate ? 'mug' : 'folder');
+      const item = this.enemyShots.create(enemy.x + 19 * direction, enemy.y - 5, projectile);
       item.setScale(1.5).setDepth(25);
       item.body.setAllowGravity(false);
       item.setVelocity(direction * (enemy.kind === 'manager' ? 315 : 245), enemy.kind === 'manager' ? 0 : -45);
-      item.setAngularVelocity(direction * 360);
+      item.setAngularVelocity(direction * (projectile === 'gear' ? 600 : 360));
       item.setData('expires', this.time.now + 1900);
       enemy.setFlipX(direction < 0);
       this.tone(170, 0.06, 'triangle');
@@ -767,6 +838,19 @@
         if (!e.active) return;
         const sameFloor = e.floorIndex === this.floor;
         if (!sameFloor) { e.setVelocityX(0); return; }
+        if (time < e.contactUntil) {
+          e.setVelocityX(0);
+          if (e.kind === 'manager') {
+            e.setTexture(`manager-stomp-${Math.floor((e.contactUntil - time) / 140) % 2}`);
+            if (time - e.lastStomp > 280) {
+              e.lastStomp = time;
+              this.tone(75, 0.09, 'square');
+              this.cameras.main.shake(65, 0.0015);
+            }
+          }
+          return;
+        }
+        e.setTexture(e.kind);
         if (e.x < e.baseX - e.patrol) e.direction = 1;
         if (e.x > e.baseX + e.patrol) e.direction = -1;
         e.setVelocityX(e.direction * (e.kind === 'manager' ? 34 : 49));
