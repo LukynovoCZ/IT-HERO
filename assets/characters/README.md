@@ -11,3 +11,7 @@ No new illustrated weapon was added. All three use the existing default folder p
 `sap_integrator.png`: transparentní atlas malého štíhlého Šéfa SAP podle dodané
 reference (1774 × 887). Klid, nápřah pumpičkou a hod. Ořezy a kotvy jsou
 v `sap-integrator.js`; chůze, zásah a smrt používají jednoduchou Phaser animaci.
+
+`managers_readable.png` (1536 × 1024): čitelnější varianta HR manažerky
+(horní řada) a design manažera (dolní řada), po třech pózách. Používá výraznější
+obrysy a kontrast, nahrazuje původní jemné atlasy v konfiguraci verze 0.8.1.

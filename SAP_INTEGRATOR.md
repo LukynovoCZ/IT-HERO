@@ -1,7 +1,7 @@
-# Šéf SAP – Globální integrátor (0.8.0)
+# Šéf SAP – Globální integrátor (0.8.1)
 
 Samostatná větev `feature/sap-integrator`; veřejná hra se touto větví nemění.
-Nový miniboss je v 8. patře (MANAGEMENT), x=650, vedle stávajících nepřátel.
+Nový miniboss je v 5. patře, x=650, vedle stávajících nepřátel.
 Finální šéf v 9. patře zůstává zachovaný.
 
 ## Konfigurace a soubory
@@ -17,7 +17,7 @@ Finální šéf v 9. patře zůstává zachovaný.
   zachovává referenční oblek, brýle, pleš, kravatu a odznáček zeměkoule.
 - `enemy-catalog.js`: napojení samostatného chování přes `behavior:'sap'`.
 - `game.js`: správné zobrazení bodové odměny z profilu.
-- `index.html`, `character-preview.html/js`: načtení modulu, verze 0.8.0,
+- `index.html`, `character-preview.html/js`: načtení modulu, verze 0.8.1,
   desátá postava v porovnání se stejnými herními texturami a rozměry.
 
 ## Férovost a útoky
@@ -53,4 +53,4 @@ node tests/support.cjs
 Test SAP ověřuje umístění, zachování finálního bosse, oba směry všech útoků,
 nápřah a přeskočení pumpičky, oblouk helmy, tři rychlé úzké propisky,
 přerušení zásahem, zrušení při změně patra, skutečné kolize hráčových CD,
-500 bodů a schody do posledního patra.
+500 bodů a schody do 6. patra.

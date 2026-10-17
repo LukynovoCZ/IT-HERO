@@ -130,6 +130,15 @@ těla, proto se u něj nezobrazuje hitbox. Původní rozměry ve hře se neměn�
 
 ## Šéf SAP (0.8.0, samostatná větev)
 
-Desátá postava v porovnání, miniboss v 8. patře, 8 životů a odměna 500 bodů.
+Desátá postava v porovnání, miniboss v 5. patře, 8 životů a odměna 500 bodů.
 Vlastní modul `sap-integrator.js` přidává profil a chování do katalogu;
 parametry, grafika, útoky a testování jsou popsány v `SAP_INTEGRATOR.md`.
+
+## Čitelnější manažeři a 5. patro (0.8.1)
+
+Šéf SAP je nyní v 5. patře, x=650; konfigurace je v `sap-integrator.js`.
+HR a design manažer používají nový společný atlas
+`assets/characters/managers_readable.png` s výraznějšími obrysy, většími barevnými
+plochami a vyšším kontrastem. Ořezy a kotvy jsou v jejich profilech v tomto katalogu.
+Herní výšky 92/108 px, hitboxy, parametry soubojů a umístění obou manažerů se nemění.
+Původní atlasy zůstávají jako podklady, nyní se ve hře nenačítají.

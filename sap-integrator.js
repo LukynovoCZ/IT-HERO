@@ -114,7 +114,7 @@
   }
   profile.combat=config;
   ITHeroEnemyCatalog.profiles.sap_integrator=profile;
-  ITHeroEnemyCatalog.placements.push({id:'sap_integrator',floor:8,x:650});
+  ITHeroEnemyCatalog.placements.push({id:'sap_integrator',floor:5,x:650});
   window.ITHeroSAP={profile,config,quotes,textures,update,attack,cancel,
     defeat(scene,e){cancel(e);e.sapHud?.destroy();e.sapIntro?.destroy();},
     hit(scene,e){cancel(e);e.sapNextAttack=Math.max(e.sapNextAttack||0,scene.time.now+650);}

@@ -28,10 +28,10 @@
       frameWidth:80,frameHeight:96,renderHeight:92,
       body:{width:26,height:88,x:27,y:8},
       art:{
-        path:'assets/characters/hr_manager.png',
-        poses:{idle:[215,9,302,814],stop:[783,10,291,815],walk:[1377,13,297,811],documents:[1377,13,297,811]},
+        path:'assets/characters/managers_readable.png',
+        poses:{idle:[225,6,227,504],stop:[669,10,223,500],walk:[1117,6,230,504],documents:[1117,6,230,504]},
         facing:{idle:'left',stop:'front',walk:'right',documents:'right'},
-        anchors:{idle:{x:129.5,y:814},stop:{x:141,y:815},walk:{x:173.5,y:811},documents:{x:173.5,y:811}}
+        anchors:{idle:{x:115,y:504},stop:{x:114,y:500},walk:{x:123,y:504},documents:{x:123,y:504}}
       }
     },
     design_manager: {
@@ -43,10 +43,10 @@
       frameWidth:80,frameHeight:112,renderHeight:108,
       body:{width:24,height:104,x:28,y:8},
       art:{
-        path:'assets/characters/design_manager.png',
-        poses:{idle:[180,37,288,975],explain:[583,38,375,973],tablet:[583,38,375,973],walk:[1042,41,369,970]},
+        path:'assets/characters/managers_readable.png',
+        poses:{idle:[223,513,223,505],explain:[644,512,257,506],tablet:[644,512,257,506],walk:[1092,513,312,505]},
         facing:{idle:'left',explain:'left',tablet:'left',walk:'right'},
-        anchors:{idle:{x:145.5,y:975},explain:{x:170.5,y:973},tablet:{x:170.5,y:973},walk:{x:214.5,y:970}}
+        anchors:{idle:{x:112,y:505},explain:{x:130,y:506},tablet:{x:130,y:506},walk:{x:164,y:505}}
       }
     }
   };
