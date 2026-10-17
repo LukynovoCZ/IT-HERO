@@ -2,7 +2,7 @@
 
 Větev: `feature/office-enemy-trio`. Veřejný `main` zůstává beze změny.
 
-**Všechny tři postavy jsou zapnuté v této pracovní větvi a používají dodané návrhy zpracované do transparentních atlasů. Manažer designu má podle zadání přísnější výraz. Veřejná větev main se nemění.**
+**Všechny tři postavy jsou zapnuté ve verzi 0.7.0 a používají dodané návrhy zpracované do transparentních atlasů. Manažer designu má podle zadání přísnější výraz.**
 
 ## Jedno konfigurační místo
 
@@ -85,7 +85,7 @@ Výchozí šanon nových postav vzniká 34 pixelů nad spodní hranou jejich fyz
 
 `node tests/trio-collisions.cjs` testuje skutečné fyzikální zásahy každého finálního hitboxu přes hráčovo `fire()`: jedna CD střela a dvě diskety protivníka porazí a přidělí skóre. Pro izolovaný test zastaví jeho pohyb a útoky ostatních nepřátel; nenahrazuje detekci kolizí přímým voláním zásahu. Regresní `tests/browser.cjs` kontroluje Enter, kliknutí, ovládání, všechna patra i původní postavy.
 
-Pracovní větev je připravena jako verze 0.7.0. Verzované URL skriptů zabrání načtení starého `game.js` po případném sloučení. Toto samo o sobě veřejnou hru nepublikuje.
+Verze 0.7.0 obsahuje všechny tři postavy a odkaz na porovnávací scénu. Verzované URL skriptů zabrání načtení starého `game.js` po zveřejnění.
 
 ## Zkušební scéna velikostí
 

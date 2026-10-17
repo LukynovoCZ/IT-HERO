@@ -1,4 +1,4 @@
-/* Office enemy catalogue. Enable profiles as their reference artwork arrives.
+/* Office enemy catalogue. Profiles share the existing default attack system.
  * Floor numbers in placements are 1–9. Existing enemies are not configured here.
  */
 (() => {
