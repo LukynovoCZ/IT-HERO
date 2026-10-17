@@ -8,6 +8,10 @@
       this.load.image('preview-hero-source', 'assets/characters.png');
     }
     create() {
+      this.floor = 0; this.gameState = 'playing';
+      this.player = {x: -9999, body: {bottom: 0}};
+      this.tone = () => {}; this.takeDamage = () => {};
+      ITHeroTrioAttacks.textures(this);
       this.paused = false;
       this.animationTime = 0;
       this.baseline = 360;
@@ -32,6 +36,10 @@
       this.entries.forEach((entry, i) => {
         const x = 120 + i * 240;
         entry.sprite = this.add.sprite(x, this.baseline, entry.frames.idle).setOrigin(0.5, 1);
+        if (entry.id) {
+          Object.assign(entry.sprite, {profile: entry, floorIndex: 0, facingDirection: 1, body: {bottom: this.baseline}});
+          entry.projectiles.forEach((weapon, index) => this.add.image(x - 22 + index * 44, 485, weapon.key));
+        }
         this.add.text(x, 415, entry.name, { fontFamily: 'monospace', fontSize: '17px', color: '#b0ee78' }).setOrigin(0.5);
         this.add.text(x, 445, `${entry.height} px`, { fontFamily: 'monospace', fontSize: '16px', color: '#e6eee8' }).setOrigin(0.5);
       });
@@ -52,6 +60,14 @@
         let frame = pose === 'contact' ? entry.contactPose : pose === 'attack' ? entry.attackPose : pose;
         if (pose === 'walk' && Math.floor(this.animationTime / 180) % 2 === 0) frame = 'idle';
         entry.sprite.setTexture(entry.frames[frame] || entry.frames.idle).setScale(zoom);
+        if (entry.id) {
+          if (pose === 'contact') {
+            // Effect coordinates use game pixels; scale the graphics with the sprite.
+            if (!entry.sprite.contactEffect) { ITHeroTrioAttacks.contact(this, entry.sprite); entry.sprite.effectUntil = this.animationTime + 650; }
+            ITHeroTrioAttacks.update(this, entry.sprite, this.animationTime);
+            entry.sprite.contactEffect?.setScale(zoom);
+          } else ITHeroTrioAttacks.clear(entry.sprite);
+        }
         if (this.controls.bodies.checked) {
           const body = entry.body;
           this.bodyGraphics.strokeRect(entry.sprite.x + (body.x - entry.frameWidth / 2) * zoom,

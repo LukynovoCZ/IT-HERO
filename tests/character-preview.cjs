@@ -21,6 +21,8 @@ const assert = require('node:assert/strict');
  await page.waitForTimeout(100);
  entries = await snapshot();
  assert.deepEqual(entries.slice(1).map(e => e.texture), ['trio-security_guard-radio', 'trio-hr_manager-documents', 'trio-design_manager-tablet']);
+ await page.selectOption('#pose', 'contact');
+ await page.waitForFunction(() => window.__preview.scene.scenes[0].entries.slice(1).every(e => e.sprite.contactEffect?.active));
  await page.selectOption('#pose', 'walk');
  await page.click('#pause');
  await page.waitForTimeout(50);

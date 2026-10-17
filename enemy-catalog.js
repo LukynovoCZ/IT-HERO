@@ -7,8 +7,9 @@
     security_guard: {
       id:'security_guard',name:'BEZPEČÁK',enabled:true,idleDuration:650,movementCycle:3400,
       health:4,speed:45,patrol:24,attackInterval:1900,attackRange:380,
-      attackType:'default',projectile:'default',damage:1,score:100,
-      contactPose:'stop',attackPose:'radio',
+      attackType:'office-weapons',projectile:'default',damage:1,score:100,
+      contactPose:'stop',attackPose:'radio',contactEffect:'firewall',
+      projectiles:[{key:'handcuffs',weight:4,spin:240},{key:'fireball',weight:1,speed:285}],
       frameWidth:80,frameHeight:96,renderHeight:92,
       body:{width:32,height:88,x:24,y:8},
       art:{
@@ -21,8 +22,9 @@
     hr_manager: {
       id:'hr_manager',name:'HR MANAŽERKA',enabled:true,idleDuration:600,movementCycle:3500,
       health:4,speed:43,patrol:24,attackInterval:1850,attackRange:380,
-      attackType:'default',projectile:'default',damage:1,score:100,
-      contactPose:'stop',attackPose:'documents',
+      attackType:'office-weapons',projectile:'default',damage:1,score:100,
+      contactPose:'stop',attackPose:'documents',contactEffect:'whip',
+      projectiles:[{key:'red-heel',weight:1,spin:280},{key:'red-balloon',weight:1,speed:195}],
       frameWidth:80,frameHeight:96,renderHeight:92,
       body:{width:26,height:88,x:27,y:8},
       art:{
@@ -35,8 +37,9 @@
     design_manager: {
       id:'design_manager',name:'MANAŽER DESIGNU',enabled:true,idleDuration:800,movementCycle:3800,
       health:4,speed:39,patrol:18,attackInterval:1950,attackRange:380,
-      attackType:'default',projectile:'default',damage:1,score:100,
-      contactPose:'explain',attackPose:'tablet',
+      attackType:'office-weapons',projectile:'default',damage:1,score:100,
+      contactPose:'explain',attackPose:'tablet',contactEffect:'scream',
+      projectiles:[{key:'golf-club',weight:1,spin:300},{key:'calculator',weight:1,spin:200}],
       frameWidth:80,frameHeight:112,renderHeight:108,
       body:{width:24,height:104,x:28,y:8},
       art:{
@@ -113,6 +116,7 @@
     };
     const manager={enemies,
       update(e,time){
+        window.ITHeroTrioAttacks.update(scene,e,time);
         if(e.defeated)return;
         if(e.floorIndex!==scene.floor){e.setVelocityX(0);return;}
         if(time<e.hitUntil){e.setVelocityX(0);pose(e,'hit');return;}
@@ -141,15 +145,18 @@
         if(scene.time.now<e.contactUntil)return;
         e.facingDirection=scene.player.x>=e.x?1:-1;
         e.contactUntil=scene.time.now+650;e.setVelocityX(0);pose(e,e.profile.contactPose);
+        window.ITHeroTrioAttacks.contact(scene,e);
       },
       hit(e){e.hitUntil=scene.time.now+160;pose(e,'hit');},
       defeat(e){
+        window.ITHeroTrioAttacks.clear(e);
         e.defeated=true;e.setVelocity(0,0);e.body.enable=false;pose(e,'defeat');
         scene.tweens.add({targets:e,alpha:0,duration:260,onComplete:()=>e.destroy()});
       }
     };
     return manager;
   }
+  attacks.set('office-weapons',(scene,e)=>window.ITHeroTrioAttacks.projectile(scene,e));
   attacks.set('default',(scene,e)=>{
     const direction=scene.player.x>=e.x?1:-1;
     const key=e.profile.projectile==='default'?'folder':e.profile.projectile;

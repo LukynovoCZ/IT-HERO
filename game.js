@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.7.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.7.1 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -513,6 +513,7 @@
       this.physics.add.overlap(this.playerShots, this.enemies, (shot, enemy) => this.hitEnemy(shot, enemy));
       this.physics.add.overlap(this.player, this.enemyShots, (_, shot) => {
         if (!shot.active) return;
+        if (shot.getData('floor') !== undefined && shot.getData('floor') !== this.floor) { shot.destroy(); return; }
         const sourceX = shot.x;
         const damage = shot.getData('damage') || 1;
         shot.destroy();
@@ -1037,7 +1038,7 @@
         }
       });
       [this.playerShots, this.enemyShots].forEach(group => group.getChildren().forEach(shot => {
-        if (shot.active && (time > shot.getData('expires') || shot.x < -30 || shot.x > WIDTH + 30)) shot.destroy();
+        if (shot.active && ((shot.getData('floor') !== undefined && shot.getData('floor') !== this.floor) || time > shot.getData('expires') || shot.x < -30 || shot.x > WIDTH + 30)) shot.destroy();
       }));
       const door = this.doors[this.floor];
       const nearDoor = Math.abs(this.player.x - door.x) < 74 && Math.abs(this.player.y - (door.y - 25)) < 110;

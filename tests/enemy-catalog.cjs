@@ -12,7 +12,7 @@ const assert=require('node:assert/strict');
   await p.keyboard.press('Enter');
   await p.evaluate(()=>{
    const s=window.__testGame.scene.getScene('ITGame');s.enemies.clear(true,true);
-   const profiles=Object.fromEntries(Object.entries(ITHeroEnemyCatalog.profiles).map(([id,p])=>[id,{...p,enabled:true,art:{sourceKey:'character-art',poses:{idle:[40,16,245,342]}}}]));
+   const profiles=Object.fromEntries(Object.entries(ITHeroEnemyCatalog.profiles).map(([id,p])=>[id,{...p,attackType:'default',enabled:true,art:{sourceKey:'character-art',poses:{idle:[40,16,245,342]}}}]));
    s.enemyTrio=ITHeroEnemyCatalog.create(s,[4320],{profiles,placements:Object.keys(profiles).map((id,i)=>({id,floor:1,x:[200,440,800][i]}))});
   });
   for(let i=0;i<3;i++){

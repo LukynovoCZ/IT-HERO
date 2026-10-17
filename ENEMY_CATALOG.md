@@ -100,3 +100,22 @@ v profilech katalogu (`renderHeight`, `frameWidth`, `frameHeight`, `body`),
 nikoliv v náhledu. Výška ajťáka odpovídá hernímu ořezu 76 px.
 
 Ověření náhledu: `node tests/character-preview.cjs` (server na portu 8000).
+
+## Vlastní zbraně a kontakt (0.7.1)
+
+`trio-attacks.js` procedurálně kreslí šest pixelových střel a krátké kontaktní
+animace bez externích obrázků. Profily v `enemy-catalog.js` nyní používají
+`attackType: 'office-weapons'` a pole `projectiles` s položkami `key`, `weight`,
+volitelnými `speed` a `spin`. Původní typ `default` zůstává dostupný.
+
+- Bezpečák: želízka / fireball, váhy 4:1; `contactEffect: 'firewall'`.
+- HR: červený střevíc / červený balonek s černým poutkem, 1:1; `contactEffect: 'whip'`.
+- Design: malá golfová hůl / kalkulačka, 1:1; `contactEffect: 'scream'`.
+
+Kontakt trvá 650 ms. Plameny a bičík mají dosah přibližně 50/62 px, respektují
+stejné patro, svislou vzdálenost a stávající ochranu po zásahu. Efekty zmizí po
+poražení či opuštění patra. Nové střely nesou číslo patra a při přechodu zmizí.
+Skóre, zdraví a poškození se nemění. Porovnávací scéna ukazuje oba předměty pod
+každou postavou a kontaktní efekty přes volbu „Zastavení hráče“.
+
+Ověření: `node tests/trio-weapons.cjs`, `node tests/trio-collisions.cjs`.

@@ -26,7 +26,7 @@ const fs=require('node:fs');
   assert.ok(Math.max(...frames.map(f=>f.bottom))-Math.min(...frames.map(f=>f.bottom))<=1,'Pose feet must stay aligned');
   assert.ok(Math.max(...frames.map(f=>f.footCenter))-Math.min(...frames.map(f=>f.footCenter))<=1,'Foot centers must not shift horizontally');
   await p.keyboard.press('Enter');
-  await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.enemies.getChildren().filter(e=>!e.profile).forEach(e=>e.destroy());window.__guard=s.enemyTrio.enemies[0];});
+  await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.enemies.getChildren().filter(e=>!e.profile).forEach(e=>e.destroy());window.__guard=s.enemyTrio.enemies[0];window.__guard.lastAttack=Infinity;});
   await p.waitForFunction(()=>Math.abs(window.__guard.body.velocity.x)>0);
   const positions=[];
   for(let n=0;n<5;n++){positions.push(await p.evaluate(()=>window.__guard.x));await p.waitForTimeout(100);}
