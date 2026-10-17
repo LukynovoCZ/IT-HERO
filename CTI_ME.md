@@ -1,4 +1,4 @@
-# IT HERO 0.2.1 — Výstup do vedení
+# IT HERO 0.3.0 — Výstup do vedení
 
 První hratelný prototyp kancelářské 2D pixelové plošinovky v JavaScriptu a **Phaseru 3.90.0**.
 
@@ -33,7 +33,7 @@ První hratelný prototyp kancelářské 2D pixelové plošinovky v JavaScriptu 
 - sekretářky vrhající šanony, odborář a silnější manažer;
 - ubývání energie, invulnerabilita krátce po zásahu, káva pro doplnění energie;
 - skóre, patrová oznámení, interakce se schodištěm, finální dveře a konec hry;
-- provizorní pixelová grafika tvořená přímo v JavaScriptu (bez obrázkových souborů);
+- detailní pixelové postavy a prostředí v lokální složce `assets`, zelenobílá corporate paleta;
 - responzivní herní plátno 960 × 540, zvuky generované v prohlížeči.
 
 ## Struktura projektu
@@ -71,7 +71,7 @@ Oprava také používá `body.setAllowGravity(false)` pro střely hráče a nep�
 - Žádné mobilní dotykové ovládání, gamepad ani editor levelů.
 - Stav a skóre se po zavření hry zatím neukládají.
 - Schodiště funguje jako interaktivní přechod mezi patry, nikoli jako samostatná fyzikální minihra.
-- Grafika je záměrně provizorní a snadno nahraditelná.
+- Postavy používají lokální atlas s jednotlivými pózami; sekretářka má štíhlou blond siluetu.
 
 **Technologie:** Phaser v3.90.0 (https://phaser.io/download/release/v3.90.0).
 
@@ -86,3 +86,7 @@ Spusť `python3 -m http.server 8000 --bind 127.0.0.1`. S dostupným Node.js, bal
 - Manažer hází zlaté karty. Při doteku zrudne a dupe.
 
 Kontakt ubírá jeden bod energie; krátká ochrana po zásahu brání ztrátě více bodů během jediného doteku. Reakce trvá jednu sekundu, poté nepřítel pokračuje v hlídce. Zvuky respektují klávesu M.
+
+## Grafika verze 0.3.0
+
+`assets/characters.png` obsahuje postavy a kontaktní pózy, `assets/office.png` kancelářské prostředí a `assets/exterior.png` budovu v menu. Ilustrace byly vytvořeny podle schváleného návrhu; původní fotografie se na web nenahrávají. Pozadí i atlas se načítají lokálně a fungují bez internetu. Při nasazení kopíruj také složku `assets`. Jednotlivé pózy se normalizují se zachováním poměru stran a společnou základní linií, vykreslování používá nearest-neighbor.

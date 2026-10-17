@@ -1,6 +1,6 @@
 /*
- * IT HERO 0.2.1 – mini plošinovka v Phaser 3.
- * Bez externích obrázků: všechny textury jsou generované pomocí Phaser Graphics.
+ * IT HERO 0.3.0 – mini plošinovka v Phaser 3.
+ * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
 (() => {
@@ -32,6 +32,12 @@
 
   class ITGame extends Phaser.Scene {
     constructor() { super('ITGame'); }
+
+    preload() {
+      this.load.image('character-art', 'assets/characters.png');
+      this.load.image('office-art', 'assets/office.png');
+      this.load.image('exterior-art', 'assets/exterior.png');
+    }
 
     create() {
       this.gameState = 'menu';
@@ -87,73 +93,27 @@
       };
       const rect = (g, color, x, y, w, h) => { g.fillStyle(color); g.fillRect(x, y, w, h); };
 
-      const hero = (walk) => (g) => {
-        rect(g, 0x19293f, 4, 22, 6, 5);
-        rect(g, 0x19293f, walk ? 11 : 10, 22, 6, 5);
-        rect(g, 0x6cdbe1, 3, 11, 15, 12);
-        rect(g, 0x2a7691, 4, 19, 13, 4);
-        rect(g, 0xf6b99a, 5, 4, 11, 9);
-        rect(g, 0x26344a, 4, 2, 13, 5);
-        rect(g, 0x26344a, 3, 4, 3, 7);
-        rect(g, 0x19293f, 12, 8, 2, 2);
-        rect(g, 0xf8c4a7, 0, 14, 4, 7);
-        rect(g, 0xf8c4a7, 17, 14, 3, 7);
-        rect(g, 0xe8fff6, 8, 14, 2, 5);
-        rect(g, 0xe8fff6, 12, 14, 2, 5);
+      // Normalize independently drawn atlas poses to a shared baseline without
+      // stretching slim characters. Source rectangles isolate each pose.
+      const poses = {
+        'hero': [40, 16, 245, 342], 'hero-walk': [380, 16, 265, 342],
+        'hero-duck': [744, 122, 244, 236],
+        'secretary': [65, 365, 210, 358], 'secretary-scream': [385, 362, 267, 361],
+        'union': [730, 365, 285, 358], 'union-whistle': [1090, 365, 302, 358],
+        'manager': [35, 725, 279, 337], 'manager-stomp-0': [375, 728, 298, 336],
+        'manager-stomp-1': [733, 728, 292, 336]
       };
-      texture('hero', 20, 28, hero(false));
-      texture('hero-walk', 20, 28, hero(true));
-      texture('hero-duck', 20, 28, g => {
-        rect(g, 0x26344a, 4, 15, 13, 4);
-        rect(g, 0xf6b99a, 5, 18, 11, 5);
-        rect(g, 0x18293b, 12, 20, 2, 2);
-        rect(g, 0x6cdbe1, 3, 23, 15, 4);
-        rect(g, 0x1c283d, 4, 27, 14, 1);
+      const source = this.textures.get('character-art').getSourceImage();
+      Object.entries(poses).forEach(([key, [x, y, w, h]]) => {
+        if (this.textures.exists(key)) return;
+        const canvas = this.textures.createCanvas(key, 64, 80);
+        const ctx = canvas.context;
+        ctx.imageSmoothingEnabled = false;
+        const height = key === 'hero-duck' ? 49 : 76;
+        const width = Math.round(w * height / h);
+        ctx.drawImage(source, x, y, w, h, Math.round((64 - width) / 2), 80 - height, width, height);
+        canvas.refresh();
       });
-      texture('secretary', 20, 29, g => {
-        rect(g, 0x423044, 4, 23, 5, 6); rect(g, 0x423044, 12, 23, 5, 6);
-        rect(g, 0xdb6188, 3, 11, 14, 14); rect(g, 0xaa3e68, 5, 22, 12, 3);
-        rect(g, 0x8b4e41, 3, 1, 15, 12); rect(g, 0xf1b18f, 5, 5, 11, 10);
-        rect(g, 0x4a2e37, 12, 10, 2, 2); rect(g, 0xc4a7c4, 16, 15, 4, 8);
-        rect(g, 0xedd3af, 1, 14, 3, 9);
-      });
-      texture('union', 20, 29, g => {
-        rect(g, 0x22293d, 4, 23, 5, 6); rect(g, 0x22293d, 12, 23, 5, 6);
-        rect(g, 0x6f89a4, 3, 11, 14, 14); rect(g, 0x4d667c, 3, 19, 14, 5);
-        rect(g, 0xf5ba8e, 5, 4, 11, 11); rect(g, 0xc6d0df, 3, 1, 15, 5);
-        rect(g, 0x252c3e, 6, 9, 2, 2); rect(g, 0x252c3e, 12, 9, 2, 2);
-        rect(g, 0xffdf82, 8, 15, 4, 5);
-      });
-      texture('manager', 20, 29, g => {
-        rect(g, 0x101e2e, 3, 22, 5, 7); rect(g, 0x101e2e, 12, 22, 5, 7);
-        rect(g, 0x273750, 2, 11, 16, 14); rect(g, 0xf1b18f, 5, 4, 11, 10);
-        rect(g, 0x29303d, 4, 2, 13, 4); rect(g, 0x141f30, 6, 9, 4, 2);
-        rect(g, 0x141f30, 12, 9, 4, 2); rect(g, 0xff647e, 9, 14, 3, 9);
-        rect(g, 0xf1b18f, 17, 13, 3, 9);
-      });
-      texture('secretary-scream', 20, 29, g => {
-        rect(g, 0x423044, 4, 23, 5, 6); rect(g, 0x423044, 12, 23, 5, 6);
-        rect(g, 0xdb6188, 3, 11, 14, 14); rect(g, 0xaa3e68, 5, 22, 12, 3);
-        rect(g, 0x8b4e41, 3, 1, 15, 12); rect(g, 0xf1b18f, 5, 5, 11, 10);
-        rect(g, 0x4a2e37, 9, 10, 4, 4);
-        rect(g, 0xf1b18f, 0, 0, 3, 16); rect(g, 0xf1b18f, 17, 0, 3, 16);
-      });
-      texture('union-whistle', 20, 29, g => {
-        rect(g, 0x22293d, 4, 23, 5, 6); rect(g, 0x22293d, 12, 23, 5, 6);
-        rect(g, 0x6f89a4, 3, 11, 14, 14); rect(g, 0x4d667c, 3, 19, 14, 5);
-        rect(g, 0xf5ba8e, 5, 4, 11, 11); rect(g, 0xc6d0df, 3, 1, 15, 5);
-        rect(g, 0x252c3e, 6, 9, 2, 2); rect(g, 0x252c3e, 12, 9, 2, 2);
-        rect(g, 0xf5ba8e, 14, 12, 5, 4);
-        rect(g, 0x3a9bff, 11, 11, 8, 3); rect(g, 0xa6e3ff, 14, 10, 3, 2);
-      });
-      [0, 1].forEach(step => texture(`manager-stomp-${step}`, 20, 29, g => {
-        rect(g, 0x101e2e, 3, step ? 22 : 25, 6, step ? 7 : 4);
-        rect(g, 0x101e2e, 12, step ? 25 : 22, 6, step ? 4 : 7);
-        rect(g, 0x273750, 2, 11, 16, 14); rect(g, 0xed5554, 5, 4, 11, 10);
-        rect(g, 0x29303d, 4, 2, 13, 4); rect(g, 0x141f30, 6, 8, 4, 2);
-        rect(g, 0x141f30, 12, 8, 4, 2); rect(g, 0xff647e, 9, 14, 3, 9);
-        rect(g, 0xed5554, 0, 15, 3, 6); rect(g, 0xed5554, 17, 15, 3, 6);
-      }));
       texture('mug', 15, 14, g => {
         rect(g, 0xe4f1f1, 1, 2, 10, 11); rect(g, 0x8e4843, 2, 3, 8, 3);
         rect(g, 0x86b8cb, 2, 7, 8, 5); rect(g, 0xe4f1f1, 11, 4, 4, 7);
@@ -175,7 +135,7 @@
         rect(g, 0x997027, 10, 8, 7, 1);
       });
       texture('floppy', 14, 14, g => {
-        rect(g, 0x242e66, 0, 0, 14, 14); rect(g, 0x7e8cc9, 2, 0, 9, 6);
+        rect(g, 0x472469, 0, 0, 14, 14); rect(g, 0xcaa5ea, 2, 0, 9, 6);
         rect(g, 0x18243e, 7, 1, 3, 4); rect(g, 0xf3e5be, 2, 8, 10, 5);
         rect(g, 0xd16d84, 3, 9, 8, 1);
       });
@@ -209,58 +169,37 @@
       const names = ['RECEPCE', 'ADMINISTRATIVA', 'ÚČTÁRNA', 'PROJEKTY', 'ODBORY', 'PERSONÁLNÍ', 'PRÁVNÍ', 'MANAGEMENT', 'VEDENÍ'];
       FLOORS.forEach((y, level) => {
         const top = y - 414;
-        const wall = level % 2 ? 0x68777d : 0x748187;
-        g.fillStyle(wall).fillRect(0, top, WIDTH, 420);
-        g.fillStyle(0x142539).fillRect(0, top + 10, WIDTH, 9);
-        g.fillStyle(0x3b526a).fillRect(0, top + 22, WIDTH, 4);
-        // Kancelářská okna (pixelové město za sklem).
-        for (let x = 55; x < 940; x += 176) {
-          g.fillStyle(0x647a92).fillRect(x - 5, top + 72, 134, 142);
-          g.fillStyle(0x10273e).fillRect(x, top + 77, 124, 132);
-          g.fillStyle(0x2b5363).fillRect(x + 3, top + 114, 118, 95);
-          g.fillStyle(0x28485a).fillRect(x + 10, top + 147, 26, 62);
-          g.fillStyle(0x183748).fillRect(x + 43, top + 125, 28, 84);
-          g.fillStyle(0x315569).fillRect(x + 82, top + 156, 35, 53);
-          g.fillStyle(0xc5a966).fillRect(x + 18, top + 152, 6, 8);
-          g.fillStyle(0xc5a966).fillRect(x + 92, top + 174, 7, 9);
-          g.fillStyle(0x668397).fillRect(x + 59, top + 77, 6, 132);
-        }
-        // Kolejnice lamp, lampy, podlahová lišta.
-        g.fillStyle(0x93a5ba).fillRect(0, top + 49, WIDTH, 3);
-        for (const lx of [130, 470, 810]) {
-          g.fillStyle(0x5d7289).fillRect(lx, top + 49, 3, 25);
-          g.fillStyle(0xf3dda0).fillRect(lx - 39, top + 73, 82, 8);
-          g.fillStyle(0xcbb879, 0.11).fillTriangle(lx - 40, top + 81, lx + 45, top + 81, lx, top + 220);
-        }
-        g.fillStyle(0x364860).fillRect(0, y - 6, WIDTH, 6);
-        g.fillStyle(0x8899ab).fillRect(0, y + 1, WIDTH, 5);
-        g.fillStyle(0x152338).fillRect(0, y + 6, WIDTH, 38);
-        for (let x = 0; x < WIDTH; x += 32) {
-          g.fillStyle(0x23354b).fillRect(x, y + 10, 28, 2);
-        }
-        // Kancelářské obrazy a nástěnky.
-        g.fillStyle(0x102136).fillRect(313, top + 244, 116, 64);
-        g.fillStyle(0x52908b).fillRect(320, top + 250, 102, 51);
-        g.fillStyle(0x6cf0dc).fillRect(331, top + 281, 12, 15);
-        g.fillStyle(0x9ed5dc).fillRect(352, top + 268, 12, 28);
-        g.fillStyle(0xe2cc77).fillRect(373, top + 256, 12, 40);
-        g.fillStyle(0xd17b8b).fillRect(394, top + 273, 12, 23);
-        this.add.text(24, y - 383, `${String(level + 1).padStart(2, '0')}  /  ${names[level]}`, {
-          fontFamily: 'monospace', fontSize: '14px', color: '#c2d2e6',
-          backgroundColor: '#152139', padding: { x: 12, y: 7 }
+        const office = this.textures.get('office-art');
+        if (!office.has('floor')) office.add('floor', 0, 0, 382, 1942, 355);
+        this.add.image(0, top, 'office-art', 'floor').setOrigin(0).setDisplaySize(WIDTH, 414).setDepth(-10);
+        g.fillStyle(0x253b36).fillRect(0, y, WIDTH, 38);
+        g.fillStyle(0xa7b1a5).fillRect(0, y, WIDTH, 6);
+        for (let x = 0; x < WIDTH; x += 32) g.fillStyle(0x4d6058).fillRect(x, y + 14, 28, 2);
+        this.add.text(24, y - 348, `${String(level + 1).padStart(2, '0')}  /  ${names[level]}`, {
+          fontFamily: 'monospace', fontSize: '14px', color: '#f4f0df',
+          backgroundColor: '#064c37', padding: { x: 12, y: 7 }
         }).setDepth(-8);
-        this.addStatic(this.platforms, WIDTH / 2, y + 17, WIDTH, 30, 0x77869c, 11);
+        this.addStatic(this.platforms, WIDTH / 2, y + 17, WIDTH, 30, 0x77877a, 11);
       });
 
       // Stoly – překážky, které je potřeba přeskočit.
       FLOORS.flatMap((_, level) => [[level, 305], [level, 700]]).forEach(([level, x]) => {
         const y = FLOORS[level];
-        this.addStatic(this.obstacles, x, y - 19, 88, 38, 0x2d5363, 10);
+        this.addStatic(this.obstacles, x, y - 19, 88, 38, 0x174b3c, 10);
         this.add.rectangle(x, y - 42, 96, 9, 0xc4a27a).setDepth(11);
         this.add.rectangle(x - 19, y - 63, 45, 31, 0x132a3c).setDepth(12);
         this.add.rectangle(x - 19, y - 65, 38, 24, 0x42809b).setDepth(13);
         this.add.rectangle(x + 26, y - 42, 12, 7, 0xffdf82).setDepth(13);
         this.add.rectangle(x - 17, y - 43, 32, 4, 0xd4dee6).setDepth(13);
+        const detail = this.add.graphics().setDepth(14);
+        detail.fillStyle(0xa7e970).fillRect(x - 35, y - 73, 19, 2);
+        detail.fillStyle(0x9bb7b1).fillRect(x - 35, y - 68, 10, 2);
+        detail.fillStyle(0x314b43).fillRect(x - 38, y - 35, 76, 2);
+        detail.fillStyle(0x1c382d).fillRect(x + 5, y - 31, 2, 28);
+        for (let line = 0; line < 3; line++) {
+          detail.fillStyle(0x70917d).fillRect(x + 12, y - 26 + line * 9, 20, 1);
+          detail.fillStyle(0xd1d6bd).fillRect(x + 21, y - 24 + line * 9, 4, 1);
+        }
       });
 
       // Schodišťové dveře; každé další patro začíná u stejné šachty.
@@ -279,20 +218,27 @@
         lift.fillStyle(0x243b49).fillRect(498, y - 151, 4, 151);
         lift.fillStyle(0xd5e3d7).fillRect(449, y - 205, 102, 28);
         lift.fillStyle(0xe97568).fillRect(563, y - 92, 8, 8);
+        lift.fillStyle(0xc7d6cb).fillRect(455, y - 149, 2, 146);
+        lift.fillStyle(0x79978c).fillRect(535, y - 149, 6, 146);
+        for (let stripe = 0; stripe < 9; stripe++) {
+          const tx = 451 + stripe * 11;
+          const ty = y - 77 + stripe * 4;
+          lift.fillStyle(stripe % 2 ? 0x25352f : 0xf3d266).fillRect(tx, ty, 12, 7);
+        }
         this.add.text(500, y - 192, `${floor + 1}  VÝTAH`, {font:'bold 12px monospace',color:'#243342'}).setOrigin(0.5).setDepth(5);
         this.add.text(500, y - 110, 'MIMO\nPROVOZ', {font:'bold 13px monospace',color:'#ffce83',align:'center',backgroundColor:'#283b49',padding:{x:5,y:5}}).setOrigin(0.5).setDepth(5);
       });
     }
 
     drawDoor(x, y, isExit, entry = false) {
-      const color = isExit ? 0xc7a96e : 0x3b8b8b;
+      const color = isExit ? 0xc7a96e : 0x176344;
       const g = this.add.graphics().setDepth(5);
       g.fillStyle(0x0c1828).fillRect(x - 42, y - 118, 84, 118);
       g.fillStyle(0x78949a).fillRect(x - 38, y - 115, 76, 114);
       g.fillStyle(color).fillRect(x - 32, y - 107, 64, 106);
-      g.fillStyle(0x1a3b45).fillRect(x - 25, y - 99, 50, 65);
+      g.fillStyle(0x0a392e).fillRect(x - 25, y - 99, 50, 65);
       g.fillStyle(0xdde9da).fillRect(x + 21, y - 49, 5, 10);
-      for (let k = 0; k < 5; k++) g.fillStyle(0x8ddacf).fillRect(x - 20 + k * 8, y - 21 - k * 9, 9, 5);
+      for (let k = 0; k < 5; k++) g.fillStyle(0xa6ef5d).fillRect(x - 20 + k * 8, y - 21 - k * 9, 9, 5);
       g.fillStyle(0x0b1926).fillRect(x - 44, y - 123, 88, 23);
       const label = isExit ? 'CÍL' : entry ? 'VÝSTUP' : 'SCHODY ↑';
       this.add.text(x, y - 111, label, {
@@ -305,9 +251,9 @@
 
     createActors() {
       this.player = this.physics.add.sprite(82, FLOORS[0] - 40, 'hero');
-      this.player.setScale(1.8).setDepth(23).setMaxVelocity(250, 860);
+      this.player.setScale(1).setDepth(23).setMaxVelocity(250, 860);
       this.player.setCollideWorldBounds(true).setDragX(1050).setBounce(0);
-      this.player.body.setSize(15, 27).setOffset(2, 1);
+      this.player.body.setSize(28, 72).setOffset(18, 8);
 
       this.enemySpecs = FLOORS.flatMap((_, floor) => [
         {kind: floor === 8 ? 'manager' : floor % 3 === 1 ? 'union' : 'secretary', floor, x: 590, hp: floor === 8 ? 8 : 3 + Math.floor(floor / 3), patrol: 30, delay: 1800 - floor * 65},
@@ -315,8 +261,8 @@
       ]);
       this.enemySpecs.forEach((spec, i) => {
         const e = this.enemies.create(spec.x, FLOORS[spec.floor] - 36, spec.kind);
-        e.setScale(1.8).setDepth(22).setCollideWorldBounds(true);
-        e.body.setSize(17, 28).setOffset(1, 0);
+        e.setScale(1).setDepth(22).setCollideWorldBounds(true);
+        e.body.setSize(spec.kind === 'secretary' ? 24 : 38, 72).setOffset(spec.kind === 'secretary' ? 20 : 13, 8);
         e.kind = spec.kind;
         e.floorIndex = spec.floor;
         e.hp = spec.hp;
@@ -488,7 +434,7 @@
     createHUD() {
       this.add.rectangle(480, 27, 960, 54, 0x0b1627, 0.94).setDepth(101).setScrollFactor(0);
       this.add.rectangle(480, 54, 960, 2, 0x3c526e).setDepth(101).setScrollFactor(0);
-      this.add.text(22, 9, 'IT HERO', {font: 'bold 20px monospace', color: '#6cf0dc'}).setScrollFactor(0).setDepth(102);
+      this.add.text(22, 9, 'IT HERO', {font: 'bold 20px monospace', color: '#a9ed63'}).setScrollFactor(0).setDepth(102);
       this.add.text(150, 8, 'ENERGIE', {font: 'bold 12px monospace', color: '#a9bad1'}).setScrollFactor(0).setDepth(102);
       this.energyCells = [];
       for (let i = 0; i < 5; i++) {
@@ -512,59 +458,16 @@
     }
 
     drawExterior() {
-      // Pixelová silueta podle reference: dvě křídla, pásy oken,
-      // prosklená spojovací věž a nízká vstupní hala.
-      const art = this.add.graphics();
-      const r = (color, x, y, w, h) => art.fillStyle(color).fillRect(x, y, w, h);
-      r(0x243f55, 608, 86, 312, 364);
-      for (let y = 100; y < 440; y += 8) r(0x29465a, 608, y, 312, 2);
-      r(0x142b3a, 608, 418, 312, 32);
-      r(0x89928e, 626, 155, 116, 254);
-      r(0xa6aaa0, 778, 109, 122, 300);
-      r(0x63736e, 900, 109, 12, 300);
-      for (let floor = 0; floor < 9; floor++) {
-        const y = 117 + floor * 31;
-        r(0xd0ccaf, 778, y + 21, 122, 6);
-        for (let col = 0; col < 6; col++) {
-          r(0xd5d6c4, 783 + col * 19, y, 17, 22);
-          r((floor + col) % 4 ? 0x425e6e : 0x93a6aa, 785 + col * 19, y + 2, 13, 18);
-          r(0x849799, 785 + col * 19, y + 2, 2, 18);
-        }
-        if (floor > 0) {
-          const ly = 157 + (floor - 1) * 28;
-          r(0xb7b8a5, 626, ly + 19, 116, 5);
-          for (let col = 0; col < 6; col++) {
-            r(0xccd0bf, 630 + col * 18, ly, 16, 19);
-            r(0x4a6570, 632 + col * 18, ly + 2, 12, 15);
-          }
-        }
-      }
-      r(0x6d807d, 742, 100, 36, 309);
-      r(0x324f5c, 748, 107, 24, 300);
-      for (let y = 110; y < 404; y += 21) {
-        r(0x91a7a4, 746, y, 30, 2); r(0x74918e, 759, y, 2, 20);
-      }
-      r(0x1d383a, 751, 84, 22, 16); r(0xa5bca0, 757, 87, 10, 10);
-      r(0x364a4d, 616, 348, 120, 61);
-      for (let x = 620; x < 736; x += 28) r(0x96a8a0, x, 348, 2, 61);
-      r(0x90a6a1, 616, 377, 120, 3);
-      r(0x536d70, 626, 386, 96, 23);
-      r(0xb4c4b7, 626, 386, 96, 3);
-      r(0xb4c4b7, 672, 386, 3, 23);
-      r(0x6e7d77, 612, 410, 300, 8);
-      r(0x1d3838, 880, 382, 18, 35); r(0x496a52, 876, 370, 26, 22);
-      r(0x263d41, 641, 423, 46, 10); r(0x83999b, 650, 416, 25, 8);
-      r(0x131f2b, 646, 432, 8, 5); r(0x131f2b, 675, 432, 8, 5);
-      return art;
+      return this.add.image(608, 52, 'exterior-art').setOrigin(0).setDisplaySize(312, 416);
     }
 
     createOverlay() {
-      const shade = this.add.rectangle(480, 270, 960, 540, 0x06101e, 0.82);
-      const panel = this.add.rectangle(308, 266, 556, 366, 0x17253b);
+      const shade = this.add.rectangle(480, 270, 960, 540, 0x061e18, 0.94);
+      const panel = this.add.rectangle(308, 266, 556, 366, 0x0c3028);
       const exterior = this.drawExterior();
-      panel.setStrokeStyle(4, 0x5accc7);
+      panel.setStrokeStyle(4, 0x95de64);
       this.overlayTitle = this.add.text(308, 121, '', {
-        font: 'bold 48px monospace', color: '#82f7df'
+        font: 'bold 48px monospace', color: '#a9ed63'
       }).setOrigin(0.5);
       this.overlaySub = this.add.text(308, 170, '', {
         font: 'bold 17px monospace', color: '#ffdf82'
@@ -573,7 +476,7 @@
         font: '14px monospace', color: '#d9e4f6', align: 'center', lineSpacing: 11
       }).setOrigin(0.5);
       this.overlayAction = this.add.text(480, 378, '', {
-        font: 'bold 17px monospace', color: '#101d2a', backgroundColor: '#75f1dc',
+        font: 'bold 17px monospace', color: '#101d2a', backgroundColor: '#a9ed63',
         padding: { x: 18, y: 12 }
       }).setOrigin(0.5);
       this.overlay = this.add.container(0, 0, [shade, panel, exterior, this.overlayTitle, this.overlaySub, this.overlayBody]);
@@ -632,7 +535,7 @@
     }
 
     updateHUD() {
-      this.energyCells.forEach((rect, i) => rect.setFillStyle(i < this.energy ? 0x66f0d7 : 0x30435a));
+      this.energyCells.forEach((rect, i) => rect.setFillStyle(i < this.energy ? 0xa9ed63 : 0x30435a));
       if (this.weaponText) this.weaponText.setText(this.weapon === 'cd' ? 'CD • 2×' : 'DISKETY');
       this.floorText.setText(`PATRO ${this.floor + 1} / ${FLOOR_COUNT}`);
       this.scoreText.setText(`SKÓRE ${String(this.score).padStart(5, '0')}`);
@@ -813,8 +716,8 @@
       const grounded = this.player.body.blocked.down || this.player.body.touching.down;
       const crouching = grounded && down('crouch');
       if (crouching !== this.wasCrouching) {
-        this.player.body.setSize(15, crouching ? 14 : 27);
-        this.player.body.setOffset(2, crouching ? 14 : 1);
+        this.player.body.setSize(28, crouching ? 36 : 72);
+        this.player.body.setOffset(18, crouching ? 44 : 8);
         this.wasCrouching = crouching;
       }
       if (grounded) this.lastOnGroundAt = time;
@@ -864,6 +767,7 @@
       }));
       const door = this.doors[this.floor];
       const nearDoor = Math.abs(this.player.x - door.x) < 74 && Math.abs(this.player.y - (door.y - 25)) < 110;
+      this.promptText.setVisible(nearDoor);
       this.promptText.setText(nearDoor ? (door.kind === 'exit' ? '[ E ]  VSTUP DO VEDENÍ' : '[ E ]  PO SCHODECH NAHORU') : '');
       if (!this.isMuted || !this.tipText.text.startsWith('ZVUK')) {
         this.tipText.setText(nearDoor ? 'Použij schody • výtah je mimo provoz' : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD');
