@@ -122,3 +122,7 @@ Každé patro má vlastní rozmístění herních stolů, které respektuje i po
 ## Plakáty a stoly verze 0.6.0
 
 Herní stoly mají šedé podstavce a krémově bílé desky. Modul `posters.js` generuje 12 korporátních plakátů přímo v prohlížeči; po patrech jich je rozmístěno 17, vždy 1–2 na patro. Při přiblížení se ve spodní liště zobrazí celý slogan a podtext. Texty, barvy, rozměry a pozice lze měnit v konfiguraci modulu. Postup pro přidání dalšího plakátu a testování je v `POSTERS.md`.
+
+## Noví nepřátelé verze 0.7.0 (pracovní větev)
+
+Konfigurace v `enemy-catalog.js`: bezpečák v 1.–3. patře, HR manažerka v 6. a 8., manažer designu ve 4., 8. a 9. Nové transparentní atlasy jsou v `assets/characters/`. Všichni používají stávající šanony a původní fyziku zásahů; původní nepřátelé se zachovávají. Vzhled designéra má přísnější výraz podle zadání. Podrobný popis parametrů a testů je v `ENEMY_CATALOG.md`. Tato verze je připravena ve větvi `feature/office-enemy-trio`, sama o sobě nemění veřejnou hru z větve main.

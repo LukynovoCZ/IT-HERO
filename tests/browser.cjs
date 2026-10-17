@@ -102,6 +102,8 @@ const assert=require('node:assert/strict');
   await combat.goto('http://127.0.0.1:8000');
   await combat.waitForFunction(()=>window.__testGame?.scene.getScene('ITGame')?.overlay?.visible);
   await combat.keyboard.press('Enter');
+  // Exercise legacy enemy behavior independently of the separately tested trio.
+  await combat.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemies.getChildren().filter(e=>e.profile).forEach(e=>e.destroy()));
   for(const [kind,shots,pose] of [
     ['secretary',['folder','mug'],'secretary-scream'],
     ['union',['hammer','gear'],'union-whistle'],

@@ -33,12 +33,18 @@
       }
     },
     design_manager: {
-      id:'design_manager',name:'MANAŽER DESIGNU',enabled:false,
+      id:'design_manager',name:'MANAŽER DESIGNU',enabled:true,idleDuration:800,movementCycle:3800,
       health:4,speed:39,patrol:18,attackInterval:1950,attackRange:380,
       attackType:'default',projectile:'default',damage:1,score:100,
       contactPose:'explain',attackPose:'tablet',
-      frameWidth:80,frameHeight:100,renderHeight:96,
-      body:{width:26,height:92,x:27,y:8},art:null
+      frameWidth:80,frameHeight:112,renderHeight:108,
+      body:{width:24,height:104,x:28,y:8},
+      art:{
+        path:'assets/characters/design_manager.png',
+        poses:{idle:[180,37,288,975],explain:[583,38,375,973],tablet:[583,38,375,973],walk:[1042,41,369,970]},
+        facing:{idle:'left',explain:'left',tablet:'left',walk:'right'},
+        anchors:{idle:{x:145.5,y:975},explain:{x:170.5,y:973},tablet:{x:170.5,y:973},walk:{x:214.5,y:970}}
+      }
     }
   };
   const placements = [
@@ -147,7 +153,9 @@
   attacks.set('default',(scene,e)=>{
     const direction=scene.player.x>=e.x?1:-1;
     const key=e.profile.projectile==='default'?'folder':e.profile.projectile;
-    const shot=scene.enemyShots.create(e.x+direction*24,e.y-5,key).setDepth(25).setScale(1.5);
+    // A shared hand-height above the feet also works for the taller design manager.
+    const originY=e.body.bottom+(e.profile.projectileOffsetY??-34);
+    const shot=scene.enemyShots.create(e.x+direction*24,originY,key).setDepth(25).setScale(1.5);
     shot.body.setAllowGravity(false);
     shot.setVelocity(direction*245,-45).setAngularVelocity(direction*360);
     shot.setData('expires',scene.time.now+1900).setData('damage',e.profile.damage);
