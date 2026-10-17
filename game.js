@@ -84,8 +84,8 @@
       this.physics.world.setBounds(0, 0, WIDTH, WORLD_HEIGHT);
       this.cameras.main.fadeIn(350, 6, 13, 26);
       this.updateHUD();
-      this.showOverlay('IT HERO', 'VÝSTUP DO VEDENÍ',
-        'Jsi poslední ajťák, který ještě neztratil heslo.\nProjdi 9 pater. Výtahy jsou mimo provoz.\nDiskety střílíš J. Najdi vylepšení na CD.',
+      this.showOverlay('IT HERO', 'NO MORE MEETING',
+        'Jsi ajťák na životně důležité misi.\nProjdi 9 pater a zachraň, co se dá.',
         'ENTER nebo kliknutí = HRÁT');
     }
 
