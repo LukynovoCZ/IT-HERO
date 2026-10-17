@@ -19,12 +19,18 @@
       }
     },
     hr_manager: {
-      id:'hr_manager',name:'HR MANAŽERKA',enabled:false,
+      id:'hr_manager',name:'HR MANAŽERKA',enabled:true,idleDuration:600,movementCycle:3500,
       health:4,speed:43,patrol:24,attackInterval:1850,attackRange:380,
       attackType:'default',projectile:'default',damage:1,score:100,
       contactPose:'stop',attackPose:'documents',
-      frameWidth:80,frameHeight:80,renderHeight:76,
-      body:{width:30,height:72,x:25,y:8},art:null
+      frameWidth:80,frameHeight:96,renderHeight:92,
+      body:{width:26,height:88,x:27,y:8},
+      art:{
+        path:'assets/characters/hr_manager.png',
+        poses:{idle:[215,9,302,814],stop:[783,10,291,815],walk:[1377,13,297,811],documents:[1377,13,297,811]},
+        facing:{idle:'left',stop:'front',walk:'right',documents:'right'},
+        anchors:{idle:{x:129.5,y:814},stop:{x:141,y:815},walk:{x:173.5,y:811},documents:{x:173.5,y:811}}
+      }
     },
     design_manager: {
       id:'design_manager',name:'MANAŽER DESIGNU',enabled:false,

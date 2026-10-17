@@ -2,7 +2,7 @@
 
 Větev: `feature/office-enemy-trio`. Veřejný `main` zůstává beze změny.
 
-**Bezpečák je zapnutý a používá dodaný návrh zpracovaný do transparentního atlasu. HR manažerka a designér zůstávají vypnutí (`enabled: false`, `art: null`), dokud nepřijdou jejich obrázky.**
+**Bezpečák i HR manažerka jsou zapnutí a používají dodané návrhy zpracované do transparentních atlasů. Designér zůstává vypnutý (`enabled: false`, `art: null`), dokud nepřijde jeho obrázek.**
 
 ## Jedno konfigurační místo
 
@@ -12,7 +12,7 @@ Větev: `feature/office-enemy-trio`. Veřejný `main` zůstává beze změny.
 - `placements`: ID profilu, patro **1–9**, souřadnice X. Dosavadní nepřátelé se nemění.
 - `registerAttack(type, handler)`: budoucí specializované útoky. Obsluha dostane `(scene, enemy)`.
 
-Výskyty (bezpečák aktivní, zbylé dva profily čekají na obrázky):
+Výskyty (bezpečák a HR aktivní, designér čeká na obrázek):
 
 | Profil | Patra |
 |---|---|
@@ -57,7 +57,7 @@ Modul se načítá před `game.js`. Přidává instance do stávající fyzikál
 
 Spusť lokální server na portu 8000 a `node tests/enemy-catalog.cjs`. Test používá **dosavadní grafiku jako výslovnou testovací náhradu pouze v paměti prohlížeče**; ověřuje konfiguraci, útoky v rámci patra, zásahy CD/disketami, jednorázové skóre a odstranění. Neověřuje skutečný vzhled nových postav ani konečné animační snímky.
 
-Pro HR a designéra zbývá dodat a zpracovat obrázky, doladit hitboxy a ověřit skutečné pózy. Bezpečák používá pózy idle, STOP a chůzi s vysílačkou; chůze střídá existující pózy. Zásah využívá krátké zábleskové zvýraznění a poražení fade-out. Samostatné kreslené snímky zásahu a poražení v dodaném podkladu nejsou.
+Pro designéra zbývá dodat a zpracovat obrázek, doladit hitbox a ověřit skutečné pózy. Bezpečák používá pózy idle, STOP a chůzi s vysílačkou; chůze střídá existující pózy. Zásah využívá krátké zábleskové zvýraznění a poražení fade-out. Samostatné kreslené snímky zásahu a poražení v dodaném podkladu nejsou.
 
 ## Ověřený bezpečák
 
@@ -66,3 +66,9 @@ Transparentní atlas je `assets/characters/security_guard.png` (2033 × 774). Pr
 Výskyt: 1. patro X=420, 2. patro X=420, 3. patro X=450. Pozice jsou mimo vstupní bod hráče a herní stoly. `idleDuration` a `movementCycle` střídají stání/hlídání s chůzí. Zdraví a útok zůstávají výchozí.
 
 `node tests/security-guard.cjs` používá skutečnou grafiku: kontroluje průhledné okraje, modré boty, zarovnání chodidel, pohyb, STOP při skutečném kontaktu, vysílačku při útoku, zásah hráče a zákaz útoku na jiné patro. `tests/enemy-catalog.cjs` nadále používá testovací náhrady pro zbývající profily a ověřuje jejich budoucí mechaniky.
+
+## Ověřená HR manažerka
+
+Transparentní atlas `assets/characters/hr_manager.png` má 1881 × 836 pixelů. Zachovává rezavé kudrny, černé brýle, lesklé černé šaty, podpatky a červené dokumenty z dodaného návrhu. Normalizované snímky mají 80 × 96, společnou výšku 92 a hitbox 26 × 88. Samostatné kotvy chodidel jsou zadané v `profiles.hr_manager.art.anchors`. Pózy: idle s rukou v bok, STOP a chůze s dokumenty. Útok používá dokumentovou pózu a stávající šanon, zásah záblesk, poražení postupné zmizení; nové zbraně nevznikají.
+
+Je v 6. patře na X=420 a v 8. patře na X=180. `node tests/hr-manager.cjs` ověřuje skutečné textury, průhlednost, zarovnání, pohyb, kontakt se STOP, útok, poškození hráče a poražení disketami/CD se skóre. `tests/floors.cjs` kontroluje průchod všemi patry po zapojení postavy.
