@@ -20,3 +20,7 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
 .game-action:focus-visible{outline:3px solid #ffdd82;outline-offset:4px}
 .game-action[hidden]{display:none}
 #game canvas:focus-visible{outline:2px solid #a4e963;outline-offset:-2px}
+
+.mission-story{margin-top:22px;padding:14px 18px;border:1px solid #3d6851;background:#0c3028;color:#d9e4d9;font-size:13px;line-height:1.8}
+.mission-story summary{cursor:pointer;color:#a4e963;font-weight:700;letter-spacing:1px}
+.mission-story p{max-width:850px}.mission-story strong{color:#f4e3a2}

@@ -8,7 +8,7 @@ const assert = require('node:assert/strict');
     const page = await browser.newPage();
     page.setDefaultTimeout(10000);
     page.on('pageerror', e => errors.push(e.message));
-    await page.route('**/game.js', async route => {
+    await page.route('**/game.js*', async route => {
       const response = await route.fetch();
       await route.fulfill({ response, body: (await response.text()).replace('new Phaser.Game({', 'window.__testGame = new Phaser.Game({') });
     });

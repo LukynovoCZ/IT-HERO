@@ -10,7 +10,7 @@ const assert=require('node:assert/strict');
    page.on('pageerror',e=>errors.push(e.message));
    page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:8000'))external.push(r.url());});
    // Expose the real game instance for assertions; all game logic runs unchanged.
-   await page.route('**/game.js',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame = new Phaser.Game({')});});
+   await page.route('**/game.js*',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame = new Phaser.Game({')});});
    await page.goto('http://127.0.0.1:8000');
    const state=()=>page.evaluate(()=>window.__testGame.scene.getScene('ITGame').gameState);
    await page.waitForFunction(()=>window.__testGame?.scene.getScene('ITGame')?.overlay?.visible);
@@ -48,7 +48,7 @@ const assert=require('node:assert/strict');
   }
   const gamePage=await browser.newPage();gamePage.setDefaultTimeout(10000);const gameErrors=[];
   gamePage.on('pageerror',e=>gameErrors.push(e.message));
-  await gamePage.route('**/game.js',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame = new Phaser.Game({')});});
+  await gamePage.route('**/game.js*',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame = new Phaser.Game({')});});
   await gamePage.goto('http://127.0.0.1:8000');
   await gamePage.waitForFunction(()=>window.__testGame?.scene.getScene('ITGame')?.overlay?.visible);
   await gamePage.waitForTimeout(500);
@@ -85,7 +85,7 @@ const assert=require('node:assert/strict');
   await gamePage.close();
   const combat=await browser.newPage();const combatErrors=[];
   combat.on('pageerror',e=>combatErrors.push(e.message));
-  await combat.route('**/game.js',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame = new Phaser.Game({')});});
+  await combat.route('**/game.js*',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame = new Phaser.Game({')});});
   await combat.goto('http://127.0.0.1:8000');
   await combat.waitForFunction(()=>window.__testGame?.scene.getScene('ITGame')?.overlay?.visible);
   await combat.keyboard.press('Enter');

@@ -98,3 +98,7 @@ Starý ajťák je přátelský pomocník. Poprvé se objeví přibližně po 7 s
 Modrovlasá specialistka se objevuje ve 3., 5., 7. a 8. patře. Má silnější siluetu, fialové sako a duhovou vlajku. Na dálku hází jednorožce, zblízka používá krátký duhový sprej a při kontaktu udeří vlajkou. Všechny zásahy ubírají jeden bod energie a respektují ochranu po zásahu.
 
 `node tests/support.cjs` ověřuje oba příchody pomocníka, dárky a jejich skutečný sběr přes fyziku, plné uzdravení, pauzu, zmizení, automatický příchod i tři útoky specialistky. Test expirace posouvá herní čas; útoky volí testovanou vzdálenost přemístěním postavy. Před spuštěním testů spusť lokální server na portu 8000.
+
+## Úvod a hlášky verze 0.4.1
+
+Menu zobrazuje „NO MORE MEETING“ a krátké zadání mise. Pod hrou je rozbalovací úplný příběh „Operace poslední záloha“. Při smrti se losuje z deseti hlášek, každá se objeví jednou za kolo; pořadí přetrvává přes restarty scény a poslední hláška se neopakuje na začátku nového kola. Po obnovení celé stránky začíná nové losování. HTML načítá JS a CSS s verzí v URL kvůli cache. Při dalším vydání aktualizuj query verzi i BUILD společně. `node tests/intro-death.cjs` kontroluje úvod, příběh, načítanou verzi a 11 skutečných úmrtí/restartů včetně rozměrů textu.

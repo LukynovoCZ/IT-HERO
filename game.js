@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.4.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.4.1 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -29,6 +29,19 @@
     pink: 0xff7698,
     blue: 0x75bdfb
   };
+
+  const DEATH_LINES = [
+    'Jdeš na povinné školení řízení vysokozdvižných vozíků v serverovnách s vodním chlazením. Plavky s sebou.',
+    'Vyplníš dotazník „Nechceme jíst maso v závodní jídelně“. Má 94 otázek. Všechny jsou povinné.',
+    'Jdeš nastavit přístupová hesla ke kávě zdarma pro kolegu Jimma. Každý nápoj musí mít jiné heslo a dvoufázové ověření.',
+    'Čeká tě rychlá porada o tom, proč jsou porady příliš dlouhé. Rezervováno do pátku.',
+    'Byl jsi jmenován koordinátorem přechodu z disket na diskety s vyšší kapacitou.',
+    'Jdeš ručně inventarizovat cloud. Žebřík si vyzvedni na recepci.',
+    'Musíš obnovit smazanou prezentaci o důležitosti zálohování. Záloha neexistuje.',
+    'Dostal jsi za úkol opravit výtahy. Přístupová karta je v devátém patře.',
+    'Jdeš schválit žádost o přístup k formuláři pro podání žádosti o přístup.',
+    'Povinný brainstorming právě začíná. Téma: Jak dostat ajťáky zpátky do práce.'
+  ];
 
   class ITGame extends Phaser.Scene {
     constructor() { super('ITGame'); }
@@ -588,7 +601,7 @@
         font: 'bold 17px monospace', color: '#ffdf82'
       }).setOrigin(0.5);
       this.overlayBody = this.add.text(308, 261, '', {
-        font: '14px monospace', color: '#d9e4f6', align: 'center', lineSpacing: 11
+        font: '14px monospace', color: '#d9e4f6', align: 'center', lineSpacing: 8, wordWrap: {width: 480, useAdvancedWrap: true}
       }).setOrigin(0.5);
       this.overlayAction = this.add.text(480, 378, '', {
         font: 'bold 17px monospace', color: '#101d2a', backgroundColor: '#a9ed63',
@@ -603,6 +616,7 @@
     showOverlay(title, sub, message, action) {
       this.overlayTitle.setText(title);
       this.overlaySub.setText(sub);
+      this.overlayBody.setFontSize(this.gameState === 'lose' ? 13 : 14);
       this.overlayBody.setText(message);
       this.overlay.setVisible(true);
       const button = document.getElementById('game-action');
@@ -765,6 +779,18 @@
       }
     }
 
+    nextDeathLine() {
+      let queue = this.registry.get('deathLines');
+      if (!queue || !queue.length) {
+        queue = Phaser.Utils.Array.Shuffle([...DEATH_LINES]);
+        if (queue[0] === this.registry.get('lastDeathLine')) [queue[0],queue[1]] = [queue[1],queue[0]];
+      }
+      const line = queue.shift();
+      this.registry.set('deathLines',queue);
+      this.registry.set('lastDeathLine',line);
+      return line;
+    }
+
     takeDamage(sourceX) {
       if (this.gameState !== 'playing' || this.time.now - this.lastHit < 1250) return;
       this.lastHit = this.time.now;
@@ -778,8 +804,9 @@
       if (this.energy === 0) {
         this.gameState = 'lose';
         this.player.setVelocityX(0);
-        this.time.delayedCall(350, () => this.showOverlay('GAME OVER', 'ZASE DALŠÍ PORADA…',
-          `Došel ti kofein.\nDostal ses do patra ${this.floor + 1}.\nZískané skóre: ${this.score}`, 'ENTER / R / KLIK = ZNOVU'));
+        const line = this.nextDeathLine();
+        this.time.delayedCall(350, () => this.showOverlay('DOSTALI TĚ!', 'TVŮJ NOVÝ ÚKOL:',
+          `${line}\n\nPatro ${this.floor + 1} / ${FLOOR_COUNT} • Skóre ${this.score}`, 'ENTER / KLIK = ZKUSIT ZNOVU'));
       }
     }
 
