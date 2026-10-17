@@ -4,9 +4,9 @@
 (() => {
   'use strict';
   const defaults = {
-    width: 144, height: 180, textureScale: 2,
-    bgColor: '#f0eddb', accentColor: '#29674b', textColor: '#20382d',
-    depth: 3, tooltipDistance: 92
+    width: 144, height: 180, textureScale: 2, displayScale: 0.5,
+    bgColor: '#e2dfcc', accentColor: '#29674b', textColor: '#465347',
+    depth: -7, tint: 0xd1d4c0, tooltipDistance: 92
   };
   const definitions = [
     {id:'friday',title:'NEJVĚTŠÍ INOVACE\nVZNIKAJÍ V PÁTEK V OFISU',subtitle:'Spolupráce. Energie. Přítomnost.',theme:'office / attendance / culture',icon:'chair',accentColor:'#537c46'},
@@ -83,7 +83,7 @@
     const ctx = texture.context;
     ctx.scale(scale,scale);ctx.imageSmoothingEnabled=false;
     ctx.fillStyle=spec.bgColor;ctx.fillRect(0,0,width,height);
-    ctx.strokeStyle='#68766a';ctx.lineWidth=2;ctx.strokeRect(1,1,width-2,height-2);
+    ctx.strokeStyle='#939b89';ctx.lineWidth=1;ctx.strokeRect(1,1,width-2,height-2);
     ctx.fillStyle=spec.accentColor;ctx.fillRect(4,4,width-8,14);
     ctx.fillStyle=spec.bgColor;ctx.font='bold 6px monospace';ctx.fillText('INTERNÍ KOMUNIKACE',10,14);
     const pad=10, titleArea=height*0.43;
@@ -114,7 +114,7 @@
       const spec={...defaults,...def,...place};
       const key=createTexture(scene,def,{width:spec.width,height:spec.height,bgColor:spec.bgColor,accentColor:spec.accentColor,textColor:spec.textColor,textureScale:spec.textureScale});
       const image=scene.add.image(place.x,floors[place.floor-1]+place.y,key)
-        .setDisplaySize(spec.width,spec.height).setDepth(spec.depth)
+        .setDisplaySize(spec.width*spec.displayScale,spec.height*spec.displayScale).setDepth(spec.depth).setTint(spec.tint)
         .setData('posterId',def.id).setData('floor',place.floor);
       return {image,definition:def,placement:place};
     });

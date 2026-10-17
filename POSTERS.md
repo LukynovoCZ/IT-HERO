@@ -5,8 +5,8 @@ Modul `posters.js` je načtený před `game.js`. Vše kreslí lokálně do Phase
 ## Texty, vzhled a pozice
 
 - `definitions`: `id`, `title`, `subtitle`, `theme`, `icon`; volitelně `bgColor`, `accentColor`, `textColor`, `width`, `height` a `textureScale`.
-- `defaults`: společné barvy, rozměry, vrstva a vzdálenost tooltipu. Výchozí plakát má 144 × 180 herních pixelů, texturu ve dvojnásobném rozlišení.
-- `placements`: `floor` (1 až 9), `x`, `y`, `poster` (ID definice); lze přepsat rozměry a barvy konkrétního umístění. `x` je souřadnice ve světě, `y` je posun středu plakátu vůči podlaze. Výchozí `y: -220` znamená 220 pixelů nad podlahou.
+- `defaults`: společné barvy, rozměry, vrstva a vzdálenost tooltipu. Návrh má 144 × 180 pixelů s texturou ve dvojnásobném rozlišení; `displayScale: 0.5` jej na stěně zmenší na 72 × 90 herních pixelů. `tint` tlumí barvy podle prostředí a `depth` určuje vrstvu.
+- `placements`: `floor` (1 až 9), `x`, `y`, `poster` (ID definice); lze přepsat rozměry, `displayScale`, `tint` a barvy konkrétního umístění. `x` je souřadnice ve světě, `y` je posun středu plakátu vůči podlaze. Výchozí `y: -220` znamená 220 pixelů nad podlahou.
 - `icon`: `chair`, `workflow`, `cloud`, `arrows`, `people`, `car`, `meeting`, `chart`, `org`, `ai`, `stamp`. Ikony kreslí samostatná funkce `icon()`.
 
 Konfigurační seznam je dostupný také jako `window.ITHeroPosters.placements`; katalog jako `window.ITHeroPosters.definitions`. Po úpravě zdroje obnov stránku. Při publikování změň verzi `posters.js?v=…` v `index.html`, aby prohlížeč nepoužil starý modul.
