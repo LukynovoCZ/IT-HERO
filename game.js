@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.3.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.4.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -34,6 +34,7 @@
     constructor() { super('ITGame'); }
 
     preload() {
+      this.load.image('support-art', 'assets/support.png');
       this.load.image('character-art', 'assets/characters.png');
       this.load.image('office-art', 'assets/office.png');
       this.load.image('exterior-art', 'assets/exterior.png');
@@ -62,6 +63,10 @@
       this.obstacles = this.physics.add.staticGroup();
       this.coffees = this.physics.add.staticGroup();
       this.upgrades = this.physics.add.staticGroup();
+      this.aidItems = this.physics.add.staticGroup();
+      this.playTime = 0;
+      this.nextHelperAt = 7000;
+      this.helperVisit = null;
 
       this.makeTextures();
       this.buildOffice();
@@ -113,6 +118,60 @@
         const width = Math.round(w * height / h);
         ctx.drawImage(source, x, y, w, h, Math.round((64 - width) / 2), 80 - height, width, height);
         canvas.refresh();
+      });
+      const supportSource = this.textures.get('support-art').getSourceImage();
+      const supportPoses = {
+        'old-it': [85, 12, 370, 482], 'old-it-crouch': [580, 120, 430, 374],
+        'old-it-offer': [1120, 12, 380, 482],
+        'specialist': [45, 502, 420, 495],
+        'specialist-flag': [490, 533, 585, 464],
+        'specialist-spray': [1070, 533, 465, 464]
+      };
+      Object.entries(supportPoses).forEach(([key, [x,y,w,h]]) => {
+        if (this.textures.exists(key)) return;
+        const canvas = this.textures.createCanvas(key, 136, 80);
+        canvas.context.imageSmoothingEnabled = false;
+        const height = key === 'old-it-crouch' ? 54 : 76;
+        const width = Math.round(w * height / h);
+        // Same body anchor (x=68) for wide flag / spray poses.
+        const left = key === 'specialist-flag' ? 39 : key === 'specialist-spray' ? 46 : Math.round(68 - width / 2);
+        canvas.context.drawImage(supportSource,x,y,w,h,left,80-height,width,height);
+        canvas.refresh();
+      });
+      const rainbow = [0xef5366,0xf5a347,0xf8df65,0x63c86a,0x54b3f6,0xaf79e1];
+      texture('unicorn', 26, 22, g => {
+        rect(g,0x263b51,4,9,17,9); rect(g,0xfaf0ff,5,8,15,9);
+        rect(g,0xfaf0ff,15,4,8,10); rect(g,0xd9a4f1,13,5,4,9);
+        rect(g,0xffd96f,20,0,2,6); rect(g,0x27374b,20,7,2,2);
+        rect(g,0xeebdf1,5,16,3,5); rect(g,0xeebdf1,15,16,3,5);
+        rainbow.forEach((color,i)=>rect(g,color,1,8+i,5,1));
+      });
+      texture('rainbow-spray', 74, 36, g => {
+        rainbow.forEach((color,i)=> {
+          rect(g,color,6+i*4,3+i*5,58-i*3,4);
+          rect(g,color,66-i*2,4+i*5,3,3);
+        });
+      });
+      texture('rainbow-flag', 62, 42, g => {
+        rect(g,0xb39a72,1,1,3,40);
+        rainbow.forEach((color,i)=>rect(g,color,4,2+i*5,56,5));
+      });
+      texture('beer', 18, 27, g => {
+        rect(g,0x132e23,2,0,14,27); rect(g,0xd9c477,3,0,12,3);
+        rect(g,0x12613c,3,3,12,21); rect(g,0x38935a,4,4,2,18);
+        rect(g,0xe9d99c,4,10,10,9); rect(g,0xb44636,7,12,4,4);
+        rect(g,0xd9c477,3,24,12,2);
+      });
+      // Český párek v rohlíku: párek nahoře, dutý rohlík svisle, ubrousek dole.
+      texture('hotdog', 17, 34, g => {
+        rect(g,0x743e22,7,0,6,14); rect(g,0xcf7d3d,8,1,4,13);
+        rect(g,0xf2ad65,8,1,1,8);
+        rect(g,0x9d6328,4,10,11,20); rect(g,0xd39b45,5,10,9,19);
+        rect(g,0xe7b966,6,13,3,15); rect(g,0xefd08a,6,14,1,12);
+        rect(g,0xf5cd4c,5,9,4,3); rect(g,0xf5cd4c,8,11,4,2);
+        rect(g,0xffe37b,5,9,2,1);
+        rect(g,0xe1e7e3,1,25,15,7); rect(g,0xf8f8ed,2,24,6,6);
+        rect(g,0xf8f8ed,8,26,8,7); rect(g,0xadbdb6,7,27,2,6);
       });
       texture('mug', 15, 14, g => {
         rect(g, 0xe4f1f1, 1, 2, 10, 11); rect(g, 0x8e4843, 2, 3, 8, 3);
@@ -257,12 +316,13 @@
 
       this.enemySpecs = FLOORS.flatMap((_, floor) => [
         {kind: floor === 8 ? 'manager' : floor % 3 === 1 ? 'union' : 'secretary', floor, x: 590, hp: floor === 8 ? 8 : 3 + Math.floor(floor / 3), patrol: 30, delay: 1800 - floor * 65},
+        ...([2, 4, 6, 7].includes(floor) ? [{kind:'specialist', floor, x:790, hp:5, patrol:26, delay:1600}] : []),
         ...(floor > 1 ? [{kind:'secretary', floor, x:350, hp:3, patrol:25, delay:1900 - floor * 45}] : [])
       ]);
       this.enemySpecs.forEach((spec, i) => {
         const e = this.enemies.create(spec.x, FLOORS[spec.floor] - 36, spec.kind);
         e.setScale(1).setDepth(22).setCollideWorldBounds(true);
-        e.body.setSize(spec.kind === 'secretary' ? 24 : 38, 72).setOffset(spec.kind === 'secretary' ? 20 : 13, 8);
+        e.body.setSize(spec.kind === 'secretary' ? 24 : 38, 72).setOffset(spec.kind === 'specialist' ? 49 : spec.kind === 'secretary' ? 20 : 13, 8);
         e.kind = spec.kind;
         e.floorIndex = spec.floor;
         e.hp = spec.hp;
@@ -287,6 +347,60 @@
       });
     }
 
+    spawnHelper(source = Phaser.Math.Between(0, 1) ? 'lift' : 'desk', kind = Phaser.Math.Between(0, 1) ? 'beer' : 'hotdog') {
+      if (this.helperVisit || this.gameState !== 'playing') return;
+      const floor = this.floor;
+      const x = source === 'lift' ? 500 : (this.player.x < 480 ? 305 : 700);
+      const dropX = source === 'lift' ? (this.player.x < 500 ? 435 : 565) : x - 68;
+      const sprite = this.add.sprite(x, FLOORS[floor], source === 'desk' ? 'old-it-crouch' : 'old-it').setOrigin(0.5,1).setDepth(source === 'desk' ? 9 : 20);
+      const doorway = source === 'lift' ? this.add.rectangle(x,FLOORS[floor]-73,82,146,0x152a25).setDepth(7) : null;
+      this.helperVisit = {floor,source,kind,x,dropX,sprite,doorway,started:this.playTime,dropped:false};
+      this.nextHelperAt = this.playTime + Phaser.Math.Between(24000,32000);
+    }
+
+    updateHelper(delta) {
+      this.playTime += delta;
+      const visit = this.helperVisit;
+      if (visit) {
+        const age = this.playTime - visit.started;
+        visit.sprite.setAlpha(Math.min(1,age/300,Math.max(0,(3500-age)/500)));
+        if (visit.floor !== this.floor || age > 3500) {
+          visit.sprite.destroy();
+          if (visit.doorway) visit.doorway.destroy();
+          this.helperVisit = null;
+        } else if (age >= 900 && !visit.dropped) {
+          visit.dropped = true;
+          visit.sprite.setTexture('old-it-offer').setDepth(20).setX(visit.source === 'desk' ? visit.x - 60 : visit.x);
+          const item = this.aidItems.create(visit.dropX,FLOORS[this.floor]-22,visit.kind).setScale(1.5).setDepth(21).refreshBody();
+          item.setData('expires',this.playTime + 11000);
+          const label = this.add.text(visit.dropX,FLOORS[this.floor]-98,visit.kind === 'beer' ? 'PLZEŇ • PLNÉ ZDRAVÍ' : 'PÁREK • PLNÉ ZDRAVÍ', {font:'bold 10px monospace',color:'#f4e3a2',backgroundColor:'#173c2e',padding:{x:4,y:3}}).setOrigin(0.5).setDepth(105);
+          item.setData('label',label);
+          this.popText(visit.dropX,FLOORS[this.floor]-150,'STARÝ AJŤÁK: NA ZDRAVÍ!', '#a9ed63');
+          this.tone(680,0.12,'triangle');
+        }
+      } else if (this.playTime >= this.nextHelperAt) this.spawnHelper();
+      this.aidItems.getChildren().slice().forEach(item => {
+        const remaining = item.getData('expires') - this.playTime;
+        if (remaining <= 0) this.removeAid(item);
+        else item.setAlpha(remaining < 3000 && Math.floor(this.playTime/180)%2 ? 0.35 : 1);
+      });
+    }
+
+    removeAid(item) {
+      const label = item.getData('label');
+      if (label) label.destroy();
+      item.destroy();
+    }
+
+    collectAid(item) {
+      if (this.gameState !== 'playing' || !item.active) return;
+      this.energy = this.maxEnergy;
+      this.removeAid(item);
+      this.updateHUD();
+      this.popText(this.player.x,this.player.y-65,'ZDRAVÍ DOPLNĚNO DO PLNA', '#a9ed63');
+      this.tone(820,0.17,'triangle');
+    }
+
     collectUpgrade(upgrade) {
       if (this.gameState !== 'playing' || !upgrade.active) return;
       upgrade.destroy();
@@ -305,6 +419,7 @@
       this.physics.add.collider(this.playerShots, this.obstacles, shot => shot.destroy());
       this.physics.add.collider(this.enemyShots, this.platforms, shot => shot.destroy());
       this.physics.add.collider(this.enemyShots, this.obstacles, shot => shot.destroy());
+      this.physics.add.overlap(this.player, this.aidItems, (_, item) => this.collectAid(item));
       this.physics.add.overlap(this.player, this.upgrades, (_, upgrade) => this.collectUpgrade(upgrade));
       this.physics.add.overlap(this.player, this.coffees, (_, coffee) => this.collectCoffee(coffee));
       this.physics.add.overlap(this.playerShots, this.enemies, (shot, enemy) => this.hitEnemy(shot, enemy));
@@ -587,6 +702,10 @@
         enemy.setTexture('union-whistle');
         this.popText(enemy.x, enemy.y - 55, 'PÍÍÍÍ!', '#79caff');
         this.tone(2300, 0.4, 'sine');
+      } else if (enemy.kind === 'specialist') {
+        enemy.setTexture('specialist-flag');
+        this.specialistAttack(enemy, 'rainbow-flag');
+        this.tone(320,0.12,'triangle');
       } else {
         enemy.setTexture('manager-stomp-0');
         this.popText(enemy.x, enemy.y - 55, 'DUP! DUP!', '#ff9a85');
@@ -594,6 +713,10 @@
     }
 
     enemyAttack(enemy) {
+      if (enemy.kind === 'specialist') {
+        this.specialistAttack(enemy, Math.abs(this.player.x-enemy.x)<135 ? 'rainbow-spray' : 'unicorn');
+        return;
+      }
       const direction = this.player.x >= enemy.x ? 1 : -1;
       const near = Math.abs(this.player.x - enemy.x) < 180;
       const alternate = enemy.shotsThrown++ % 2;
@@ -608,6 +731,22 @@
       item.setData('expires', this.time.now + 1900);
       enemy.setFlipX(direction < 0);
       this.tone(170, 0.06, 'triangle');
+    }
+
+    specialistAttack(enemy, projectile) {
+      const direction = this.player.x >= enemy.x ? 1 : -1;
+      const short = projectile !== 'unicorn';
+      const item = this.enemyShots.create(enemy.x + direction*(short ? 52 : 27),enemy.y-5,projectile).setDepth(26);
+      item.body.setAllowGravity(false);
+      item.setFlipX(direction<0).setVelocityX(short ? direction*35 : direction*270);
+      item.setData('expires',this.time.now+(short ? 350 : 1800));
+      if (!short) item.setScale(1.3);
+      enemy.setFlipX(direction<0);
+      if (projectile === 'rainbow-spray') {
+        enemy.setTexture('specialist-spray');
+        enemy.contactUntil = this.time.now + 450;
+        this.tone(900,0.1,'sawtooth');
+      }
     }
 
     hitEnemy(shot, enemy) {
@@ -666,6 +805,8 @@
       this.cameras.main.fadeOut(220, 7, 15, 28);
       this.time.delayedCall(230, () => {
         this.floor++;
+        this.aidItems.getChildren().slice().forEach(item => this.removeAid(item));
+        this.nextHelperAt = Math.min(this.nextHelperAt,this.playTime+5000);
         const spawnX = this.floor % 2 ? 872 : 88;
         this.player.setPosition(spawnX, FLOORS[this.floor] - 50);
         this.player.setVelocity(0, 0);
@@ -700,6 +841,7 @@
         return;
       }
 
+      this.updateHelper(delta);
       const down = action => this.browserDown(action) || (
         Array.isArray(this.keys[action]) ? this.keys[action] : [this.keys[action]]
       ).some(k => k && k.isDown);
@@ -757,7 +899,7 @@
         if (e.x < e.baseX - e.patrol) e.direction = 1;
         if (e.x > e.baseX + e.patrol) e.direction = -1;
         e.setVelocityX(e.direction * (e.kind === 'manager' ? 34 : 49));
-        if (Math.abs(e.x - this.player.x) < 510 && time - e.lastAttack > e.attackDelay) {
+        if (Math.abs(e.x - this.player.x) < 510 && time - e.lastAttack > (e.kind === 'specialist' && Math.abs(e.x-this.player.x)<135 ? 850 : e.attackDelay)) {
           e.lastAttack = time;
           this.enemyAttack(e);
         }

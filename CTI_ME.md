@@ -1,4 +1,4 @@
-# IT HERO 0.3.0 — Výstup do vedení
+# IT HERO 0.4.0 — Výstup do vedení
 
 První hratelný prototyp kancelářské 2D pixelové plošinovky v JavaScriptu a **Phaseru 3.90.0**.
 
@@ -87,6 +87,14 @@ Spusť `python3 -m http.server 8000 --bind 127.0.0.1`. S dostupným Node.js, bal
 
 Kontakt ubírá jeden bod energie; krátká ochrana po zásahu brání ztrátě více bodů během jediného doteku. Reakce trvá jednu sekundu, poté nepřítel pokračuje v hlídce. Zvuky respektují klávesu M.
 
-## Grafika verze 0.3.0
+## Grafika verze 0.4.0
 
 `assets/characters.png` obsahuje postavy a kontaktní pózy, `assets/office.png` kancelářské prostředí a `assets/exterior.png` budovu v menu. Ilustrace byly vytvořeny podle schváleného návrhu; původní fotografie se na web nenahrávají. Pozadí i atlas se načítají lokálně a fungují bez internetu. Při nasazení kopíruj také složku `assets`. Jednotlivé pózy se normalizují se zachováním poměru stran a společnou základní linií, vykreslování používá nearest-neighbor.
+
+## Nové postavy verze 0.4.0
+
+Starý ajťák je přátelský pomocník. Poprvé se objeví přibližně po 7 sekundách hraní, potom zhruba po 24–32 sekundách; po přechodu do patra přijde nejpozději za 5 sekund. Náhodně vykoukne z výtahu nebo zpod stolu, za 0,9 sekundy položí zelenozlatou plechovku Plzně nebo český párek v rohlíku (svislý rohlík, vyčnívající párek, hořčice a ubrousek). Oba dárky doplní energii do plna. Pomocník odejde po 3,5 sekundách, nesebraný dárek zmizí po 11 sekundách a poslední 3 sekundy bliká. Pauza odpočet zastaví. Při změně patra se zbývající dárky odstraní. Pomocníkovi nelze ublížit.
+
+Modrovlasá specialistka se objevuje ve 3., 5., 7. a 8. patře. Má silnější siluetu, fialové sako a duhovou vlajku. Na dálku hází jednorožce, zblízka používá krátký duhový sprej a při kontaktu udeří vlajkou. Všechny zásahy ubírají jeden bod energie a respektují ochranu po zásahu.
+
+`node tests/support.cjs` ověřuje oba příchody pomocníka, dárky a jejich skutečný sběr přes fyziku, plné uzdravení, pauzu, zmizení, automatický příchod i tři útoky specialistky. Test expirace posouvá herní čas; útoky volí testovanou vzdálenost přemístěním postavy. Před spuštěním testů spusť lokální server na portu 8000.

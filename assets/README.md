@@ -7,3 +7,5 @@ Local generated artwork based on the approved visual concept. Reference photogra
 - `exterior.png`: 1024 × 1536 title-screen building illustration.
 
 Source rectangles in `game.js` isolate character poses and render them onto 64 × 80 textures with a shared baseline and preserved aspect ratio. Update those rectangles when replacing the atlas. Character body sizes and crouch offsets must stay consistent with the new textures. Nearest-neighbor rendering is enabled throughout.
+
+- `support.png`: transparent 1536 × 1024 atlas of old IT helper (standing, crouching, offering) and blue-haired specialist (idle, flag swing, spray). Poses are normalized to 136 × 80 textures with a shared body anchor; source coordinates live in `supportPoses` in `game.js`. Food and projectile textures are generated in the game.
