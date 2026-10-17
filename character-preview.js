@@ -6,6 +6,7 @@
     preload() {
       ITHeroEnemyCatalog.preload(this);
       this.load.image('preview-hero-source', 'assets/characters.png');
+      this.load.image('preview-support-source', 'assets/support.png');
     }
     create() {
       this.floor = 0; this.gameState = 'playing';
@@ -14,34 +15,52 @@
       ITHeroTrioAttacks.textures(this);
       this.paused = false;
       this.animationTime = 0;
-      this.baseline = 360;
       const graphics = this.add.graphics();
-      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 540);
-      graphics.lineStyle(1, 0x24453e);
-      for (let y = 40; y < this.baseline; y += 20) graphics.lineBetween(0, y, 960, y);
-      graphics.fillStyle(0x78867b).fillRect(0, this.baseline, 960, 34);
-      graphics.lineStyle(2, 0xa7eb6a).lineBetween(0, this.baseline, 960, this.baseline);
-      const hero = this.textures.createCanvas('preview-hero', 64, 80);
-      hero.context.imageSmoothingEnabled = false;
-      const width = Math.round(245 * 76 / 342);
-      hero.context.drawImage(this.textures.get('preview-hero-source').getSourceImage(),
-        40, 16, 245, 342, Math.round((64 - width) / 2), 4, width, 76);
-      hero.refresh();
-      this.entries = [{ name: 'AJŤÁK', height: 76, frames: { idle: 'preview-hero' },
-        body: { width: 28, height: 72, x: 18, y: 8 }, frameWidth: 64, frameHeight: 80 }];
+      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 1260);
+      for (const baseline of [260, 660, 1060]) {
+        graphics.lineStyle(1, 0x24453e);
+        for (let y = baseline - 240; y < baseline; y += 20) graphics.lineBetween(0, y, 960, y);
+        graphics.fillStyle(0x78867b).fillRect(0, baseline, 960, 24);
+        graphics.lineStyle(2, 0xa7eb6a).lineBetween(0, baseline, 960, baseline);
+      }
+      // Match makeTextures() in game.js: identical source crops, scale and anchors.
+      const legacy = [
+        {name:'AJŤÁK',body:{width:28,height:72,x:18,y:8},poses:{idle:[40,16,245,342],walk:[380,16,265,342]}},
+        {name:'SEKRETÁŘKA',body:{width:24,height:72,x:20,y:8},contactPose:'contact',poses:{idle:[65,365,210,358],contact:[385,362,267,361]}},
+        {name:'ODBORÁŘ',contactPose:'contact',poses:{idle:[730,365,285,358],contact:[1090,365,302,358]}},
+        {name:'MANAŽER',contactPose:'contact',poses:{idle:[35,725,279,337],contact:[375,728,298,336],walk:[733,728,292,336]}},
+        {name:'STARÝ AJŤÁK',support:true,attackPose:'offer',contactPose:'offer',poses:{idle:[85,12,370,482],walk:[580,120,430,374],offer:[1120,12,380,482]}},
+        {name:'SPECIALISTKA',support:true,body:{width:38,height:72,x:49,y:8},attackPose:'spray',contactPose:'flag',poses:{idle:[45,502,420,495],flag:[490,533,585,464],spray:[1070,533,465,464]}}
+      ];
+      this.entries = legacy.map((entry, index) => {
+        const frames = {}, frameWidth = entry.support ? 136 : 64;
+        for (const [pose, [x,y,w,h]] of Object.entries(entry.poses)) {
+          const key = `preview-legacy-${index}-${pose}`;
+          const canvas = this.textures.createCanvas(key, frameWidth, 80);
+          canvas.context.imageSmoothingEnabled = false;
+          const height = entry.name === 'STARÝ AJŤÁK' && pose === 'walk' ? 54 : 76;
+          const width = Math.round(w * height / h);
+          const left = pose === 'flag' ? 39 : pose === 'spray' ? 46 : Math.round((frameWidth - width) / 2);
+          canvas.context.drawImage(this.textures.get(entry.support ? 'preview-support-source' : 'preview-hero-source').getSourceImage(), x,y,w,h,left,80-height,width,height);
+          canvas.refresh(); frames[pose] = key;
+        }
+        return {...entry,frames,height:76,frameWidth,frameHeight:80,
+          body:entry.body || (entry.support ? null : {width:38,height:72,x:13,y:8})};
+      });
       for (const profile of Object.values(ITHeroEnemyCatalog.profiles)) {
         this.entries.push({ ...profile, height: profile.renderHeight,
           frames: ITHeroEnemyCatalog.createTextures(this, profile) });
       }
       this.entries.forEach((entry, i) => {
-        const x = 120 + i * 240;
-        entry.sprite = this.add.sprite(x, this.baseline, entry.frames.idle).setOrigin(0.5, 1);
+        const x = 160 + (i % 3) * 320;
+        entry.baseline = 260 + Math.floor(i / 3) * 400;
+        entry.sprite = this.add.sprite(x, entry.baseline, entry.frames.idle).setOrigin(0.5, 1);
         if (entry.id) {
-          Object.assign(entry.sprite, {profile: entry, floorIndex: 0, facingDirection: 1, body: {bottom: this.baseline}});
-          entry.projectiles.forEach((weapon, index) => this.add.image(x - 22 + index * 44, 485, weapon.key));
+          Object.assign(entry.sprite, {profile: entry, floorIndex: 0, facingDirection: 1, body: {bottom: entry.baseline}});
+          entry.projectiles.forEach((weapon, index) => this.add.image(x - 22 + index * 44, entry.baseline + 115, weapon.key));
         }
-        this.add.text(x, 415, entry.name, { fontFamily: 'monospace', fontSize: '17px', color: '#b0ee78' }).setOrigin(0.5);
-        this.add.text(x, 445, `${entry.height} px`, { fontFamily: 'monospace', fontSize: '16px', color: '#e6eee8' }).setOrigin(0.5);
+        this.add.text(x, entry.baseline + 45, entry.name, { fontFamily: 'monospace', fontSize: '17px', color: '#b0ee78' }).setOrigin(0.5);
+        this.add.text(x, entry.baseline + 75, `${entry.height} px`, { fontFamily: 'monospace', fontSize: '16px', color: '#e6eee8' }).setOrigin(0.5);
       });
       this.bodyGraphics = this.add.graphics();
       this.controls = Object.fromEntries(['pose', 'zoom', 'pause', 'bodies'].map(id => [id, document.getElementById(id)]));
@@ -68,10 +87,10 @@
             entry.sprite.contactEffect?.setScale(zoom);
           } else ITHeroTrioAttacks.clear(entry.sprite);
         }
-        if (this.controls.bodies.checked) {
+        if (this.controls.bodies.checked && entry.body) {
           const body = entry.body;
           this.bodyGraphics.strokeRect(entry.sprite.x + (body.x - entry.frameWidth / 2) * zoom,
-            this.baseline + (body.y - entry.frameHeight) * zoom, body.width * zoom, body.height * zoom);
+            entry.baseline + (body.y - entry.frameHeight) * zoom, body.width * zoom, body.height * zoom);
         }
       }
     }
@@ -82,7 +101,7 @@
     }
   }
   new Phaser.Game({
-    type: Phaser.AUTO, parent: 'game', width: 960, height: 540,
+    type: Phaser.AUTO, parent: 'game', width: 960, height: 1260,
     pixelArt: true, roundPixels: true, antialias: false,
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [CharacterPreview]

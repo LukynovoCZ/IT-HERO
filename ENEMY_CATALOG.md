@@ -119,3 +119,11 @@ Skóre, zdraví a poškození se nemění. Porovnávací scéna ukazuje oba pře
 každou postavou a kontaktní efekty přes volbu „Zastavení hráče“.
 
 Ověření: `node tests/trio-weapons.cjs`, `node tests/trio-collisions.cjs`.
+
+## Kompletní porovnání (0.7.2)
+
+`character-preview.html` zobrazuje všech devět herních postav ve třech řadách
+po třech. Každá řada má společnou základnu, zoom je pro všechny stejný. Starší
+postavy používají stejné ořezy, výšky a kotvy jako `makeTextures()` v `game.js`.
+U chybějících póz se zachová klidová póza. Starý ajťák je pomocník bez zásahového
+těla, proto se u něj nezobrazuje hitbox. Původní rozměry ve hře se nemění.
