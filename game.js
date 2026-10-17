@@ -59,6 +59,7 @@
     constructor() { super('ITGame'); }
 
     preload() {
+      window.ITHeroEnemyCatalog.preload(this);
       this.load.image('support-art', 'assets/support.png');
       this.load.image('character-art', 'assets/characters.png');
       this.load.image('floor-art', 'assets/floors.png');
@@ -420,6 +421,7 @@
         e.lastStomp = -1000;
         e.attackDelay = spec.delay;
       });
+      this.enemyTrio = window.ITHeroEnemyCatalog.create(this, FLOORS);
       FLOORS.flatMap((_, floor) => [[floor, 192], [floor, 790]]).forEach(([floor, x]) => {
         const coffee = this.coffees.create(x, FLOORS[floor] - 17, 'coffee');
         coffee.setScale(1.2).setDepth(19).refreshBody();
@@ -512,8 +514,9 @@
       this.physics.add.overlap(this.player, this.enemyShots, (_, shot) => {
         if (!shot.active) return;
         const sourceX = shot.x;
+        const damage = shot.getData('damage') || 1;
         shot.destroy();
-        this.takeDamage(sourceX);
+        this.takeDamage(sourceX, damage);
       });
       this.physics.add.overlap(this.player, this.enemies, (_, enemy) => this.enemyContact(enemy));
     }
@@ -779,6 +782,7 @@
     }
 
     enemyContact(enemy) {
+      if (enemy.profile) { this.enemyTrio.contact(enemy); return; }
       if (this.gameState !== 'playing' || !enemy.active || enemy.floorIndex !== this.floor) return;
       this.takeDamage(enemy.x);
       if (this.time.now < enemy.contactUntil) return;
@@ -803,6 +807,7 @@
     }
 
     enemyAttack(enemy) {
+      if (enemy.profile) { this.enemyTrio.attack(enemy); return; }
       if (enemy.kind === 'specialist') {
         this.specialistAttack(enemy, Math.abs(this.player.x-enemy.x)<135 ? 'rainbow-spray' : 'unicorn');
         return;
@@ -840,17 +845,19 @@
     }
 
     hitEnemy(shot, enemy) {
-      if (this.gameState !== 'playing' || !shot.active || !enemy.active) return;
+      if (this.gameState !== 'playing' || !shot.active || !enemy.active || enemy.defeated) return;
       const damage = shot.getData('damage') || 1;
       shot.destroy();
       enemy.hp -= damage;
+      if (enemy.profile) this.enemyTrio.hit(enemy);
       enemy.setTintFill(0xffffff);
       this.time.delayedCall(90, () => { if (enemy.active) enemy.clearTint(); });
       this.tone(245, 0.045);
       if (enemy.hp <= 0) {
-        this.score += enemy.kind === 'manager' ? 250 : 100;
+        this.score += enemy.profile ? enemy.profile.score : enemy.kind === 'manager' ? 250 : 100;
         this.popText(enemy.x, enemy.y - 27, enemy.kind === 'manager' ? '+250 ŠÉF' : '+100', '#91ffe0');
-        enemy.destroy();
+        if (enemy.profile) this.enemyTrio.defeat(enemy);
+        else enemy.destroy();
         this.updateHUD();
       }
     }
@@ -867,15 +874,15 @@
       return line;
     }
 
-    takeDamage(sourceX) {
+    takeDamage(sourceX, damage = 1) {
       if (this.gameState !== 'playing' || this.time.now - this.lastHit < 1250) return;
       this.lastHit = this.time.now;
-      this.energy = Math.max(0, this.energy - 1);
+      this.energy = Math.max(0, this.energy - damage);
       this.player.setVelocityX(this.player.x < sourceX ? -280 : 280);
       this.player.setVelocityY(-185);
       this.cameras.main.shake(100, 0.0038);
       this.tone(135, 0.20, 'sawtooth');
-      this.popText(this.player.x, this.player.y - 42, '-1 ENERGIE', '#ff8ca6');
+      this.popText(this.player.x, this.player.y - 42, `-${damage} ENERGIE`, '#ff8ca6');
       this.updateHUD();
       if (this.energy === 0) {
         this.gameState = 'lose';
@@ -1005,6 +1012,7 @@
 
       this.enemies.getChildren().forEach(e => {
         if (!e.active) return;
+        if (e.profile) { this.enemyTrio.update(e, time); return; }
         const sameFloor = e.floorIndex === this.floor;
         if (!sameFloor) { e.setVelocityX(0); return; }
         if (time < e.contactUntil) {
