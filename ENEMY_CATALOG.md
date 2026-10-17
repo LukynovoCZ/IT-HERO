@@ -2,7 +2,7 @@
 
 Větev: `feature/office-enemy-trio`. Veřejný `main` zůstává beze změny.
 
-**Grafické podklady zatím nebyly dodané. Všechny tři profily mají `enabled: false` a `art: null`. Nemají produkční náhradní obrázky. Nelze zatím ověřit jejich skutečný vzhled, proporce ani animace.**
+**Bezpečák je zapnutý a používá dodaný návrh zpracovaný do transparentního atlasu. HR manažerka a designér zůstávají vypnutí (`enabled: false`, `art: null`), dokud nepřijdou jejich obrázky.**
 
 ## Jedno konfigurační místo
 
@@ -12,7 +12,7 @@ Větev: `feature/office-enemy-trio`. Veřejný `main` zůstává beze změny.
 - `placements`: ID profilu, patro **1–9**, souřadnice X. Dosavadní nepřátelé se nemění.
 - `registerAttack(type, handler)`: budoucí specializované útoky. Obsluha dostane `(scene, enemy)`.
 
-Připravené výskyty (zatím neaktivní):
+Výskyty (bezpečák aktivní, zbylé dva profily čekají na obrázky):
 
 | Profil | Patra |
 |---|---|
@@ -57,4 +57,12 @@ Modul se načítá před `game.js`. Přidává instance do stávající fyzikál
 
 Spusť lokální server na portu 8000 a `node tests/enemy-catalog.cjs`. Test používá **dosavadní grafiku jako výslovnou testovací náhradu pouze v paměti prohlížeče**; ověřuje konfiguraci, útoky v rámci patra, zásahy CD/disketami, jednorázové skóre a odstranění. Neověřuje skutečný vzhled nových postav ani konečné animační snímky.
 
-Po obdržení obrázků zbývá vyčistit pozadí, vyříznout a ukotvit pózy, doladit hitboxy a otestovat skutečné zobrazení, chůzi, gesta, zásah a poražení všech tří postav včetně průchodu budovou.
+Pro HR a designéra zbývá dodat a zpracovat obrázky, doladit hitboxy a ověřit skutečné pózy. Bezpečák používá pózy idle, STOP a chůzi s vysílačkou; chůze střídá existující pózy. Zásah využívá krátké zábleskové zvýraznění a poražení fade-out. Samostatné kreslené snímky zásahu a poražení v dodaném podkladu nejsou.
+
+## Ověřený bezpečák
+
+Transparentní atlas je `assets/characters/security_guard.png` (2033 × 774). Profil má snímek 80 × 96, vykreslenou výšku 92 pixelů a pevný hitbox 32 × 88. Obdélníky póz jsou v `profiles.security_guard.art.poses`; všechny se přepočítávají stejným měřítkem a ukotvují chodidly. `art.facing` zachovává správný směr původních póz při obracení postavy.
+
+Výskyt: 1. patro X=420, 2. patro X=420, 3. patro X=450. Pozice jsou mimo vstupní bod hráče a herní stoly. `idleDuration` a `movementCycle` střídají stání/hlídání s chůzí. Zdraví a útok zůstávají výchozí.
+
+`node tests/security-guard.cjs` používá skutečnou grafiku: kontroluje průhledné okraje, modré boty, zarovnání chodidel, pohyb, STOP při skutečném kontaktu, vysílačku při útoku, zásah hráče a zákaz útoku na jiné patro. `tests/enemy-catalog.cjs` nadále používá testovací náhrady pro zbývající profily a ověřuje jejich budoucí mechaniky.

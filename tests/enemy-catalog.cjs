@@ -7,7 +7,8 @@ const assert=require('node:assert/strict');
   const p=await b.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));
   await p.route('**/game.js*',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame = new Phaser.Game({')});});
   await p.goto('http://127.0.0.1:8000');await p.locator('#game-action').waitFor({state:'visible'});
-  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemyTrio.enemies.length),0);
+  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemyTrio.enemies.length),3);
+  assert.ok(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemyTrio.enemies.every(e=>e.kind==='security_guard')));
   await p.keyboard.press('Enter');
   await p.evaluate(()=>{
    const s=window.__testGame.scene.getScene('ITGame');s.enemies.clear(true,true);
@@ -38,6 +39,6 @@ const assert=require('node:assert/strict');
    assert.equal(await p.evaluate(i=>window.__testGame.scene.getScene('ITGame').enemyTrio.enemies[i].active,i),false);
   }
   assert.deepEqual(errors,[]);
-  console.log('PASS disabled pending artwork; all three test profiles use existing projectiles, block cross-floor attacks, take CD/floppy damage, award score once and disappear after defeat');
+  console.log('PASS only security enabled; all three mechanics test profiles use existing projectiles, block cross-floor attacks, take CD/floppy damage, award score once and disappear after defeat');
  }finally{await b.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

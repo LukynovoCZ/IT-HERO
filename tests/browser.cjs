@@ -24,19 +24,32 @@ const assert=require('node:assert/strict');
    if(method==='canvas')await page.locator('canvas').click({position:{x:100,y:100}});
    await page.waitForTimeout(300);
    assert.equal(await state(),'playing');
+   // Isolate input assertions from timed enemy knockback. Combat is verified below
+   // and in security-guard.cjs with actual attacks enabled.
+   await page.evaluate(()=>{
+     const s=window.__testGame.scene.getScene('ITGame');
+     s.enemyShots.clear(true,true);
+     s.enemies.getChildren().forEach(e=>{e.lastAttack=Infinity;});
+   });
    assert.equal(await page.locator('#game-action').isVisible(),false);
    const x=await page.evaluate(()=>window.__testGame.scene.getScene('ITGame').player.x);
-   await page.keyboard.down('d');await page.waitForTimeout(300);await page.keyboard.up('d');
+   await page.keyboard.down('d');
+   await page.waitForFunction(x=>window.__testGame.scene.getScene('ITGame').player.x>x+20,x);
+   await page.keyboard.up('d');
    assert.ok(await page.evaluate(()=>window.__testGame.scene.getScene('ITGame').player.x)>x+20,'Player must move after start');
-   await page.waitForTimeout(200);
+   await page.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').player.body.blocked.down);
    const groundY=await page.evaluate(()=>window.__testGame.scene.getScene('ITGame').player.y);
    await page.keyboard.down('s');await page.waitForTimeout(80);
    assert.equal(await page.evaluate(()=>window.__testGame.scene.getScene('ITGame').player.body.height),36);
    await page.keyboard.up('s');await page.waitForTimeout(80);
    assert.equal(await page.evaluate(()=>window.__testGame.scene.getScene('ITGame').player.body.height),72);
-   await page.keyboard.down('Space');await page.waitForTimeout(150);await page.keyboard.up('Space');
+   await page.keyboard.down('Space');
+   await page.waitForFunction(y=>window.__testGame.scene.getScene('ITGame').player.y<y-20,groundY);
+   await page.keyboard.up('Space');
    assert.ok(await page.evaluate(()=>window.__testGame.scene.getScene('ITGame').player.y)<groundY-20,'New hero sprite must jump');
-   await page.keyboard.down('j');await page.waitForTimeout(150);await page.keyboard.up('j');
+   await page.keyboard.down('j');
+   await page.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').lastShot>=0);
+   await page.keyboard.up('j');
    assert.ok(await page.evaluate(()=>window.__testGame.scene.getScene('ITGame').lastShot)>=0,'Player must fire');
    await page.keyboard.press('Escape');assert.equal(await state(),'paused');
    await page.locator('#game-action').click();assert.equal(await state(),'playing');

@@ -1,16 +1,22 @@
-/* New office enemies. Kept disabled until the user's reference artwork arrives.
+/* Office enemy catalogue. Enable profiles as their reference artwork arrives.
  * Floor numbers in placements are 1–9. Existing enemies are not configured here.
  */
 (() => {
   'use strict';
   const profiles = {
     security_guard: {
-      id:'security_guard',name:'BEZPEČÁK',enabled:false,
+      id:'security_guard',name:'BEZPEČÁK',enabled:true,idleDuration:650,movementCycle:3400,
       health:4,speed:45,patrol:24,attackInterval:1900,attackRange:380,
       attackType:'default',projectile:'default',damage:1,score:100,
       contactPose:'stop',attackPose:'radio',
-      frameWidth:80,frameHeight:80,renderHeight:76,
-      body:{width:36,height:72,x:22,y:8},art:null
+      frameWidth:80,frameHeight:96,renderHeight:92,
+      body:{width:32,height:88,x:24,y:8},
+      art:{
+        path:'assets/characters/security_guard.png',
+        poses:{idle:[239,35,355,729],stop:[841,33,385,726],radio:[1411,48,368,716],walk:[1411,48,368,716]},
+        facing:{idle:'left',stop:'front',radio:'right',walk:'right'},
+        anchors:{idle:{x:160,y:729},stop:{x:192,y:726},radio:{x:210,y:716},walk:{x:210,y:716}}
+      }
     },
     hr_manager: {
       id:'hr_manager',name:'HR MANAŽERKA',enabled:false,
@@ -30,9 +36,9 @@
     }
   };
   const placements = [
-    {id:'security_guard',floor:1,x:150},
-    {id:'security_guard',floor:2,x:150},
-    {id:'security_guard',floor:3,x:160},
+    {id:'security_guard',floor:1,x:420},
+    {id:'security_guard',floor:2,x:420},
+    {id:'security_guard',floor:3,x:450},
     {id:'hr_manager',floor:6,x:420},
     {id:'hr_manager',floor:8,x:180},
     {id:'design_manager',floor:4,x:205},
@@ -86,7 +92,13 @@
         lastAttack:scene.time.now,contactUntil:0,poseUntil:0,hitUntil:0,defeated:false});
       return e;
     });
-    const pose=(e,name)=>e.setTexture(e.poses[name]||e.poses.idle);
+    const pose=(e,name)=>{
+      const actual=e.poses[name]?name:'idle';
+      e.setTexture(e.poses[actual]);
+      const facing=e.profile.art.facing?.[actual]||'right';
+      const direction=e.facingDirection||e.direction;
+      e.setFlipX(facing==='front'?false:facing==='left'?direction>0:direction<0);
+    };
     const manager={enemies,
       update(e,time){
         if(e.defeated)return;
@@ -95,8 +107,10 @@
         if(time<e.contactUntil||time<e.poseUntil){e.setVelocityX(0);return;}
         if(e.x<e.baseX-e.patrol)e.direction=1;
         if(e.x>e.baseX+e.patrol)e.direction=-1;
-        e.setVelocityX(e.direction*e.profile.speed).setFlipX(e.direction<0);
-        pose(e,Math.floor(time/180)%2?'walk':'idle');
+        const resting=time%(e.profile.movementCycle||3400)<(e.profile.idleDuration||0);
+        e.facingDirection=e.direction;
+        e.setVelocityX(resting?0:e.direction*e.profile.speed);
+        pose(e,resting?'idle':Math.floor(time/180)%2?'walk':'idle');
         if(Math.abs(e.x-scene.player.x)<e.profile.attackRange&&Math.abs(e.y-scene.player.y)<100&&time-e.lastAttack>e.profile.attackInterval){
           e.lastAttack=time;manager.attack(e);
         }
@@ -105,6 +119,7 @@
         if(scene.gameState!=='playing'||e.defeated||e.floorIndex!==scene.floor||Math.abs(e.y-scene.player.y)>=100)return;
         const attack=attacks.get(e.profile.attackType);
         if(!attack)throw new Error(`Unknown attack: ${e.profile.attackType}`);
+        e.facingDirection=scene.player.x>=e.x?1:-1;
         pose(e,e.profile.attackPose);e.poseUntil=scene.time.now+350;e.setVelocityX(0);
         attack(scene,e);
       },
@@ -112,6 +127,7 @@
         if(scene.gameState!=='playing'||e.defeated||e.floorIndex!==scene.floor)return;
         scene.takeDamage(e.x,e.profile.damage);
         if(scene.time.now<e.contactUntil)return;
+        e.facingDirection=scene.player.x>=e.x?1:-1;
         e.contactUntil=scene.time.now+650;e.setVelocityX(0);pose(e,e.profile.contactPose);
       },
       hit(e){e.hitUntil=scene.time.now+160;pose(e,'hit');},
@@ -129,7 +145,7 @@
     shot.body.setAllowGravity(false);
     shot.setVelocity(direction*245,-45).setAngularVelocity(direction*360);
     shot.setData('expires',scene.time.now+1900).setData('damage',e.profile.damage);
-    e.setFlipX(direction<0);scene.tone(170,0.06,'triangle');
+    scene.tone(170,0.06,'triangle');
   });
   window.ITHeroEnemyCatalog={profiles,placements,preload,create,
     registerAttack(type,handler){attacks.set(type,handler);}
