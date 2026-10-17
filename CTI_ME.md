@@ -126,3 +126,10 @@ Herní stoly mají šedé podstavce a krémově bílé desky. Modul `posters.js`
 ## Noví nepřátelé verze 0.7.0
 
 Konfigurace v `enemy-catalog.js`: bezpečák v 1.–3. patře, HR manažerka v 6. a 8., manažer designu ve 4., 8. a 9. Nové transparentní atlasy jsou v `assets/characters/`. Od verze 0.7.1 mají vlastní střely a kontaktní efekty v `trio-attacks.js`, se zachováním původní fyziky zásahů; původní nepřátelé se zachovávají. Vzhled designéra má přísnější výraz podle zadání. Podrobný popis parametrů a testů je v `ENEMY_CATALOG.md`. Porovnání postav otevřete odkazem pod hrou nebo přes `character-preview.html`.
+
+## Hlášky starého ajťáka (0.9.1)
+
+Texty jsou v `game.js` v tabulce `OLD_HELPER_LINES`: `beer` pro nabídku piva,
+`hotdog` pro párek a `peek` při vykouknutí. Výběr je náhodný. Hláška se při
+nabídce vymění, dlouhé texty se zalamují a při odchodu postavy zmizí.
+Léčení, předměty i časování návštěv zůstávají stejné.

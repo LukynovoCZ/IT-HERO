@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.9.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.9.1 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -41,6 +41,12 @@
     {name:'MANAGEMENT • KANCELÁŘE',type:'office',desks:[305,720]},
     {name:'VEDENÍ • POSLEDNÍ ZÁLOHA',type:'executive',desks:[340,690]}
   ];
+
+  const OLD_HELPER_LINES = {
+    beer: ['Ááá, plznička ', 'Chcaní bez prdu, to je jak láska bez mrd.. polibku teda…', 'Neviděli jste tu Laca?'],
+    hotdog: ['Srát na tousty, dej si párek!', 'Teplej páreka a studená němka. nebo tak nějak to bylo.'],
+    peek: ['Hele…ryba', 'a ten stál a čuměl.']
+  };
 
   const DEATH_LINES = [
     'Jdeš na povinné školení řízení vysokozdvižných vozíků v serverovnách s vodním chlazením. Plavky s sebou.',
@@ -445,7 +451,16 @@
       const sprite = this.add.sprite(x, FLOORS[floor], source === 'desk' ? 'old-it-crouch' : 'old-it').setOrigin(0.5,1).setDepth(source === 'desk' ? 9 : 20);
       const doorway = source === 'lift' ? this.add.rectangle(x,FLOORS[floor]-73,82,146,0x152a25).setDepth(7) : null;
       this.helperVisit = {floor,source,kind,x,dropX,sprite,doorway,started:this.playTime,dropped:false};
+      this.sayOldHelper(this.helperVisit, 'peek');
       this.nextHelperAt = this.playTime + Phaser.Math.Between(24000,32000);
+    }
+
+    sayOldHelper(visit, category) {
+      visit.speech?.destroy();
+      const line = Phaser.Utils.Array.GetRandom(OLD_HELPER_LINES[category]);
+      visit.speech = this.add.text(Phaser.Math.Clamp(visit.dropX,150,810),FLOORS[visit.floor]-150,line,
+        {font:'bold 12px monospace',color:'#e9f6cd',backgroundColor:'#173c2e',
+          wordWrap:{width:260},align:'center',padding:{x:8,y:6}}).setOrigin(0.5,1).setDepth(106);
     }
 
     updateHelper(delta) {
@@ -455,6 +470,7 @@
         const age = this.playTime - visit.started;
         visit.sprite.setAlpha(Math.min(1,age/300,Math.max(0,(3500-age)/500)));
         if (visit.floor !== this.floor || age > 3500) {
+          visit.speech?.destroy();
           visit.sprite.destroy();
           if (visit.doorway) visit.doorway.destroy();
           this.helperVisit = null;
@@ -465,7 +481,7 @@
           item.setData('expires',this.playTime + 11000);
           const label = this.add.text(visit.dropX,FLOORS[this.floor]-98,visit.kind === 'beer' ? 'PLZEŇ • PLNÉ ZDRAVÍ' : 'PÁREK • PLNÉ ZDRAVÍ', {font:'bold 10px monospace',color:'#f4e3a2',backgroundColor:'#173c2e',padding:{x:4,y:3}}).setOrigin(0.5).setDepth(105);
           item.setData('label',label);
-          this.popText(visit.dropX,FLOORS[this.floor]-150,'STARÝ AJŤÁK: NA ZDRAVÍ!', '#a9ed63');
+          this.sayOldHelper(visit, visit.kind);
           this.tone(680,0.12,'triangle');
         }
       } else if (this.playTime >= this.nextHelperAt) this.spawnHelper();
