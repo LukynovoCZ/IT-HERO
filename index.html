@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#111a2a">
   <title>IT HERO 0.1.1 | Výstup do vedení</title>
   <link rel="stylesheet" href="style.css">
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.90.0/phaser.min.js"></script>
+  <script defer src="vendor/phaser.min.js"></script>
   <script defer src="game.js"></script>
 </head>
 <body>
@@ -22,7 +22,7 @@
       <div id="game" role="application" aria-label="Hra IT HERO"></div>
       <button type="button" id="game-action" class="game-action" hidden>ENTER nebo kliknutí = HRÁT</button>
       <div class="offline-message" id="offline-message" hidden>
-        Phaser se nepodařilo načíst. Zkontroluj internetové připojení nebo spusť hru po připojení k internetu.
+        Phaser se nepodařilo načíst. Zkontroluj, že složka vendor obsahuje soubor phaser.min.js, a obnov stránku.
       </div>
     </div>
     <div class="controls">

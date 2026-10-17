@@ -18,7 +18,7 @@ První hratelný prototyp kancelářské 2D pixelové plošinovky v JavaScriptu 
 
 1. Rozbal soubor `IT_HERO_0.1.zip` do vlastní složky.
 2. Otevři `index.html` dvojklikem v Chrome, Edge nebo Firefoxu. Na Windows můžeš použít také `SPUSTIT_HRU.bat`.
-3. **Je potřeba připojení k internetu**, protože projekt načítá samotný engine Phaser z CDN Cloudflare. Herní kód a grafika jsou lokální.
+3. **Připojení k internetu není potřeba.** Phaser 3.90.0 je přiložený ve složce `vendor`, společně s MIT licencí. Při kopírování hry zachovej i tuto složku.
 4. Na úvodní obrazovce stiskni **ENTER** nebo klikni do hry.
 
 Jako alternativu lze použít jediný soubor `IT_HERO_0.1_JEDEN_SOUBOR.html` — rozbalování není nutné, ale také vyžaduje internet kvůli Phaseru.
@@ -71,11 +71,11 @@ Otevři složku ve Visual Studio Code. K úpravám postačí textový editor:
 
 Lokální vývojový server není pro tuto konkrétní verzi nutný, ale pokud máš Python, můžeš ve složce spustit `python -m http.server 8000` a navštívit `http://localhost:8000`.
 
-## Volitelné hraní bez internetu
+## Lokální engine a oprava spuštění
 
-Jednorázově si stáhni soubor Phaser 3.90.0 z
-`https://cdnjs.cloudflare.com/ajax/libs/phaser/3.90.0/phaser.min.js`,
-umísti ho jako `vendor/phaser.min.js` a v `index.html` změň adresu `<script src=...>` z CDN na `vendor/phaser.min.js`. Potom bude možné hru otevírat offline. Phaser 3 je open source pod MIT licencí.
+Phaser 3.90.0 je přiložen jako `vendor/phaser.min.js` z oficiálního npm balíčku `phaser@3.90.0`. Licence je v `vendor/PHASER-LICENSE.txt`. Hra tak nevyžaduje přístup k CDN.
+
+Oprava také používá `body.setAllowGravity(false)` pro střely hráče a nepřátel: původní volání na sprite způsobovalo po startu výjimku a zastavilo herní smyčku. Pokud engine chybí, zobrazí se chybová zpráva ještě před deklarací herní scény.
 
 ## Omezení první verze
 

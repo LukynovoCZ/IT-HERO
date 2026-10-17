@@ -6,6 +6,13 @@
 (() => {
   'use strict';
 
+  // Ověř engine ještě před deklarací třídy, která dědí z Phaser.Scene.
+  if (typeof Phaser === 'undefined') {
+    const msg = document.getElementById('offline-message');
+    if (msg) msg.hidden = false;
+    return;
+  }
+
   const WIDTH = 960;
   const HEIGHT = 540;
   const WORLD_HEIGHT = 1530;
@@ -527,7 +534,8 @@
       const x = this.player.x + this.facing * 22;
       const y = this.player.y - 5;
       const bullet = this.playerShots.create(x, y, 'packet');
-      bullet.setDepth(26).setScale(1.6).setAllowGravity(false).setVelocityX(this.facing * 560);
+      bullet.setDepth(26).setScale(1.6).setVelocityX(this.facing * 560);
+      bullet.body.setAllowGravity(false);
       bullet.setData('expires', this.time.now + 1250);
       if (this.facing < 0) bullet.setFlipX(true);
       this.tone(510, 0.045);
@@ -536,7 +544,8 @@
     enemyAttack(enemy) {
       const direction = this.player.x >= enemy.x ? 1 : -1;
       const item = this.enemyShots.create(enemy.x + 19 * direction, enemy.y - 5, 'folder');
-      item.setScale(1.5).setDepth(25).setAllowGravity(false);
+      item.setScale(1.5).setDepth(25);
+      item.body.setAllowGravity(false);
       item.setVelocity(direction * (enemy.kind === 'manager' ? 315 : 245), enemy.kind === 'manager' ? 0 : -45);
       item.setAngularVelocity(direction * 360);
       item.setData('expires', this.time.now + 1900);
@@ -692,12 +701,7 @@
     }
   }
 
-  // Použitý engine: Phaser 3.90.0, načtený v index.html.
-  if (typeof Phaser === 'undefined') {
-    const msg = document.getElementById('offline-message');
-    if (msg) msg.hidden = false;
-    return;
-  }
+  // Použitý engine: Phaser 3.90.0, načtený lokálně v index.html.
   new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',
