@@ -43,9 +43,11 @@
     "groups": [
       {
         "id": "contact",
-        "label": "Zvuk při kontaktu",
+        "label": "Hlášky při kontaktu",
         "lines": [
-          "PÍÍÍÍ!"
+          "PÍÍÍÍ!",
+          "Ne, když hlídám já!",
+          "Ukaž mi kartičku."
         ]
       }
     ]
@@ -97,7 +99,17 @@
   {
     "id": "specialist",
     "name": "SPECIALISTKA",
-    "groups": []
+    "groups": [
+      {
+        "id": "combat",
+        "label": "Během souboje a při kontaktu",
+        "lines": [
+          "Byl si na prajtu?",
+          "Tohle není fér!",
+          "Kňůůůů"
+        ]
+      }
+    ]
   },
   {
     "id": "security_guard",

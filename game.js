@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.11.1 – mini plošinovka v Phaser 3.
+ * IT HERO 0.11.2 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -771,11 +771,11 @@
       this.updateHUD();
     }
 
-    popText(x, y, str, color = '#eaf4ff') {
+    popText(x, y, str, color = '#eaf4ff', visibleDuration = 820) {
       const text = this.add.text(x, y, str, {
         font: 'bold 15px monospace', color, stroke: '#111c2a', strokeThickness: 3
       }).setOrigin(0.5).setDepth(100);
-      this.tweens.add({ targets: text, y: y - 45, alpha: 0, duration: 820,
+      this.tweens.add({ targets: text, y: y - 45, alpha: 0, duration: 820, delay: Math.max(0, visibleDuration - 820),
         onComplete: () => text.destroy() });
     }
 
@@ -792,6 +792,18 @@
       this.tone(510, 0.045);
     }
 
+    enemyDialogue(enemy, group) {
+      if (this.gameState !== 'playing' || !enemy.active || enemy.floorIndex !== this.floor) return;
+      if (this.playTime < (enemy.nextDialogueAt || 0)) return;
+      const lines = window.ITHeroDialogue.lines(enemy.kind, group);
+      if (!lines.length) return;
+      const line = Phaser.Utils.Array.GetRandom(lines);
+      enemy.nextDialogueAt = this.playTime + 7000;
+      this.popText(Phaser.Math.Clamp(enemy.x, 160, 800), enemy.y - 65, line, '#eaf4ff', 3500);
+      const name = window.ITHeroDialogue.characters.find(c => c.id === enemy.kind).name;
+      this.posters.showMessage(`${name}\n${line}`, 7000);
+    }
+
     enemyContact(enemy) {
       if (enemy.profile) { this.enemyTrio.contact(enemy); return; }
       if (this.gameState !== 'playing' || !enemy.active || enemy.floorIndex !== this.floor) return;
@@ -805,10 +817,11 @@
         this.tone(1250, 0.35, 'sawtooth');
       } else if (enemy.kind === 'union') {
         enemy.setTexture('union-whistle');
-        this.popText(enemy.x, enemy.y - 55, window.ITHeroDialogue.lines('union','contact')[0], '#79caff');
+        this.enemyDialogue(enemy, 'contact');
         this.tone(2300, 0.4, 'sine');
       } else if (enemy.kind === 'specialist') {
         enemy.setTexture('specialist-flag');
+        this.enemyDialogue(enemy, 'combat');
         this.specialistAttack(enemy, 'rainbow-flag');
         this.tone(320,0.12,'triangle');
       } else {
@@ -820,6 +833,7 @@
     enemyAttack(enemy) {
       if (enemy.profile) { this.enemyTrio.attack(enemy); return; }
       if (enemy.kind === 'specialist') {
+        this.enemyDialogue(enemy, 'combat');
         this.specialistAttack(enemy, Math.abs(this.player.x-enemy.x)<135 ? 'rainbow-spray' : 'unicorn');
         return;
       }
