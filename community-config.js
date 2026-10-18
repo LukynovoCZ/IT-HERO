@@ -1,2 +1,2 @@
-/* Public Worker URL only. Leave empty until Cloudflare is deployed. Never add admin keys. */
-window.ITHeroCommunityConfig=window.ITHeroCommunityConfig||{apiBaseUrl:''};
+/* Public API URL. Private keys belong only to repository/Worker secrets. */
+window.ITHeroCommunityConfig=window.ITHeroCommunityConfig||{"apiBaseUrl":"https://it-hero-community.l-baborak.workers.dev"};
