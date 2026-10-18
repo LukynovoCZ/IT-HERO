@@ -2,9 +2,9 @@
 
 ![Šest záběrů závěru](rooftop-escape.png)
 
-**Stav:** vizuální a režijní návrh ke schválení. Animace zatím není součástí hry.
-Po současném vítězství se otevírá funkční tabulka HIGH SCORES se zadáním jména.
-Později bude mezi odpojení HDD a tabulku vložena tato sekvence.
+**Stav 0.18.0:** animace je implementovaná mezi odpojením HDD a tabulkou HIGH SCORES.
+[Samostatný náhled](../../ending-preview.html), [realizace a testy](../ENDING.md).
+Následující záběry zůstávají storyboardem, ze kterého implementace vychází.
 
 ## Podoba vozu
 
@@ -30,7 +30,7 @@ Pro finální sprite porovnat s konkrétní aktuální fotografickou referencí 
 Obrázek zachycuje kompozici, nikoli přesné titulky nebo definitivní sprity.
 Hlášky a časování výše jsou zdrojem pro následnou implementaci.
 
-## Realizace v další verzi
+## Požadavky realizované ve verzi 0.18.0
 
 - Samostatná Phaser scéna; bez nového fyzikálního souboje a bez možnosti ztratit život.
 - Vítězství a finální skóre se potvrdí již při odpojení HDD. Sekvence nesmí

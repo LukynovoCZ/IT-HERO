@@ -10,7 +10,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:1,x:r.x+r.width/2,y:r.y+r.height/2}]});
  await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').pacing.state.disconnect>200);
  await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').gameState==='win');await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
- assert(await p.locator('#game-action').isVisible());assert.deepEqual(errors,[]);await p.screenshot({path:'/tmp/it-hero-tests/gameplay-mobile-victory.png'});
+ await p.locator('#ending-skip').tap();await p.locator('dialog[open]').waitFor();assert(await p.locator('#game-action').isVisible());assert.deepEqual(errors,[]);await p.screenshot({path:'/tmp/it-hero-tests/gameplay-mobile-victory.png'});
  await p.locator('.score-again').tap();await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').gameState==='menu');
  console.log('PASS mobile gameplay: landscape layout, final salvo, real held crouch touch disconnects HDD, victory and touch restart.');
 }finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});

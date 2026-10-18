@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.17.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.18.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -55,6 +55,7 @@
       window.ITHeroColleague.preload(this);
       window.ITHeroOldBadger.preload(this);
       window.ITHeroGenZ.preload(this);
+      window.ITHeroEnding.preload(this);
       this.load.image('support-art', 'assets/support.png');
       this.load.image('character-art', 'assets/characters.png');
       this.load.image('floor-art', 'assets/floors.png');
@@ -641,7 +642,7 @@
     }
 
     handleStart() {
-      if (window.ITHeroScores?.isOpen()) return;
+      if (window.ITHeroScores?.isOpen() || window.ITHeroEnding?.isRunning()) return;
       if (this.gameState === 'menu') {
         this.gameState = 'playing';
         this.hideOverlay();
@@ -855,9 +856,7 @@
       this.updateHUD();
       this.tone(660, 0.20, 'sine');
       this.time.delayedCall(130, () => this.tone(990, 0.27, 'sine'));
-      this.showOverlay('HOTOVO!', 'HDD ODPOJEN • POJISTKA ZASTAVENA',
-        `Servery žijí. Fotomontáže zůstaly na disku.\nČas: ${elapsed} • Bonus za rychlost: +${timeBonus}\nEnergie: ${this.energy} / ${this.maxEnergy}\nKonečné skóre: ${this.score}`, 'ENTER / R / KLIK = ZNOVU');
-      window.ITHeroScores.open(this, {score:this.score, elapsed, bonus:timeBonus});
+      window.ITHeroEnding.play(this, {score:this.score, elapsed, bonus:timeBonus});
     }
 
     interact() {
@@ -1063,6 +1062,6 @@
       default: 'arcade',
       arcade: { gravity: { x: 0, y: 1200 }, debug: false }
     },
-    scene: [ITGame]
+    scene: [ITGame, window.ITHeroEnding.Scene]
   });
 })();
