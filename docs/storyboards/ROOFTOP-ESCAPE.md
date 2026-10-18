@@ -1,4 +1,4 @@
-# IT HERO – střešní únik: storyboard, návrh 01
+# IT HERO – střešní únik: storyboard, návrh 02
 
 ![Šest záběrů závěru](rooftop-escape.png)
 
@@ -24,7 +24,7 @@ Pro finální sprite porovnat s konkrétní aktuální fotografickou referencí 
 | 02 | 3–6 s | Na parkovacím místě DESIGN PROTOTYPE čeká sportovní PEAQ. Ajťák se zarazí; kamera ukáže velké křídlo a podezřelé kryty kol. | Ajťák: „Co to zas kluci z designu vyváděli?“ Krátká komická pauza. |
 | 03 | 6–9 s | U dveří vozu, potom detail kokpitu. Položí HDD na sedadlo spolujezdce, zapne pás. Na displeji svítí NEPOUŽÍVAT PŘED HOMOLOGACÍ a velké tlačítko LETOVÝ REŽIM. | Ajťák: „Hlavně ať to nechce aktualizaci.“ Cvaknutí pásu. |
 | 04 | 9–12 s | Boční celkový záběr. Stisk tlačítka. Auto se zvedne z podvozku, kola se pomalu otočí do horizontální polohy; objeví se modrozelený tah. | Palubní systém: „Schváleno vedením. Fyzikou zatím ne.“ Stoupající elektrický tón. |
-| 05 | 12–16 s | Vůz vzlétne ze střechy a obloukem odletí do města. Kamera odhalí celou administrativní budovu pod ním. Šála páry z klimatizace zůstane na střeše. | Ajťák: „Tak hlavně žádná porada za letu.“ Krátká vítězná chiptune fanfára. |
+| 05 | 12–16 s | Vůz vzlétne ze střechy a obloukem odletí do města. V dolní polovině je rozpoznatelný Laurin & Klement kampus v Mladé Boleslavi podle nové fotografie: nestejně vysoké propojené bloky, zaoblené rohy, bílé vodorovné pásy a tmavé průběžné prosklení. Šála páry z klimatizace zůstane na střeše. | Ajťák: „Tak hlavně žádná porada za letu.“ Krátká vítězná chiptune fanfára. |
 | 06 | 16–19 s | Silueta auta proletí za nápisem MISSION COMPLETE. Střih do arkádové tabulky, skóre se dopočítá a rozsvítí se pole pro jméno. | „HIGH SCORES“ / „TVOJE JMÉNO“. Dva arkádové tóny, bez automatického restartu. |
 
 Obrázek zachycuje kompozici, nikoli přesné titulky nebo definitivní sprity.
@@ -69,3 +69,20 @@ herních kláves, potvrzení Enterem, ochranu proti dvojímu zápisu, řazení a
 320×568. Jde o emulaci v prohlížeči; systémová klávesnice fyzického telefonu
 zde ověřená nebyla. Testy hry procházejí skutečné odpojení HDD a novou
 výsledkovou obrazovku před restartem.
+
+
+## Revize 02 – kampus a ukázková jména
+
+Pátý záběr nově používá architekturu Laurin & Klement kampusu z dodané fotografie;
+ostatní záběry a původní střešní budova zůstávají zachované. Šestý panel je
+ilustrační, přesné názvy soupeřů určuje hra v `score-table.js`, nikoli bitmapa.
+
+`demoNames` obsahuje všech 10 zadaných jmen v původním zápisu. `demoRows(score)`
+připraví přibližně 90 % až 22,5 % hráčova skóre, vždy méně než aktuální vítězný
+výsledek. V tabulce mají vlastní označenou sekci pod skutečnými rekordy. Tím
+zůstanou všechna jména viditelná i vedle skutečného top 10. Nezabírají místa ve
+skutečném pořadí a nikdy se nezapisují do localStorage ani budoucího serveru.
+Starší skutečně lepší výsledky se nesnižují.
+
+Návrh centrálního ukládání: [Cloudflare Worker + D1](../shared-scores/README.md).
+Zatím jde o připravený postup a schéma databáze; hra běží dál v lokálním režimu.

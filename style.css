@@ -163,3 +163,5 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
 .score-scroll{max-height:32dvh;overflow:auto}.score-panel table{width:100%;border-collapse:collapse;text-align:left}.score-panel caption{font-size:11px;text-align:left;color:#b4cbb8;padding-bottom:6px}
 .score-panel th{color:#f7ca70;background:#091f22;position:sticky;top:0}.score-panel td,.score-panel th{padding:6px;border-bottom:1px solid #315a4b}.score-panel td:last-child,.score-panel th:last-child{text-align:right}.score-panel td:nth-child(2){overflow-wrap:anywhere}.score-again{display:block;margin:14px auto 0}
 @media(max-height:540px) and (orientation:landscape){.score-panel{padding:10px 16px}.score-eyebrow{font-size:10px}.score-panel h2{font-size:24px;margin:0}.score-result{font-size:16px;margin:3px 0}.score-details{margin:3px 0}.score-status{margin:5px 0;min-height:16px}.score-form label{width:auto}.score-scroll{max-height:26dvh}.score-again{margin-top:8px}}
+
+.score-panel [data-demo-list] th{position:static;text-align:left;color:#a8bfac;font-size:10px;padding-top:14px;white-space:normal}.score-panel .score-demo{color:#8caa9d}
