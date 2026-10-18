@@ -265,6 +265,50 @@
         ]
       }
     ]
+  },
+  {
+    "id": "gen_z",
+    "name": "GEN Z – HOLKA A KLUČINA",
+    "groups": [
+      {
+        "id": "block",
+        "label": "Blokování cesty",
+        "lines": [
+          "Tak já snad uhýbat nebudu!",
+          "V klídku, jdu si jenom pro kafe.",
+          "Sorry, nemám sociální baterku.",
+          "Já jen scrolluju.",
+          "Jasný, úplně v pohodě."
+        ]
+      },
+      {
+        "id": "work",
+        "label": "Práce a generace",
+        "lines": [
+          "Už jsem v práci tři hodiny, tak snad už bych měl jít domů.",
+          "Pět dní home officeu v týdnu je snad samozřejmost.",
+          "A tobě je čtyřicet a ještě žiješ?",
+          "Jasný, mám depresi.",
+          "Teď už mi je tři… ne, šestnáct… kecám, dvacet dva.",
+          "Dneska už mám splněno. Byl jsem online."
+        ]
+      },
+      {
+        "id": "slang",
+        "label": "Slang / odchod",
+        "lines": [
+          "Six, seven!",
+          "To je trochu skibidi.",
+          "Tohle je lepší než real life.",
+          "No cap.",
+          "Lowkey to nedává smysl.",
+          "To je mega cringe.",
+          "Main character energy.",
+          "To je vibe.",
+          "Fr fr."
+        ]
+      }
+    ]
   }
 ];
  window.ITHeroDialogue={characters,lines(id,group){return characters.find(c=>c.id===id)?.groups.find(g=>g.id===group)?.lines || [];}};

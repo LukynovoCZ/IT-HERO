@@ -103,6 +103,7 @@
       this.createOverlay();
       this.posters = window.ITHeroPosters.mount(this, FLOORS);
       this.pacing = window.ITHeroGameplay.create(this, FLOORS, !!data.resumeCheckpoint);
+      this.genZ = window.ITHeroGenZ.create(this, FLOORS);
       const restored = this.pacing.restore();
 
       this.cameras.main.setBounds(0, 0, WIDTH, WORLD_HEIGHT);
@@ -907,6 +908,7 @@
       this.posters.update(this.player, this.floor, this.gameState === 'playing' && !this.transitioning, delta);
       this.pacing.tick(delta);
       this.dbpm.tick(delta);
+      this.genZ.update(delta);
       this.colleague.update(delta);
       this.oldBadger.update(delta);
       // START/PAUZA/RESTART mají přímou DOM obsluhu, nezávislou na Phaser input.

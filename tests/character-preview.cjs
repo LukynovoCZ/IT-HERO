@@ -10,12 +10,12 @@ const assert = require('node:assert/strict');
   await route.fulfill({ response, body: (await response.text()).replace('new Phaser.Game({', 'window.__preview = new Phaser.Game({') });
  });
  await page.goto('http://127.0.0.1:8000/character-preview.html');
- await page.waitForFunction(() => window.__preview?.scene.scenes[0]?.entries?.length === 13);
+ await page.waitForFunction(() => window.__preview?.scene.scenes[0]?.entries?.length === 15);
  const snapshot = () => page.evaluate(() => window.__preview.scene.scenes[0].entries.map(e => ({
   name: e.name, height: e.height, bottom: e.sprite.getBottomCenter().y, scale: e.sprite.scaleX, texture: e.sprite.texture.key
  })));
  let entries = await snapshot();
- assert.deepEqual(entries.map(e => e.height), [76, 76, 76, 76, 76, 76, 92, 92, 108, 68, 80, 76, 82]);
+ assert.deepEqual(entries.map(e => e.height), [76, 76, 76, 76, 76, 76, 92, 92, 108, 68, 80, 76, 82,76,76]);
  assert(entries.every(e => [260,660,1060,1460,1860].includes(e.bottom) && e.scale === 2));
  await page.selectOption('#pose', 'attack');
  await page.waitForTimeout(100);
@@ -45,5 +45,5 @@ const assert = require('node:assert/strict');
  assert(await page.locator('.version').isVisible(),'Catalogue build must stay visible on mobile');
  assert.deepEqual(errors, []);
  await browser.close();
- console.log('PASS: thirteen characters, shared row baselines, real sizes, attack poses, pause, zoom and hitboxes; no browser errors.');
+ console.log('PASS: fifteen characters, shared row baselines, real sizes, attack poses, pause, zoom and hitboxes; no browser errors.');
 })().catch(e => { console.error(e); process.exit(1); });

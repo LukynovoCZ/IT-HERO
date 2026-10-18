@@ -60,6 +60,8 @@
       this.entries.push({name:'IT KOLEGA',height:80,frames:ITHeroColleague.createTextures(this),frameWidth:96,frameHeight:88,body:null,attackPose:'offer_coffee',contactPose:'offer_candy',offerKeys:['colleague-coffee','colleague-candy']});
       this.entries.push({name:'SENIOR MASTER',itemKeys:['coffee','hotdog'],height:76,frames:ITHeroOldBadger.createTextures(this),frameWidth:80,frameHeight:80,body:{width:36,height:70,x:22,y:10},attackPose:'block',contactPose:'stomp'});
       this.entries.push(dbpmEntry);
+      const genZ=ITHeroGenZ.textures(this);
+      for(const variant of ITHeroGenZ.variants)this.entries.push({name:variant==='girl'?'GEN Z – HOLKA':'GEN Z – KLUČINA',height:76,frames:genZ[variant],frameWidth:64,frameHeight:80,body:{width:26,height:64,x:19,y:16},itemKeys:['gen-z-phone'],contactPose:'phone-scroll',attackPose:'shrug'});
       this.entries.forEach((entry, i) => {
         const x = 160 + (i % 3) * 320;
         entry.baseline = 260 + Math.floor(i / 3) * 400;
@@ -69,8 +71,8 @@
 
         }
         const keys=entry.itemKeys||entry.offerKeys||entry.projectiles?.map(w=>w.key)||[];
-        const labels={'gold-card':'Zlatá karta',floppy:'Disketa',cd:'CD',folder:'Šanon',mug:'Hrnek',hammer:'Kladivo',gear:'Kolečko',beer:'Pivo',hotdog:'Párek',coffee:'Káva',unicorn:'Jednorožec','rainbow-spray':'Sprej','rainbow-flag':'Vlajka','red-heel':'Střevíc','red-tennis-ball':'Tenisák','handcuffs':'Želízka',fireball:'Fireball','golf-club':'Golfová hůl',calculator:'Kalkulačka','colleague-coffee':'Káva','colleague-candy':'Sisinka','sap-helmet':'Helma','sap-pen':'Propiska','dbpm-laptop':'Notebook','dbpm-baguette':'Bageta'};
-        const role=entry.name==='SENIOR MASTER'?'JÍ A PIJE':entry.offerKeys||entry.name==='STARÝ AJŤÁK'?'NABÍZÍ':entry.name==='AJŤÁK'?'STŘELBA':'ÚTOKY';
+        const labels={'gold-card':'Zlatá karta',floppy:'Disketa',cd:'CD',folder:'Šanon',mug:'Hrnek',hammer:'Kladivo',gear:'Kolečko',beer:'Pivo',hotdog:'Párek',coffee:'Káva',unicorn:'Jednorožec','rainbow-spray':'Sprej','rainbow-flag':'Vlajka','red-heel':'Střevíc','red-tennis-ball':'Tenisák','handcuffs':'Želízka',fireball:'Fireball','golf-club':'Golfová hůl',calculator:'Kalkulačka','colleague-coffee':'Káva','colleague-candy':'Sisinka','sap-helmet':'Helma','sap-pen':'Propiska','dbpm-laptop':'Notebook','dbpm-baguette':'Bageta','gen-z-phone':'Mobil'};
+        const role=entry.name.startsWith('GEN Z')?'SCROLLUJE':entry.name==='SENIOR MASTER'?'JÍ A PIJE':entry.offerKeys||entry.name==='STARÝ AJŤÁK'?'NABÍZÍ':entry.name==='AJŤÁK'?'STŘELBA':'ÚTOKY';
         this.add.text(x,entry.baseline+96,role,{font:'9px monospace',color:'#dfd4a0'}).setOrigin(.5,1);
         entry.itemIcons=keys.map((key,index)=>{
           const ix=x+(index-(keys.length-1)/2)*74;
