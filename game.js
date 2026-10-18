@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.12.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.13.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -94,6 +94,7 @@
       this.makeTextures();
       this.buildOffice();
       this.createActors();
+      this.dbpm = window.ITHeroDBPM.create(this, FLOORS);
       this.configurePhysics();
       this.configureKeyboard();
       this.installReliableControls();
@@ -829,7 +830,7 @@
       enemy.setVelocityX(0);
       if (enemy.kind === 'secretary') {
         enemy.setTexture('secretary-scream');
-        this.popText(enemy.x, enemy.y - 55, window.ITHeroDialogue.lines('secretary','contact')[0], '#ffb4d3');
+        this.enemyDialogue(enemy, 'contact');
         this.tone(1250, 0.35, 'sawtooth');
       } else if (enemy.kind === 'union') {
         enemy.setTexture('union-whistle');
@@ -842,7 +843,7 @@
         this.tone(320,0.12,'triangle');
       } else {
         enemy.setTexture('manager-stomp-0');
-        this.popText(enemy.x, enemy.y - 55, window.ITHeroDialogue.lines('manager','contact')[0], '#ff9a85');
+        this.enemyDialogue(enemy, 'contact');
       }
     }
 
@@ -1001,6 +1002,7 @@
       }
       this.posters.update(this.player, this.floor, this.gameState === 'playing' && !this.transitioning, delta);
       this.pacing.tick(delta);
+      this.dbpm.tick(delta);
       this.colleague.update(delta);
       this.oldBadger.update(delta);
       // START/PAUZA/RESTART mají přímou DOM obsluhu, nezávislou na Phaser input.
