@@ -116,6 +116,7 @@
     };
     const manager={enemies,
       update(e,time){
+        if(e.profile.behavior==='dbpm'){scene.dbpm.update(e,pose);return;}
         if(e.profile.behavior==='sap'){window.ITHeroSAP.update(scene,e,time,pose);return;}
         window.ITHeroTrioAttacks.update(scene,e,time);
         if(e.defeated)return;
@@ -137,25 +138,30 @@
       },
       attack(e){
         if(scene.gameState!=='playing'||e.defeated||e.floorIndex!==scene.floor||Math.abs(e.y-scene.player.y)>=100)return;
+        if(e.profile.behavior==='dbpm'){scene.dbpm.attack(e,pose);return;}
         if(e.profile.behavior==='sap'){window.ITHeroSAP.attack(scene,e,pose);return;}
         const attack=attacks.get(e.profile.attackType);
         if(!attack)throw new Error(`Unknown attack: ${e.profile.attackType}`);
         e.facingDirection=scene.player.x>=e.x?1:-1;
         pose(e,e.profile.attackPose);e.poseUntil=scene.time.now+350;e.setVelocityX(0);
+        scene.enemyDialogue?.(e,'combat');
         attack(scene,e);
       },
       contact(e){
         if(scene.gameState!=='playing'||e.defeated||e.floorIndex!==scene.floor)return;
+        if(e.profile.behavior==='dbpm'){scene.dbpm.attack(e,pose,'melee');return;}
         if(e.profile.behavior==='sap'){window.ITHeroSAP.attack(scene,e,pose,'melee');return;}
         scene.pacing?.cancel(e);
         scene.takeDamage(e.x,e.profile.damage);
+        scene.enemyDialogue?.(e,'combat');
         if(scene.time.now<e.contactUntil)return;
         e.facingDirection=scene.player.x>=e.x?1:-1;
         e.contactUntil=scene.time.now+650;e.setVelocityX(0);pose(e,e.profile.contactPose);
         window.ITHeroTrioAttacks.contact(scene,e);
       },
-      hit(e){scene.pacing?.cancel(e);e.hitUntil=scene.time.now+160;if(e.profile.behavior==='sap')window.ITHeroSAP.hit(scene,e);pose(e,'hit');},
+      hit(e){if(e.profile.behavior==='dbpm'){scene.dbpm.hit(e,pose);return;}scene.pacing?.cancel(e);e.hitUntil=scene.time.now+160;if(e.profile.behavior==='sap')window.ITHeroSAP.hit(scene,e);pose(e,'hit');},
       defeat(e){
+        if(e.profile.behavior==='dbpm'){scene.dbpm.defeat(e,pose);return;}
         scene.pacing?.cancel(e);
         if(e.profile.behavior==='sap')window.ITHeroSAP.defeat(scene,e);
         window.ITHeroTrioAttacks.clear(e);

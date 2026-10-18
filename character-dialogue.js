@@ -12,14 +12,14 @@
         "lines": [
           "Jdeš na povinné školení řízení vysokozdvižných vozíků v serverovnách s vodním chlazením. Plavky s sebou.",
           "Vyplníš dotazník „Nechceme jíst maso v závodní jídelně“. Má 94 otázek. Všechny jsou povinné.",
-          "Jdeš nastavit přístupová hesla ke kávě zdarma pro kolegu Jimma. Každý nápoj musí mít jiné heslo a dvoufázové ověření.",
+          "Jdeš nastavit přístupová hesla ke kávě zdarma pro jedno kolego. Každý nápoj musí mít jiné heslo a dvoufázové ověření.",
           "Čeká tě rychlá porada o tom, proč jsou porady příliš dlouhé. Rezervováno do pátku.",
-          "Byl jsi jmenován koordinátorem přechodu z disket na diskety s vyšší kapacitou.",
+          "Byl jsi jmenován koordinátorem přechodu z disket na HDD s regulačním šroubem.",
           "Jdeš ručně inventarizovat cloud. Žebřík si vyzvedni na recepci.",
-          "Musíš obnovit smazanou prezentaci o důležitosti zálohování. Záloha neexistuje.",
+          "Musíš obnovit smazanou prezentaci o důležitosti zálohování.",
           "Dostal jsi za úkol opravit výtahy. Přístupová karta je v devátém patře.",
           "Jdeš schválit žádost o přístup k formuláři pro podání žádosti o přístup.",
-          "Povinný brainstorming právě začíná. Téma: Jak dostat ajťáky zpátky do práce."
+          "Povinný brainstorming právě začíná. Téma: voláme na servicedesk efektivně."
         ]
       }
     ]
@@ -32,7 +32,8 @@
         "id": "contact",
         "label": "Zvuk při kontaktu",
         "lines": [
-          "ÁÁÁÁ!"
+          "ÁÁÁÁ!",
+          "Šéfeee"
         ]
       }
     ]
@@ -47,7 +48,8 @@
         "lines": [
           "PÍÍÍÍ!",
           "Ne, když hlídám já!",
-          "Ukaž mi kartičku."
+          "Ukaž mi kartičku.",
+          "Byl si na schůzi, mladíků?"
         ]
       }
     ]
@@ -60,7 +62,9 @@
         "id": "contact",
         "label": "Dupání při kontaktu",
         "lines": [
-          "DUP! DUP!"
+          "DUP! DUP!",
+          "Pomazeš do wobu lotře.",
+          "Saša jede!"
         ]
       }
     ]
@@ -75,14 +79,15 @@
         "lines": [
           "Ááá, plznička ",
           "Chcaní bez prdu, to je jak láska bez mrd.. polibku teda…",
-          "Neviděli jste tu Laca?"
+          "Neviděli jste tu Laca?",
+          "Hesla měnil naposled Vosahlo šetrným štítkem."
         ]
       },
       {
         "id": "hotdog",
         "label": "Nabídka párku",
         "lines": [
-          "Srát na tousty, dej si párek!",
+          "Dej si párek!",
           "Teplej páreka a studená němka. nebo tak nějak to bylo."
         ]
       },
@@ -91,7 +96,9 @@
         "label": "Vykouknutí a odchod",
         "lines": [
           "Hele…ryba",
-          "a ten stál a čuměl."
+          "stál a čuměl",
+          "Ať mi skočej na cara",
+          "Jdu se kouknout, jestli venku prší "
         ]
       }
     ]
@@ -114,17 +121,45 @@
   {
     "id": "security_guard",
     "name": "BEZPEČÁK",
-    "groups": []
+    "groups": [
+      {
+        "id": "combat",
+        "label": "Při útoku a kontaktu",
+        "lines": [
+          "Kačka12 na V8",
+          "No jen aby to nebyla Remíza.",
+          "No user, no problém."
+        ]
+      }
+    ]
   },
   {
     "id": "hr_manager",
     "name": "HR MANAŽERKA",
-    "groups": []
+    "groups": [
+      {
+        "id": "combat",
+        "label": "Při útoku a kontaktu",
+        "lines": [
+          "Kde seš, ty lumpiku?",
+          "Na slovíčko panáčku.",
+          "Máte někdo kompas?"
+        ]
+      }
+    ]
   },
   {
     "id": "design_manager",
     "name": "MANAŽER DESIGNU",
-    "groups": []
+    "groups": [
+      {
+        "id": "combat",
+        "label": "Při útoku a kontaktu",
+        "lines": [
+          "Tohle ti změní paradigma."
+        ]
+      }
+    ]
   },
   {
     "id": "sap_integrator",
@@ -153,16 +188,16 @@
         "id": "coffee",
         "label": "Nabídka kávy",
         "lines": [
-          "Dáš si restart v kelímku?",
-          "Nejdřív kafe. Pak zachraňuj svět."
+          "restart v kelímku?",
+          "Nejdřív kafe. Pak zázraky."
         ]
       },
       {
         "id": "candy",
         "label": "Nabídka Sisinky",
         "lines": [
-          "Sisinka. Hotfix na náladu.",
-          "Malá záloha energie na cestu."
+          "Sisinka. Hotfix trudomyslnosti",
+          "Cukr a kafe, víc není třeba "
         ]
       }
     ]
@@ -190,6 +225,43 @@
         "lines": [
           "NA MĚ SI NEPŘIJDEŠ!",
           "TO MĚ NEROZHODÍ!"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dbpm",
+    "name": "PROJEKŤÁK DBPM",
+    "groups": [
+      {
+        "id": "chase",
+        "label": "Pronásledování",
+        "lines": [
+          "teraz som plně vytížený",
+          "som šel oba po povrche"
+        ]
+      },
+      {
+        "id": "attack",
+        "label": "Útok",
+        "lines": [
+          "u zákazníka máte připraven cervenej koberec",
+          "navrhuji další meeting na tohle téma"
+        ]
+      },
+      {
+        "id": "hit",
+        "label": "Zásah",
+        "lines": [
+          "teď už jen doleštime ten diamant"
+        ]
+      },
+      {
+        "id": "demand",
+        "label": "Nová tabulka",
+        "lines": [
+          "Dycky DEMAND!",
+          "Tak uděláme novou tabulku,ne?"
         ]
       }
     ]

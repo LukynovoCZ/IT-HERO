@@ -16,11 +16,12 @@
       this.tone = () => {}; this.takeDamage = () => {};
       ITHeroTrioAttacks.textures(this);
       ITHeroSAP.textures(this);
+      ITHeroDBPM.textures(this);
       this.paused = false;
       this.animationTime = 0;
       const graphics = this.add.graphics();
-      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 1660);
-      for (const baseline of [260, 660, 1060, 1460]) {
+      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 2060);
+      for (const baseline of [260, 660, 1060, 1460, 1860]) {
         graphics.lineStyle(1, 0x24453e);
         for (let y = baseline - 240; y < baseline; y += 20) graphics.lineBetween(0, y, 960, y);
         graphics.fillStyle(0x78867b).fillRect(0, baseline, 960, 24);
@@ -51,11 +52,13 @@
           body:entry.body || (entry.support ? null : {width:38,height:72,x:13,y:8})};
       });
       for (const profile of Object.values(ITHeroEnemyCatalog.profiles)) {
-        this.entries.push({ ...profile, height: profile.renderHeight,
+        this.entries.push({ ...profile, height: profile.previewHeight || profile.renderHeight,
           frames: ITHeroEnemyCatalog.createTextures(this, profile) });
       }
+      const dbpmEntry=this.entries.find(e=>e.id==='dbpm');this.entries=this.entries.filter(e=>e.id!=='dbpm');
       this.entries.push({name:'IT KOLEGA',height:80,frames:ITHeroColleague.createTextures(this),frameWidth:96,frameHeight:88,body:null,attackPose:'offer_coffee',contactPose:'offer_candy',offerKeys:['colleague-coffee','colleague-candy']});
       this.entries.push({name:'STARÝ JEZEVEC',height:76,frames:ITHeroOldBadger.createTextures(this),frameWidth:80,frameHeight:80,body:{width:36,height:70,x:22,y:10},attackPose:'block',contactPose:'stomp'});
+      this.entries.push(dbpmEntry);
       this.entries.forEach((entry, i) => {
         const x = 160 + (i % 3) * 320;
         entry.baseline = 260 + Math.floor(i / 3) * 400;
@@ -83,9 +86,10 @@
       this.bodyGraphics.clear().lineStyle(1, 0xffd269);
       for (const entry of this.entries) {
         let frame = pose === 'contact' ? entry.contactPose : pose === 'attack' ? entry.attackPose : pose;
-        if (pose === 'walk' && Math.floor(this.animationTime / 180) % 2 === 0) frame = 'idle';
+        if (pose === 'walk' && Math.floor(this.animationTime / 180) % 2 === 0) frame = entry.id === 'dbpm' ? 'walk_alt' : 'idle';
         entry.sprite.setTexture(entry.frames[frame] || entry.frames.idle).setScale(zoom);
-        if (entry.id && entry.behavior !== 'sap') {
+        if(entry.id==='dbpm'){entry.sprite.clearTint();if(pose==='hit'&&Math.floor(this.animationTime/90)%2)entry.sprite.setTintFill(0xffffff);}
+        if (entry.id && !['sap','dbpm'].includes(entry.behavior)) {
           if (pose === 'contact') {
             // Effect coordinates use game pixels; scale the graphics with the sprite.
             if (!entry.sprite.contactEffect) { ITHeroTrioAttacks.contact(this, entry.sprite); entry.sprite.effectUntil = this.animationTime + 650; }
@@ -107,7 +111,7 @@
     }
   }
   new Phaser.Game({
-    type: Phaser.AUTO, parent: 'game', width: 960, height: 1660,
+    type: Phaser.AUTO, parent: 'game', width: 960, height: 2060,
     pixelArt: true, roundPixels: true, antialias: false,
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [CharacterPreview]

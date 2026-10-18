@@ -8,8 +8,8 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
   const random=Phaser.Utils.Array.GetRandom,original=s.popText,seen=[];
   s.popText=function(x,y,text,color,duration){seen.push({text,duration});return original.call(this,x,y,text,color,duration);};
   try{
-   for(const [kind,group] of [['union','contact'],['specialist','combat']]){
-    const e=s.enemies.getChildren().find(e=>e.kind===kind);s.floor=e.floorIndex;
+   for(const [kind,group] of [['secretary','contact'],['union','contact'],['manager','contact'],['specialist','combat'],['security_guard','combat'],['hr_manager','combat'],['design_manager','combat']]){
+    const e=s.enemies.getChildren().find(e=>e.kind===kind);s.floor=e.floorIndex;s.player.body.reset(e.x-150,e.body.bottom-40);s.player.setVelocity(0);
     const lines=ITHeroDialogue.lines(kind,group);
     for(let i=0;i<lines.length;i++){
      Phaser.Utils.Array.GetRandom=a=>a[i%a.length];e.nextDialogueAt=0;e.contactUntil=-Infinity;
@@ -24,6 +24,6 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
    return {seen,shots:s.enemyShots.countActive()};
   }finally{Phaser.Utils.Array.GetRandom=random;s.popText=original;}
  });
- assert.equal(result.seen.length,6);assert(result.seen.every(x=>x.duration===3500));assert(result.shots>0);assert.deepEqual(errors,[]);
- console.log('PASS imported dialogue: every union/specialist line triggered in game, attack/contact hooks, 3.5s display, lower panel, 7s cooldown, same-floor restriction and preserved projectiles.');
+ assert.equal(result.seen.length,19);assert(result.seen.every(x=>x.duration===3500));assert(result.shots>0);assert.deepEqual(errors,[]);
+ console.log('PASS imported dialogue: all 19 lines of seven enemy types triggered in game, attack/contact hooks, 3.5s display, lower panel, 7s cooldown, same-floor restriction and preserved projectiles.');
 }finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});
