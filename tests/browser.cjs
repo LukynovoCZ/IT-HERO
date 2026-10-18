@@ -90,7 +90,7 @@ const assert=require('node:assert/strict');
     if(floor<8)await gamePage.waitForFunction(f=>{const s=window.__testGame.scene.getScene('ITGame');return s.floor===f+1&&!s.transitioning},floor);
     else {await gamePage.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').gameState==='win');await gamePage.keyboard.up('e');}
   }
-  await gamePage.keyboard.press('Enter');
+  await gamePage.locator('.score-again').click();
   await gamePage.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').gameState==='menu');
   assert.equal(await gamePage.evaluate(()=>window.__testGame.scene.getScene('ITGame').weapon),'floppy');
   assert.deepEqual(gameErrors,[]);

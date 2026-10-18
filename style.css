@@ -149,3 +149,17 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
  .touch-layout.touch-stick-layout .play-area{--touch-left-rail:112px}
  .touch-layout.touch-stick-layout .touch-actions button{width:48px;min-height:48px;height:48px}
 }
+
+/* Native modal stays available in fullscreen and lets phones use their own keyboard. */
+.score-dialog{width:min(560px,96vw);max-height:94dvh;padding:0;border:3px solid #a4e963;background:#091f22;color:#edf3ff;box-shadow:0 0 0 5px #20473b;font:14px/1.4 ui-monospace,monospace;overflow:auto}
+.score-dialog::backdrop{background:#030c16d9}
+.score-panel{padding:20px}.score-eyebrow{color:#f7ca70;letter-spacing:3px;margin:0;text-align:center}
+.score-panel h2{color:#a4e963;font-size:clamp(24px,5vw,34px);letter-spacing:4px;text-align:center;margin:6px 0}
+.score-result{text-align:center;color:#f7ca70;font-weight:bold;font-size:20px;margin:8px 0}.score-details{text-align:center;font-size:11px;color:#b4cbb8}
+.score-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.score-form label{width:100%;font-size:12px;color:#b4cbb8}
+.score-form input{flex:1;min-width:100px;width:150px;background:#102f30;border:1px solid #8fb590;color:#fff;padding:10px;font:18px ui-monospace,monospace;min-height:44px;text-transform:uppercase}
+.score-panel button{min-height:44px;border:1px solid #a4e963;padding:10px 12px;background:#294f33;color:#edffdc;font:bold 12px ui-monospace,monospace;cursor:pointer}.score-panel button:disabled{opacity:.5;cursor:default}
+.score-panel :focus-visible{outline:3px solid #ffd17d;outline-offset:2px}.score-status{font-size:11px;min-height:30px;color:#c8d6c8}
+.score-scroll{max-height:32dvh;overflow:auto}.score-panel table{width:100%;border-collapse:collapse;text-align:left}.score-panel caption{font-size:11px;text-align:left;color:#b4cbb8;padding-bottom:6px}
+.score-panel th{color:#f7ca70;background:#091f22;position:sticky;top:0}.score-panel td,.score-panel th{padding:6px;border-bottom:1px solid #315a4b}.score-panel td:last-child,.score-panel th:last-child{text-align:right}.score-panel td:nth-child(2){overflow-wrap:anywhere}.score-again{display:block;margin:14px auto 0}
+@media(max-height:540px) and (orientation:landscape){.score-panel{padding:10px 16px}.score-eyebrow{font-size:10px}.score-panel h2{font-size:24px;margin:0}.score-result{font-size:16px;margin:3px 0}.score-details{margin:3px 0}.score-status{margin:5px 0;min-height:16px}.score-form label{width:auto}.score-scroll{max-height:26dvh}.score-again{margin-top:8px}}

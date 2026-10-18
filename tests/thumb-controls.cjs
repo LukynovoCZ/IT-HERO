@@ -53,7 +53,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  await p.waitForFunction(()=>s.pacing.state.phase==='ready');await p.evaluate(()=>s.enemyShots.clear(true,true));
  origin=await center(zone);await start(10,origin);await move(10,{x:origin.x+8,y:origin.y+46});await p.waitForFunction(()=>s.pacing.state.disconnect>200);
  assert.deepEqual(await actions(),['crouch']);await p.waitForFunction(()=>s.gameState==='win');await end(10);
- await p.locator('#game-action').tap();await p.waitForFunction(()=>__g.scene.getScene('ITGame').gameState==='menu');await p.locator('#game-action').tap();
+ await p.locator('.score-again').tap();await p.waitForFunction(()=>__g.scene.getScene('ITGame').gameState==='menu');await p.locator('#game-action').tap();
  if(await p.locator('#touch-fullscreen').isVisible()){
   await p.locator('#touch-fullscreen').tap();await p.waitForFunction(()=>!!document.fullscreenElement);await p.waitForTimeout(120);
   assert(await p.evaluate(()=>{const z=document.querySelector('#touch-stick-zone').getBoundingClientRect(),c=document.querySelector('canvas').getBoundingClientRect();return z.right<=c.left&&z.left>=0&&z.bottom<=innerHeight;}),'Fullscreen thumb stays outside the canvas');
