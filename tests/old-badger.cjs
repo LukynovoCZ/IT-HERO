@@ -11,7 +11,7 @@ require('node:fs').mkdirSync('/tmp/it-hero-tests',{recursive:true});
  assert.deepEqual(init,{range:true,unsafe:false,automatic:true,duplicate:false});
  await p.screenshot({path:'/tmp/it-hero-tests/badger-elevator.png'});
  await p.waitForFunction(()=>window.__badger.phase==='idle');
- assert(await p.evaluate(()=>window.__badger.body.enable&&window.__badger.body.immovable&&!window.__badger.door));
+ assert(await p.evaluate(()=>window.__badger.body.enable&&!window.__badger.body.pushable&&window.__badger.body.allowGravity&&!window.__badger.door));
  await p.waitForFunction(()=>Math.abs(window.__badger.body.velocity.x)>0);
  const x=await p.evaluate(()=>window.__badger.x);await p.waitForFunction(x=>Math.abs(window.__badger.x-x)>5,x);
  // Pause freezes the entity's own clock and movement.

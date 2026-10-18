@@ -24,7 +24,7 @@
       health:4,speed:43,patrol:24,attackInterval:1850,attackRange:380,
       attackType:'office-weapons',projectile:'default',damage:1,score:100,
       contactPose:'stop',attackPose:'documents',contactEffect:'whip',
-      projectiles:[{key:'red-heel',weight:1,spin:280},{key:'red-balloon',weight:1,speed:195}],
+      projectiles:[{key:'red-heel',weight:1,spin:280},{key:'red-tennis-ball',weight:1,speed:195}],
       frameWidth:80,frameHeight:96,renderHeight:92,
       body:{width:26,height:88,x:27,y:8},
       art:{

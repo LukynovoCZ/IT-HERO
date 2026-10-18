@@ -1,7 +1,8 @@
 /* Old Badger: a separate, indestructible body. Only a descending head stomp wins. */
 (() => {
   'use strict';
-  const config={spawnIntervalMin:25000,spawnIntervalMax:45000,walkSpeed:28,walkDistance:70,
+  const config={spawnIntervalMin:25000,spawnIntervalMax:45000,walkSpeed:28,minX:55,maxX:905,
+    jumpVelocity:-520,jumpCooldown:700,lookAhead:24,
     pauseDuration:950,stompBounceVelocity:-330,sinkAnimationDuration:1250,scoreReward:150,
     exitDuration:1200,quoteInterval:7000,stompTolerance:9};
   const lines=window.ITHeroDialogue.lines('old_badger','ambient');
@@ -39,10 +40,10 @@
       if(!safeSpawn()){state.nextAt=state.clock+1500;return false;}
       const floor=scene.floor,ground=floors[floor];
       const e=group.create(500,ground-40,frames.walk).setDepth(22).setAlpha(0);
-      e.body.setSize(36,70).setOffset(22,10).setAllowGravity(false).setImmovable(true);e.body.pushable=false;e.body.enable=false;
+      e.body.setSize(36,70).setOffset(22,10).setAllowGravity(false).setImmovable(false);e.body.pushable=false;e.body.enable=false;
       Object.assign(e,{floorIndex:floor,phase:'exit',started:state.clock,baseX:500,direction:scene.player.x<500?1:-1,
         actionAt:state.clock+config.exitDuration+config.pauseDuration,nextQuote:state.clock+config.quoteInterval,
-        blockUntil:0,lastFootstep:0,stomped:false});
+        blockUntil:0,lastFootstep:0,nextJump:0,stomped:false});
       e.door=scene.add.graphics().setDepth(17);state.entity=e;schedule();scene.tone(520,0.08,'triangle');return true;
     }
     function speak(e,pool){
@@ -92,6 +93,8 @@
         if(scene.gameState!=='playing'||scene.transitioning||e.stomped||!e.body.enable)return false;
         if(canStomp(player,e)){stomp(e);return false;}return true;
       }));
+      colliders.push(scene.physics.add.collider(group,scene.platforms));
+      colliders.push(scene.physics.add.collider(group,scene.obstacles));
       // Deliberately no enemyShots × badger collider or overlap.
     }
     function update(delta){
@@ -121,14 +124,23 @@
         e.door.clear().fillStyle(0x14222b).fillRect(458,ground-146,84,146).fillStyle(0x687b84)
           .fillRect(458,ground-146,42*(1-opening),146).fillRect(542-42*(1-opening),ground-146,42*(1-opening),146);
         e.setAlpha(Phaser.Math.Clamp((t-0.25)*2,0,1)).setY(ground-40-(1-t)*8);
-        if(t>=1){if(Math.abs(scene.player.x-e.x)<60&&Math.abs(scene.player.body.bottom-ground)<110)e.setX(scene.player.x<500?560:440);e.door.destroy();e.door=null;e.setAlpha(1).setY(ground-40).setTexture(frames.idle);e.body.reset(e.x,ground-40);e.body.enable=true;e.phase='idle';}return;
+        if(t>=1){if(Math.abs(scene.player.x-e.x)<60&&Math.abs(scene.player.body.bottom-ground)<110)e.setX(scene.player.x<500?560:440);e.door.destroy();e.door=null;e.setAlpha(1).setY(ground-40).setTexture(frames.idle);e.body.reset(e.x,ground-40);e.body.enable=true;e.body.setAllowGravity(true);e.phase='idle';}return;
       }
       if(e.speech){e.speech.setPosition(Phaser.Math.Clamp(e.x,135,825),e.body.top-16);if(state.clock>=e.speechUntil){e.speech.destroy();e.speech=null;}}
       speak(e,lines);
       if(state.clock<e.blockUntil){e.setVelocityX(0);e.setTexture(frames.block);return;}
-      if(e.x<=e.baseX-config.walkDistance){e.direction=1;e.phase='idle';e.actionAt=state.clock+config.pauseDuration;e.setX(e.baseX-config.walkDistance+1);}
-      if(e.x>=e.baseX+config.walkDistance){e.direction=-1;e.phase='idle';e.actionAt=state.clock+config.pauseDuration;e.setX(e.baseX+config.walkDistance-1);}
+      if(e.x<=config.minX){e.direction=1;e.phase='idle';e.actionAt=state.clock+config.pauseDuration;e.setX(config.minX+1);}
+      if(e.x>=config.maxX){e.direction=-1;e.phase='idle';e.actionAt=state.clock+config.pauseDuration;e.setX(config.maxX-1);}
       if(state.clock<e.actionAt){e.setVelocityX(0);e.setTexture(frames.idle);return;}
+      const grounded=e.body.blocked.down||e.body.touching.down;
+      const obstacles=[...scene.obstacles.getChildren(),...(scene.pacing?.carts||[]).map(c=>c.sprite)];
+      const ahead=obstacles.some(o=>{
+        const b=o.body;if(!o.active||!b?.enable)return false;
+        const gap=e.direction>0?b.left-e.body.right:e.body.left-b.right;
+        return gap>=-8&&gap<config.lookAhead&&b.top<e.body.bottom-5&&b.bottom>e.body.bottom-125&&e.body.bottom-b.top<125;
+      });
+      const blocked=e.direction>0?e.body.blocked.right:e.body.blocked.left;
+      if(grounded&&(ahead||blocked)&&state.clock>=e.nextJump){e.setVelocityY(config.jumpVelocity);e.nextJump=state.clock+config.jumpCooldown;}
       e.phase='walk';e.setVelocityX(e.direction*config.walkSpeed).setFlipX(e.direction<0);
       e.setTexture(Math.floor(state.clock/240)%2?frames.walk:frames.idle);
       if(state.clock-e.lastFootstep>700){scene.tone(70,0.025,'triangle');e.lastFootstep=state.clock;}

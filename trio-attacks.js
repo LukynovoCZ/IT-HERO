@@ -23,10 +23,15 @@
       g.fillStyle(colors.red).fillRect(3, 12, 7, 9).fillRect(9, 18, 12, 5).fillTriangle(17, 18, 29, 23, 17, 23);
       g.fillStyle(0xff9095).fillRect(4, 12, 3, 5);
     });
-    make('red-balloon', g => {
-      g.lineStyle(2, colors.ink).lineBetween(16, 20, 19, 28).strokeCircle(19, 28, 3);
-      g.fillStyle(colors.red).fillEllipse(15, 10, 18, 20).fillTriangle(15, 18, 12, 22, 18, 22);
-      g.fillStyle(0xffa5a7).fillRect(10, 4, 3, 6);
+    make('red-tennis-ball', g => {
+      // Compact felt ball with a pale tennis seam and a short dark wrist strap.
+      g.lineStyle(3,colors.ink).strokeCircle(24,24,5).lineBetween(20,20,23,23);
+      g.fillStyle(colors.ink).fillCircle(12,12,11);
+      g.fillStyle(0xa72135).fillCircle(12,12,9);
+      g.fillStyle(colors.red).fillCircle(11,10,8);
+      g.fillStyle(0xff7880).fillRect(7,5,3,2).fillRect(5,8,2,3);
+      g.fillStyle(0xffe4ce).fillRect(13,4,2,4).fillRect(11,8,2,4)
+        .fillRect(11,12,2,4).fillRect(13,16,2,4);
     });
     make('golf-club', g => {
       g.fillStyle(colors.ink).fillRect(13, 1, 5, 25).fillRect(15, 23, 14, 7);

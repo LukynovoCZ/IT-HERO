@@ -109,7 +109,7 @@ animace bez externích obrázků. Profily v `enemy-catalog.js` nyní používaj�
 volitelnými `speed` a `spin`. Původní typ `default` zůstává dostupný.
 
 - Bezpečák: želízka / fireball, váhy 4:1; `contactEffect: 'firewall'`.
-- HR: červený střevíc / červený balonek s černým poutkem, 1:1; `contactEffect: 'whip'`.
+- HR: červený střevíc / červený tenisák s tmavým řemínkem (`red-tennis-ball`), 1:1; `contactEffect: 'whip'`.
 - Design: malá golfová hůl / kalkulačka, 1:1; `contactEffect: 'scream'`.
 
 Kontakt trvá 650 ms. Plameny a bičík mají dosah přibližně 50/62 px, respektují

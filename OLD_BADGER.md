@@ -24,7 +24,8 @@ V `ITHeroOldBadger.config` na začátku `old-badger.js`:
 |---|---:|
 | spawnIntervalMin / spawnIntervalMax | 25000 / 45000 ms |
 | walkSpeed | 28 px/s |
-| walkDistance | 70 px na každou stranu od výtahu |
+| minX / maxX | 55 / 905 px, celé patro |
+| jumpVelocity / jumpCooldown / lookAhead | −520 px/s / 700 ms / 24 px |
 | pauseDuration | 950 ms |
 | stompBounceVelocity | −330 px/s |
 | sinkAnimationDuration | 1250 ms |
@@ -41,8 +42,11 @@ Dveře jsou dočasná grafická vrstva; po výstupu opět platí „MIMO PROVOZ�
 ## Pravidla kolizí
 
 Senior master není ve skupině `enemies`, nemá odečítané životy a nemá střelnou zbraň.
-Jeho Arcade tělo je nepohyblivé vůči hráči a bez gravitace, ale AI jím posouvá
-vodorovně. Chodí v centrální volné části patra mezi herními stoly.
+Jeho Arcade tělo nelze hráčem odtlačit (`pushable: false`), ale má gravitaci
+a kolize s podlahou a nábytkem. Hlídkuje přes celé patro od `minX` do `maxX`,
+před stoly a zavřenými dveřmi vyskočí. U kraje patra se otočí a krátce zastaví.
+Test `node tests/senior-patrol.cjs` ověřuje průchod přes oba stoly oběma směry,
+a recepci i v patře s lávkami a časovanými dveřmi.
 
 - `playerShots × oldBadger`: střela zmizí, vznikne jiskra, blokovací póza a ťuknutí.
   Registruje se před běžnými zásahy nepřátel. Záloha v `hitEnemy` kontroluje

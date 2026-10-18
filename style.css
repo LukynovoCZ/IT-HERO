@@ -112,3 +112,7 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
 .dialogue-actions{display:flex;flex-wrap:wrap;gap:10px}
 .dialogue-actions button{min-height:44px;padding:10px;background:#214d3b;color:#edf3ff;border:1px solid #73965f;cursor:pointer;font:inherit}
 #dialogue-status{color:#f4e3a2;font-size:14px}
+
+/* Keep the catalogue build visible on phones as well as desktop. */
+.character-preview .version{display:inline-block}
+.character-preview .heading{flex-wrap:wrap}
