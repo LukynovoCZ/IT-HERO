@@ -7,6 +7,14 @@ veřejného formuláře i autorizované načtení správy a připojil adresu do
 Databáze D1 může být stejná jako pro plánovaný společný žebříček; tato migrace
 pouze přidá vlastní tabulky a nevytváří ani nemaže tabulky skóre.
 
+## Připomínky ke hře
+
+Formulář nabízí také nápad, komentář a chybu / připomínku. Jeden příspěvek může
+mít až 2000 znaků včetně odstavců. Ukládá se do stejné soukromé schránky
+pod označením Připomínky ke hře. Export má `type: game_feedback`, `category`,
+`text` a `author`; není určen k importu do hlášek postav. Platí stejné
+ověřování správce, omezení odesílání a ruční vyřízení jako pro hlášky.
+
 ## Použití
 
 - Hráč: `dialogue-suggestions.html`, nebo odkaz u konkrétní postavy v přehledu.

@@ -12,6 +12,8 @@ function clean(value,max){if(typeof value!=='string')fail(400,'Neplatný text.')
 function proposal(data){
  if(!data||typeof data!=='object')fail(400,'Neplatný návrh.');if(data.website)fail(400,'Návrh nebyl přijat.');
  if(typeof data.requestId!=='string'||! /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(data.requestId))fail(400,'Chybí identifikátor návrhu.');
+ const feedback=data.characterId==='game_feedback';
+ if(feedback){if(!['idea','comment','bug'].includes(data.groupId)||!Array.isArray(data.lines)||data.lines.length!==1||typeof data.lines[0]!=='string')fail(400,'Neplatná připomínka.');const text=data.lines[0].normalize('NFC').trim();if(!text||text.length>2000||/[\u0000-\u0008\u000b-\u001f\u007f]/.test(text))fail(400,'Napiš připomínku do 2000 znaků.');return {requestId:data.requestId,characterId:'game_feedback',groupId:data.groupId,lines:[text],author:clean(data.author??'',24)};}
  const character=catalog.find(c=>c.id===data.characterId);if(!character||!character.groups.some(g=>g.id===data.groupId))fail(400,'Neznámá postava nebo situace.');
  if(!Array.isArray(data.lines)||!data.lines.length||data.lines.length>10)fail(400,'Pošli 1 až 10 hlášek.');
  const lines=[...new Set(data.lines.map(line=>clean(line,200)))];if(lines.some(line=>!line))fail(400,'Hláška nesmí být prázdná.');
