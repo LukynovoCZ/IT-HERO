@@ -39,7 +39,7 @@
     const schedule=()=>state.nextAt=state.clock+Phaser.Math.Between(config.intervalMin,config.intervalMax);
     const overlaps=(x,ground,body)=>body&&body.enable!==false&&body.left<x+18&&body.right>x-18&&body.top<ground-1&&body.bottom>ground-30;
     function safe(x,floor){
-      if(x<60||x>900)return false;
+      if(x<60||x>900||scene.pacing?.reserved(x,floor))return false;
       const ground=floors[floor];
       if([...scene.obstacles.getChildren(),...scene.platforms.getChildren()].some(o=>o.active&&overlaps(x,ground,o.body)))return false;
       if([...scene.coffees.getChildren(),...scene.upgrades.getChildren()].some(item=>item.active&&Math.abs(item.x-x)<48&&Math.abs(item.y-ground)<80))return false;

@@ -120,6 +120,7 @@
         window.ITHeroTrioAttacks.update(scene,e,time);
         if(e.defeated)return;
         if(e.floorIndex!==scene.floor){e.setVelocityX(0);return;}
+        if(scene.pacing?.isWinding(e)){e.setVelocityX(0);return;}
         if(time<e.hitUntil){e.setVelocityX(0);pose(e,'hit');return;}
         if(time<e.contactUntil||time<e.poseUntil){e.setVelocityX(0);return;}
         if(e.x<e.baseX-e.patrol)e.direction=1;
@@ -129,7 +130,9 @@
         e.setVelocityX(resting?0:e.direction*e.profile.speed);
         pose(e,resting?'idle':Math.floor(time/180)%2?'walk':'idle');
         if(Math.abs(e.x-scene.player.x)<e.profile.attackRange&&Math.abs(e.y-scene.player.y)<100&&time-e.lastAttack>e.profile.attackInterval){
-          e.lastAttack=time;manager.attack(e);
+          e.lastAttack=time;
+          if(scene.pacing)scene.pacing.queue(e,()=>manager.attack(e),()=>{e.facingDirection=scene.player.x>=e.x?1:-1;pose(e,e.profile.attackPose);});
+          else manager.attack(e);
         }
       },
       attack(e){
@@ -144,14 +147,16 @@
       contact(e){
         if(scene.gameState!=='playing'||e.defeated||e.floorIndex!==scene.floor)return;
         if(e.profile.behavior==='sap'){window.ITHeroSAP.attack(scene,e,pose,'melee');return;}
+        scene.pacing?.cancel(e);
         scene.takeDamage(e.x,e.profile.damage);
         if(scene.time.now<e.contactUntil)return;
         e.facingDirection=scene.player.x>=e.x?1:-1;
         e.contactUntil=scene.time.now+650;e.setVelocityX(0);pose(e,e.profile.contactPose);
         window.ITHeroTrioAttacks.contact(scene,e);
       },
-      hit(e){e.hitUntil=scene.time.now+160;if(e.profile.behavior==='sap')window.ITHeroSAP.hit(scene,e);pose(e,'hit');},
+      hit(e){scene.pacing?.cancel(e);e.hitUntil=scene.time.now+160;if(e.profile.behavior==='sap')window.ITHeroSAP.hit(scene,e);pose(e,'hit');},
       defeat(e){
+        scene.pacing?.cancel(e);
         if(e.profile.behavior==='sap')window.ITHeroSAP.defeat(scene,e);
         window.ITHeroTrioAttacks.clear(e);
         e.defeated=true;e.setVelocity(0,0);e.body.enable=false;pose(e,'defeat');

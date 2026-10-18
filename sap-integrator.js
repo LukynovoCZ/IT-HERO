@@ -32,7 +32,7 @@
   }
   function cancel(e) {
     (e.sapTimers||[]).forEach(timer=>timer.remove(false));e.sapTimers=[];
-    e.sapEffect?.destroy();e.sapEffect=null;e.sapBusy=false;
+    e.sapEffect?.destroy();e.sapEffect=null;e.sapBusy=false;e.sapWarning?.destroy();e.sapWarning=null;
   }
   function valid(scene,e) {return e.active&&!e.defeated&&e.floorIndex===scene.floor&&scene.gameState==='playing'&&!scene.transitioning;}
   function later(scene,e,delay,fn) {
@@ -63,6 +63,8 @@
     const direction=scene.player.x>=e.x?1:-1;e.facingDirection=direction;e.sapBusy=true;
     e.sapNextAttack=scene.time.now+(type==='melee'?c.meleeCooldown:type==='helmet'?c.helmetCooldown:c.penCooldown);
     e.setVelocityX(0);e.setAngle(0);pose(e,type==='melee'?'melee':'ranged');
+    e.sapWarning=scene.add.text(e.x,e.body.top-20,'!',{font:'bold 22px monospace',color:'#ffda69',stroke:'#172b28',strokeThickness:4}).setOrigin(.5).setDepth(110);
+    later(scene,e,c.windup,()=>{e.sapWarning?.destroy();e.sapWarning=null;});
     e.poseUntil=scene.time.now+c.windup+(type==='pens'?c.penGap*2:150);
     if(type==='melee') {
       e.sapEffect=scene.add.graphics().setDepth(27);

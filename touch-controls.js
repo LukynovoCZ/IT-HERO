@@ -33,7 +33,8 @@
       pause.dataset.paused=String(scene.gameState==='paused');
       sound.textContent=scene.isMuted?'Zvuk: vyp.':'Zvuk: zap.';
       sound.setAttribute('aria-pressed',String(!scene.isMuted));
-      if(start&&!start.hidden){start.textContent=enabled?(scene.gameState==='menu'?'KLEPNI = HRÁT':scene.gameState==='paused'?'KLEPNI = POKRAČOVAT':'KLEPNI = ZNOVU'):(scene.gameState==='menu'?'ENTER nebo kliknutí = HRÁT':scene.gameState==='paused'?'ESC / KLIK = POKRAČOVAT':'ENTER / R / KLIK = ZNOVU');}
+      const retry=scene.gameState==='lose'&&scene.pacing?.state.checkpoint?'OBNOVIT ZÁLOHU':'ZNOVU';
+      if(start&&!start.hidden){start.textContent=enabled?(scene.gameState==='menu'?'KLEPNI = HRÁT':scene.gameState==='paused'?'KLEPNI = POKRAČOVAT':`KLEPNI = ${retry}`):(scene.gameState==='menu'?'ENTER nebo kliknutí = HRÁT':scene.gameState==='paused'?'ESC / KLIK = POKRAČOVAT':`ENTER / R / KLIK = ${retry}`);}
     }
     function placeStart(){
       const canvas=scene.game.canvas.getBoundingClientRect(),shell=area.querySelector('.game-shell').getBoundingClientRect();

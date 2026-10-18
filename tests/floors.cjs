@@ -22,7 +22,7 @@ const fs=require('node:fs');
   console.log('PASS new mug: animated steam, actual health pickup and steam cleanup');
   for(let floor=0;floor<9;floor++){
    if(floor===0)await p.keyboard.down('s'); // Enter the stairs while already crouching.
-   await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');const d=s.doors[s.floor];s.player.body.reset(d.x,d.y-45);s.player.setVelocity(0,0)});
+   await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');const d=s.doors[s.floor];s.player.body.reset(d.x-(s.floor===8?54:0),d.y-45);s.player.setVelocity(0,0)});
    await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').player.body.blocked.down);
    await p.waitForTimeout(100);
    await p.screenshot({path:`/tmp/it-hero-tests/floor-${floor+1}.png`});

@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.11.3 – mini plošinovka v Phaser 3.
+ * IT HERO 0.12.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -61,7 +61,7 @@
       this.load.image('exterior-art', 'assets/exterior.png');
     }
 
-    create() {
+    create(data = {}) {
       this.gameState = 'menu';
       this.energy = 4;
       this.maxEnergy = 5;
@@ -100,16 +100,19 @@
       this.createHUD();
       this.createOverlay();
       this.posters = window.ITHeroPosters.mount(this, FLOORS);
+      this.pacing = window.ITHeroGameplay.create(this, FLOORS, !!data.resumeCheckpoint);
+      const restored = this.pacing.restore();
 
       this.cameras.main.setBounds(0, 0, WIDTH, WORLD_HEIGHT);
       this.cameras.main.setRoundPixels(true);
-      this.cameras.main.startFollow(this.player, true, 0.13, 0.13, 0, 105);
-      this.cameras.main.centerOn(this.player.x, FLOORS[0] - 95);
+      this.cameras.main.startFollow(this.player, true, 0.13, 0, 0, 105);
+      // Keep the ground visible when jumping or taking an upper service route.
+      this.cameras.main.setScroll(0, FLOORS[this.floor] - 420);
       this.physics.world.setBounds(0, 0, WIDTH, WORLD_HEIGHT);
       this.cameras.main.fadeIn(350, 6, 13, 26);
       this.updateHUD();
-      this.showOverlay('IT HERO', 'NO MORE MEETING',
-        'Jsi ajťák na životně důležité misi.\nProjdi 9 pater a zachraň, co se dá.',
+      if (!restored) this.showOverlay('IT HERO', 'NO MORE MEETING',
+        'Jsi ajťák na životně důležité misi.\nProjdi 9 pater a odpoj HDD u vedení.\nPo SAP bossovi v 5. patře se uloží záloha.',
         'ENTER nebo kliknutí = HRÁT');
     }
 
@@ -380,7 +383,7 @@
       g.fillStyle(0xdde9da).fillRect(x + 21, y - 49, 5, 10);
       for (let k = 0; k < 5; k++) g.fillStyle(0xa6ef5d).fillRect(x - 20 + k * 8, y - 21 - k * 9, 9, 5);
       g.fillStyle(0x0b1926).fillRect(x - 44, y - 123, 88, 23);
-      const label = isExit ? 'CÍL ↓' : entry ? 'VÝSTUP' : 'SCHODY ↓';
+      const label = isExit ? 'HDD ↓' : entry ? 'VÝSTUP' : 'SCHODY ↓';
       this.add.text(x, y - 111, label, {
         font: 'bold 12px monospace', color: isExit ? '#ffdb8c' : '#b2ffee'
       }).setOrigin(0.5).setDepth(6);
@@ -436,7 +439,10 @@
       if (this.helperVisit || this.gameState !== 'playing') return;
       const floor = this.floor;
       const x = source === 'lift' ? 500 : FLOOR_PLANS[this.floor].desks[this.player.x < 480 ? 0 : 1];
-      const dropX = source === 'lift' ? (this.player.x < 500 ? 435 : 565) : x - 68;
+      const desiredX = source === 'lift' ? (this.player.x < 500 ? 435 : 565) : x - 68;
+      const dropX = [desiredX,125,190,390,610,780,840].sort((a,b)=>Math.abs(a-desiredX)-Math.abs(b-desiredX))
+        .find(candidate=>this.colleague.safe(candidate,floor));
+      if (dropX === undefined) return;
       const sprite = this.add.sprite(x, FLOORS[floor], source === 'desk' ? 'old-it-crouch' : 'old-it').setOrigin(0.5,1).setDepth(source === 'desk' ? 9 : 20);
       const doorway = source === 'lift' ? this.add.rectangle(x,FLOORS[floor]-73,82,146,0x152a25).setDepth(7) : null;
       this.helperVisit = {floor,source,kind,x,dropX,sprite,doorway,started:this.playTime,dropped:false};
@@ -729,8 +735,10 @@
         this.togglePause();
       } else if (this.gameState === 'lose' || this.gameState === 'win') {
         // Změna stavu před restartem brání duplicitnímu spuštění při jednom kliknutí.
+        const resumeCheckpoint = this.gameState === 'lose' && !!this.registry.get(window.ITHeroGameplay.checkpointKey);
+        if (!resumeCheckpoint) this.registry.remove(window.ITHeroGameplay.checkpointKey);
         this.gameState = 'restarting';
-        this.scene.restart();
+        this.scene.restart({resumeCheckpoint});
       }
     }
 
@@ -807,6 +815,7 @@
     enemyContact(enemy) {
       if (enemy.profile) { this.enemyTrio.contact(enemy); return; }
       if (this.gameState !== 'playing' || !enemy.active || enemy.floorIndex !== this.floor) return;
+      this.pacing.cancel(enemy);
       this.takeDamage(enemy.x);
       if (this.time.now < enemy.contactUntil) return;
       enemy.contactUntil = this.time.now + 1000;
@@ -874,16 +883,19 @@
       if (this.oldBadger.intercept(shot)) return;
       const damage = shot.getData('damage') || 1;
       shot.destroy();
+      this.pacing.cancel(enemy);
       enemy.hp -= damage;
       if (enemy.profile) this.enemyTrio.hit(enemy);
       enemy.setTintFill(0xffffff);
       this.time.delayedCall(90, () => { if (enemy.active) enemy.clearTint(); });
       this.tone(245, 0.045);
       if (enemy.hp <= 0) {
+        this.pacing.recordDefeat(enemy);
         this.score += enemy.profile ? enemy.profile.score : enemy.kind === 'manager' ? 250 : 100;
         this.popText(enemy.x, enemy.y - 27, enemy.profile ? `+${enemy.profile.score}` : enemy.kind === 'manager' ? '+250 ŠÉF' : '+100', '#91ffe0');
         if (enemy.profile) this.enemyTrio.defeat(enemy);
         else enemy.destroy();
+        if (enemy.kind === 'sap_integrator') this.pacing.checkpoint();
         this.updateHUD();
       }
     }
@@ -903,6 +915,7 @@
     takeDamage(sourceX, damage = 1) {
       if (this.gameState !== 'playing' || this.time.now - this.lastHit < 1250) return;
       this.lastHit = this.time.now;
+      this.pacing.interrupt();
       this.energy = Math.max(0, this.energy - damage);
       this.player.setVelocityX(this.player.x < sourceX ? -280 : 280);
       this.player.setVelocityY(-185);
@@ -911,12 +924,24 @@
       this.popText(this.player.x, this.player.y - 42, `-${damage} ENERGIE`, '#ff8ca6');
       this.updateHUD();
       if (this.energy === 0) {
+        this.pacing.retainElapsed();
         this.gameState = 'lose';
         this.player.setVelocityX(0);
         const line = this.nextDeathLine();
         this.time.delayedCall(350, () => this.showOverlay('DOSTALI TĚ!', 'TVŮJ NOVÝ ÚKOL:',
-          `${line}\n\nPatro ${this.floor + 1} / ${FLOOR_COUNT} • Skóre ${this.score}`, 'ENTER / KLIK = ZKUSIT ZNOVU'));
+          `${line}\n\nPatro ${this.floor + 1} / ${FLOOR_COUNT} • Skóre ${this.score}${this.pacing.state.checkpoint ? '\nPokračuješ ze zálohy v 5. patře.' : ''}`, this.pacing.state.checkpoint ? 'ENTER / KLIK = OBNOVIT ZÁLOHU' : 'ENTER / KLIK = ZKUSIT ZNOVU'));
       }
+    }
+
+    finishMission(timeBonus, elapsed) {
+      if (this.gameState !== 'playing') return;
+      this.gameState = 'win';
+      this.score += this.energy * 100 + 500 + timeBonus;
+      this.updateHUD();
+      this.tone(660, 0.20, 'sine');
+      this.time.delayedCall(130, () => this.tone(990, 0.27, 'sine'));
+      this.showOverlay('HOTOVO!', 'HDD ODPOJEN • POJISTKA ZASTAVENA',
+        `Servery žijí. Fotomontáže zůstaly na disku.\nČas: ${elapsed} • Bonus za rychlost: +${timeBonus}\nEnergie: ${this.energy} / ${this.maxEnergy}\nKonečné skóre: ${this.score}`, 'ENTER / R / KLIK = ZNOVU');
     }
 
     interact() {
@@ -926,16 +951,7 @@
         return;
       }
       if (Math.abs(this.player.x - door.x) > 74 || Math.abs(this.player.y - (door.y - 25)) > 110 || this.transitioning) return;
-      if (door.kind === 'exit') {
-        this.gameState = 'win';
-        this.score += this.energy * 100 + 500;
-        this.updateHUD();
-        this.tone(660, 0.20, 'sine');
-        this.time.delayedCall(130, () => this.tone(990, 0.27, 'sine'));
-        this.showOverlay('HOTOVO!', 'DOŠEL JSI DO VEDENÍ',
-          `Máš přístup do posledního patra.\nEnergie: ${this.energy} / ${this.maxEnergy}\nKonečné skóre: ${this.score}`, 'ENTER / R / KLIK = ZNOVU');
-        return;
-      }
+      if (door.kind === 'exit') { this.pacing.requestDisconnect(); return; }
       this.transitioning = true;
       this.tone(740, 0.15, 'triangle');
       this.cameras.main.fadeOut(220, 7, 15, 28);
@@ -952,7 +968,8 @@
         this.lastHit = this.time.now;
         this.score += 150;
         this.updateHUD();
-        this.cameras.main.centerOn(spawnX, FLOORS[this.floor] - 100);
+        this.cameras.main.setScroll(0, FLOORS[this.floor] - 420);
+        if (this.floor === 8) this.posters.showMessage('POSLEDNÍ PATRO\nPoraz šéfa, přeskoč poslední salvu a podržením skrčení odpoj HDD.', 6500);
         this.cameras.main.fadeIn(300, 7, 15, 28);
         this.popText(spawnX, FLOORS[this.floor] - 80, `PATRO ${this.floor + 1}  +150`, '#ffe6a6');
         this.transitioning = false;
@@ -974,6 +991,7 @@
         this.tipText.setText(this.isMuted ? 'ZVUK VYPNUT (M)' : 'ZVUK ZAPNUT (M)');
       }
       this.posters.update(this.player, this.floor, this.gameState === 'playing' && !this.transitioning, delta);
+      this.pacing.tick(delta);
       this.colleague.update(delta);
       this.oldBadger.update(delta);
       // START/PAUZA/RESTART mají přímou DOM obsluhu, nezávislou na Phaser input.
@@ -1030,6 +1048,8 @@
       if (!crouchHeld) this.stairsCrouchHeld = false;
       // E remains an optional alternative for older controls.
       if (pressed('interact')) this.interact();
+      this.pacing.objective(delta, {held: crouching || down('interact'), moving, grounded});
+      if (this.gameState !== 'playing') return;
       this.coffees.getChildren().forEach(coffee => {
         const steam = coffee.getData('steam');
         if (!steam) return;
@@ -1047,6 +1067,7 @@
         if (e.profile) { this.enemyTrio.update(e, time); return; }
         const sameFloor = e.floorIndex === this.floor;
         if (!sameFloor) { e.setVelocityX(0); return; }
+        if (this.pacing.isWinding(e)) { e.setVelocityX(0); return; }
         if (time < e.contactUntil) {
           e.setVelocityX(0);
           if (e.kind === 'manager') {
@@ -1065,7 +1086,7 @@
         e.setVelocityX(e.direction * (e.kind === 'manager' ? 34 : 49));
         if (Math.abs(e.x - this.player.x) < 510 && time - e.lastAttack > (e.kind === 'specialist' && Math.abs(e.x-this.player.x)<135 ? 850 : e.attackDelay)) {
           e.lastAttack = time;
-          this.enemyAttack(e);
+          this.pacing.queue(e, () => this.enemyAttack(e));
         }
       });
       [this.playerShots, this.enemyShots].forEach(group => group.getChildren().forEach(shot => {
@@ -1073,12 +1094,12 @@
       }));
       const door = this.doors[this.floor];
       const nearDoor = Math.abs(this.player.x - door.x) < 74 && Math.abs(this.player.y - (door.y - 25)) < 110;
-      this.promptText.setVisible(nearDoor);
+      this.promptText.setVisible(nearDoor && door.kind !== 'exit');
       const stairsKey = this.touchControls?.enabled ? '▼' : 'S / ↓';
-      this.promptText.setText(nearDoor ? `[ ${stairsKey} ]  ${door.kind === 'exit' ? 'VSTUP DO VEDENÍ' : 'DALŠÍ PATRO'}` : '');
+      this.promptText.setText(nearDoor ? `[ ${stairsKey} ]  ${door.kind === 'exit' ? 'ODPOJIT HDD' : 'DALŠÍ PATRO'}` : '');
       this.tipText.setVisible(!this.posters.tooltip.visible);
       if (!this.isMuted || !this.tipText.text.startsWith('ZVUK')) {
-        this.tipText.setText(this.touchControls?.enabled ? (nearDoor ? 'U schodů podrž ▼' : '◀ / ▶ • POHYB   ↑ • SKOK   ▼ • SKRČENÍ   ● • STŘELBA') : (nearDoor ? 'U schodů se skrč: S nebo ↓' : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD'));
+        this.tipText.setText(this.touchControls?.enabled ? (nearDoor ? (door.kind === 'exit' ? 'U HDD podrž ▼ a stůj na místě' : 'U schodů podrž ▼') : '◀ / ▶ • POHYB   ↑ • SKOK   ▼ • SKRČENÍ   ● • STŘELBA') : (nearDoor ? (door.kind === 'exit' ? 'U HDD podrž S / ↓ nebo E a stůj na místě' : 'U schodů se skrč: S nebo ↓') : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD'));
       }
       if (time - this.lastHit < 1250) this.player.alpha = Math.floor(time / 90) % 2 ? 0.4 : 1;
       else this.player.alpha = 1;

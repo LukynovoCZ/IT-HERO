@@ -5,17 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111a2a">
   <title>IT HERO | Save the world — but first, coffee</title>
-  <link rel="stylesheet" href="style.css?v=0.11.3">
+  <link rel="stylesheet" href="style.css?v=0.12.0">
   <script defer src="vendor/phaser.min.js"></script>
-  <script defer src="character-dialogue.js?v=0.11.3"></script>
-  <script defer src="posters.js?v=0.11.3"></script>
-  <script defer src="trio-attacks.js?v=0.11.3"></script>
-  <script defer src="enemy-catalog.js?v=0.11.3"></script>
-  <script defer src="sap-integrator.js?v=0.11.3"></script>
-  <script defer src="it-colleague.js?v=0.11.3"></script>
-  <script defer src="old-badger.js?v=0.11.3"></script>
-  <script defer src="touch-controls.js?v=0.11.3"></script>
-  <script defer src="game.js?v=0.11.3"></script>
+  <script defer src="character-dialogue.js?v=0.12.0"></script>
+  <script defer src="posters.js?v=0.12.0"></script>
+  <script defer src="trio-attacks.js?v=0.12.0"></script>
+  <script defer src="enemy-catalog.js?v=0.12.0"></script>
+  <script defer src="sap-integrator.js?v=0.12.0"></script>
+  <script defer src="it-colleague.js?v=0.12.0"></script>
+  <script defer src="old-badger.js?v=0.12.0"></script>
+  <script defer src="touch-controls.js?v=0.12.0"></script>
+  <script defer src="gameplay.js?v=0.12.0"></script>
+  <script defer src="game.js?v=0.12.0"></script>
 </head>
 <body>
   <main class="layout">
@@ -24,7 +25,7 @@
         <span class="eyebrow">PTG PIXEL OFFICE ARCADE</span>
         <h1>IT<span>HERO</span><small> / Save the world — but first, coffee</small></h1>
       </div>
-      <span class="version">BUILD 0.11.3</span>
+      <span class="version">BUILD 0.12.0</span>
     </header>
     <section id="play-area" class="play-area" aria-label="Herní plocha a ovládání">
     <div class="game-shell">
@@ -50,7 +51,7 @@
         <button type="button" data-touch-action="shoot" aria-label="Střelba disketami nebo CD" aria-pressed="false">●<small>střelba</small></button>
       </div>
     </div>
-    <p id="touch-hint" class="touch-hint" hidden>Drž ▼ pro skrčení; u schodů přejdeš dál. Pohyb, skok a střelbu můžeš kombinovat. <span>Na mobilu zkus otočit telefon na šířku.</span></p>
+    <p id="touch-hint" class="touch-hint" hidden>Drž ▼ pro skrčení; u schodů přejdeš dál a u HDD odpojíš disk. Pohyb, skok a střelbu můžeš kombinovat. <span>Na mobilu zkus otočit telefon na šířku.</span></p>
     </section>
     <button type="button" id="touch-toggle" class="touch-toggle" aria-controls="touch-controls" aria-expanded="false">Dotykové ovládání</button>
     <details class="mission-story">
@@ -74,7 +75,7 @@
       <div><kbd>M</kbd><span>Zvuk</span></div>
     </div>
     <p><a href="character-preview.html">Zkušební scéna: porovnání postav</a></p>
-    <p class="footer">Cíl: projdi devět pater po schodech — výtahy nefungují, vyhni se šanonům a dostaň se k řediteli. Káva vrací energii. CD vylepšuje střelbu. Starý ajťák občas nechá občerstvení pro plné zdraví. IT kolega nosí kávu a Sisinku (+1). Jezevce porazíš jedině skokem na hlavu. Po zásahu máš krátkou ochranu.</p>
+    <p class="footer">Cíl: projdi devět pater po schodech — výtahy nefungují, vyhni se šanonům a odpoj HDD u ředitele podržením skrčení. Po porážce Šéfa SAP v 5. patře se uloží checkpoint. Rychlost přidává bonusové body; čas tě nevyřadí. Káva vrací energii. CD vylepšuje střelbu. Starý ajťák občas nechá občerstvení pro plné zdraví. IT kolega nosí kávu a Sisinku (+1). Jezevce porazíš jedině skokem na hlavu. Po zásahu máš krátkou ochranu.</p>
   </main>
 </body>
 </html>

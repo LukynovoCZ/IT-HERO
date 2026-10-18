@@ -29,6 +29,7 @@
     }
     function safeSpawn(){
       const ground=floors[scene.floor];
+      if(scene.pacing?.reserved(500,scene.floor,95))return false;
       if(Math.abs(scene.player.x-500)<95&&Math.abs(scene.player.body.bottom-ground)<150)return false;
       if(scene.helperVisit?.source==='lift'&&scene.helperVisit.floor===scene.floor)return false;
       return !scene.obstacles.getChildren().some(o=>o.active&&o.body&&o.body.left<522&&o.body.right>478&&o.body.top<ground&&o.body.bottom>ground-75);

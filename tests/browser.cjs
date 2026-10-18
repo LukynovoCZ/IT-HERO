@@ -85,10 +85,10 @@ const assert=require('node:assert/strict');
     await gamePage.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.player.body.reset(500,s.doors[s.floor].y-30);s.player.setVelocity(0,0);});
     await gamePage.keyboard.press('e');await gamePage.waitForTimeout(80);
     assert.equal(await gamePage.evaluate(()=>window.__testGame.scene.getScene('ITGame').floor),floor);
-    await gamePage.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');const d=s.doors[s.floor];s.player.body.reset(d.x,d.y-30);s.player.setVelocity(0,0);});
-    await gamePage.keyboard.press('e');
+    await gamePage.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');const d=s.doors[s.floor];s.player.body.reset(d.x-(s.floor===8?54:0),d.y-45);s.player.setVelocity(0,0);});
+    if(floor<8)await gamePage.keyboard.press('e');else await gamePage.keyboard.down('e');
     if(floor<8)await gamePage.waitForFunction(f=>{const s=window.__testGame.scene.getScene('ITGame');return s.floor===f+1&&!s.transitioning},floor);
-    else await gamePage.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').gameState==='win');
+    else {await gamePage.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').gameState==='win');await gamePage.keyboard.up('e');}
   }
   await gamePage.keyboard.press('Enter');
   await gamePage.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').gameState==='menu');
