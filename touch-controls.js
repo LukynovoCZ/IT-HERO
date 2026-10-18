@@ -3,7 +3,7 @@
   'use strict';
   let preferred=null;
   let movementMode='stick';
-  const stickConfig={radius:46,deadZone:.25,downThreshold:.52,downDominance:1.1};
+  const stickConfig={radius:46,deadZone:.25,downThreshold:.52,upThreshold:.52,downDominance:1.1};
   function attach(scene){
     const panel=document.getElementById('touch-controls'),area=document.getElementById('play-area');
     if(!panel||!area)return null;
@@ -32,6 +32,7 @@
       const down=dy>stickConfig.radius*stickConfig.downThreshold;
       if(Math.abs(dx)>threshold&&!(down&&dy>Math.abs(dx)*stickConfig.downDominance))actions.add(dx<0?'left':'right');
       if(down)actions.add('crouch');
+      if(dy < -stickConfig.radius*stickConfig.upThreshold)actions.add('jump');
       for(const action of actions)if(!isDown(action))pressed.add(action);
       pointer.actions=actions;paint();
     }
@@ -74,7 +75,7 @@
         modeButton.dataset.mode=movementMode;
         modeButton.setAttribute('aria-label',movementMode==='stick'?'Přepnout na směrová tlačítka':'Přepnout na ovladač pod palcem');
       }
-      if(hint)hint.textContent=movementMode==='stick'?'Polož levý palec na ovladač a táhni vlevo nebo vpravo. Tažení dolů = skrčení, schody a odpojení HDD. Skok a střelba jsou napravo. Nejlépe na šířku.':'Drž ▼ pro skrčení; u schodů přejdeš dál a u HDD odpojíš disk. Pohyb, skok a střelbu můžeš kombinovat.';
+      if(hint)hint.textContent=movementMode==='stick'?'Polož levý palec na ovladač a táhni vlevo nebo vpravo. Tažení nahoru = skok, dolů = skrčení, schody a odpojení HDD. Střelba a další tlačítko skoku jsou napravo. Nejlépe na šířku.':'Drž ▼ pro skrčení; u schodů přejdeš dál a u HDD odpojíš disk. Pohyb, skok a střelbu můžeš kombinovat.';
       resetStick();requestAnimationFrame(refresh);
     }
     scene.scale.on('resize',placeStart);listeners.push(()=>scene.scale.off('resize',placeStart));

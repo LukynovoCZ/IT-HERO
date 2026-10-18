@@ -23,7 +23,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  await p.waitForFunction(()=>s.player.body.velocity.y<0);assert.deepEqual(await actions(),['right','jump','shoot']);
  await end(3);await end(2);assert.deepEqual(await actions(),['right']);
  await move(1,{x:origin.x-40,y:origin.y});assert.deepEqual(await actions(),['left']);
- await move(1,{x:origin.x,y:origin.y-40});assert.deepEqual(await actions(),[],'Up is neutral; jump stays on the right');
+ await move(1,{x:origin.x,y:origin.y-40});assert.deepEqual(await actions(),['jump'],'Up activates jump on the thumb control');
  await move(1,{x:origin.x+8,y:origin.y+46});assert.deepEqual(await actions(),['crouch'],'Down tolerates horizontal jitter without drift');
  await move(1,{x:origin.x+40,y:origin.y+32});assert.deepEqual(await actions(),['right','crouch']);
  // Capture survives leaving the zone and releases cleanly afterwards.
@@ -33,10 +33,16 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  await p.locator('#touch-pause').tap();await p.waitForFunction(()=>s.gameState==='playing');
  await start(6,origin);await move(6,{x:origin.x+40,y:origin.y});await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});points.clear();assert.deepEqual(await actions(),[]);
  await p.locator('#touch-mode').tap();assert.equal(await p.evaluate(()=>s.touchControls.movementMode),'buttons');await p.locator('#touch-mode').tap();
+ // Held up jumps once; returning to the centre arms another jump.
+ await p.evaluate(()=>{s.player.body.reset(82,4280);s.player.setVelocity(0);});await p.waitForFunction(()=>s.player.body.blocked.down);
+ origin=await center(zone);await start(12,origin);await move(12,{x:origin.x,y:origin.y-46});
+ await p.waitForFunction(()=>s.player.body.velocity.y<0);await p.waitForFunction(()=>s.player.body.blocked.down);await p.waitForTimeout(160);
+ assert.equal(await p.evaluate(()=>s.player.body.velocity.y),0,'Holding up must not auto-jump after landing');
+ await move(12,origin);await move(12,{x:origin.x,y:origin.y-46});await p.waitForFunction(()=>s.player.body.velocity.y<0);await end(12);
  // Jump over a real Gen Z blocker while holding the thumb and pressing the right button.
  await p.evaluate(()=>{s.genZ.clear();s.coffees.getChildren().slice().forEach(i=>{i.getData('steam')?.destroy();i.destroy();});s.player.body.reset(82,4280);s.player.setVelocity(0);if(!s.genZ.spawn({x:240,variant:'girl'}))throw Error('NPC fixture failed');});
  await p.waitForFunction(()=>s.genZ.state.entity?.phase==='block');origin=await center(zone);await start(7,origin);await move(7,{x:origin.x+40,y:origin.y});
- await p.waitForFunction(()=>s.player.body.touching.right);await start(8,await center(button('jump')));await p.waitForFunction(()=>s.player.x>270);
+ await p.waitForFunction(()=>s.player.body.touching.right);await start(8,await center(button('shoot')));await move(7,{x:origin.x+40,y:origin.y-46});assert.deepEqual(await actions(),['right','jump','shoot']);await p.waitForFunction(()=>s.player.body.velocity.y<0);await p.waitForFunction(()=>s.player.x>270);
  assert(await p.evaluate(()=>s.genZ.state.entity?.active&&s.energy===5));await end(8);await end(7);
  // One down gesture advances exactly one floor, even if kept held through the fade.
  await p.evaluate(()=>{s.genZ.clear();s.player.body.reset(s.doors[0].x,4280);s.player.setVelocity(0);});
@@ -48,13 +54,18 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  origin=await center(zone);await start(10,origin);await move(10,{x:origin.x+8,y:origin.y+46});await p.waitForFunction(()=>s.pacing.state.disconnect>200);
  assert.deepEqual(await actions(),['crouch']);await p.waitForFunction(()=>s.gameState==='win');await end(10);
  await p.locator('#game-action').tap();await p.waitForFunction(()=>__g.scene.getScene('ITGame').gameState==='menu');await p.locator('#game-action').tap();
+ if(await p.locator('#touch-fullscreen').isVisible()){
+  await p.locator('#touch-fullscreen').tap();await p.waitForFunction(()=>!!document.fullscreenElement);await p.waitForTimeout(120);
+  assert(await p.evaluate(()=>{const z=document.querySelector('#touch-stick-zone').getBoundingClientRect(),c=document.querySelector('canvas').getBoundingClientRect();return z.right<=c.left&&z.left>=0&&z.bottom<=innerHeight;}),'Fullscreen thumb stays outside the canvas');
+  await p.locator('#touch-fullscreen').tap();await p.waitForFunction(()=>!document.fullscreenElement);
+ }
  for(const viewport of [{width:390,height:844},{width:320,height:568},{width:844,height:390},{width:568,height:320}]){
   await p.setViewportSize(viewport);await p.waitForTimeout(180);
-  const layout=await p.evaluate(()=>{const c=document.querySelector('canvas').getBoundingClientRect(),z=document.querySelector('#touch-stick-zone').getBoundingClientRect();return {height:c.height,overflow:document.documentElement.scrollWidth>innerWidth,zone:z.width>100&&z.height>100&&z.bottom<=innerHeight,buttons:[...document.querySelectorAll('.touch-actions button,#touch-toolbar button:not([hidden])')].map(b=>{const r=b.getBoundingClientRect();return {w:r.width,h:r.height,bottom:r.bottom,visible:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('button')===b,outside:r.top>=c.bottom-1||r.left>=c.right-1};})};});
-  assert(!layout.overflow&&layout.zone,JSON.stringify(layout));assert(layout.buttons.every(b=>b.w>=44&&b.h>=44&&b.bottom<=viewport.height&&b.visible&&b.outside),JSON.stringify(layout));
-  if(viewport.width===844){assert(layout.height>=370);await p.screenshot({path:'/tmp/it-hero-tests/thumb-landscape.png'});}
+  const layout=await p.evaluate(()=>{const c=document.querySelector('canvas').getBoundingClientRect(),z=document.querySelector('#touch-stick-zone').getBoundingClientRect();return {height:c.height,overflow:document.documentElement.scrollWidth>innerWidth,zone:z.width>100&&z.height>100&&z.bottom<=innerHeight,outside:z.right<=c.left+1||z.top>=c.bottom-1,buttons:[...document.querySelectorAll('.touch-actions button,#touch-toolbar button:not([hidden])')].map(b=>{const r=b.getBoundingClientRect();return {w:r.width,h:r.height,bottom:r.bottom,visible:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('button')===b,outside:r.top>=c.bottom-1||r.left>=c.right-1};})};});
+  assert(!layout.overflow&&layout.zone&&layout.outside,JSON.stringify(layout));assert(layout.buttons.every(b=>b.w>=44&&b.h>=44&&b.bottom<=viewport.height&&b.visible&&b.outside),JSON.stringify(layout));
+  if(viewport.width===844){assert(layout.height>=340);await p.screenshot({path:'/tmp/it-hero-tests/thumb-landscape.png'});}
  }
  origin=await center(zone);await start(11,origin);await move(11,{x:origin.x-40,y:origin.y});await p.setViewportSize({width:390,height:844});await p.waitForTimeout(100);assert.deepEqual(await actions(),[]);
  await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});points.clear();assert.deepEqual(errors,[]);
- console.log('PASS floating thumb: origin/dead zone, left/right/down/diagonal, real three-finger jump/fire, capture/cancel/pause/rotation, button fallback, Gen Z jump, stairs, HDD victory, restart and four mobile layouts.');
+ console.log('PASS floating thumb: origin/dead zone, left/right/up/down/diagonal, one jump per up gesture, real three-finger jump/fire, capture/cancel/pause/rotation, button fallback, Gen Z thumb jump, stairs, HDD victory, restart and four mobile layouts with all controls outside the canvas.');
 }finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});
