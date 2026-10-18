@@ -9,7 +9,9 @@ export async function deploy({env=process.env,fetchImpl=fetch,log=console.log}={
  if(!token)throw Error('V GitHub repository secrets chybí CLOUDFLARE_API_TOKEN.');
  if(!/^[\x21-\x7e]+$/.test(token))throw Error('Cloudflare API token obsahuje mezery nebo neplatné znaky. Vlož samotný token.');
  if(!/^[a-f0-9]{32}$/i.test(account||''))throw Error('Chybí platné CLOUDFLARE_ACCOUNT_ID.');
- if(!admin||admin.length<32||admin.length>256)throw Error('Přidej GitHub secret IT_HERO_ADMIN_TOKEN: soukromé heslo pro správu, 32 až 256 znaků.');
+ if(!admin)throw Error('GitHub nepředal repository secret IT_HERO_ADMIN_TOKEN. Přidej ho pod přesným názvem v Settings > Secrets and variables > Actions > Repository secrets.');
+ if(admin.length<32)throw Error('IT_HERO_ADMIN_TOKEN existuje, ale heslo je kratší než 32 znaků. Uprav pouze hodnotu tohoto secretu.');
+ if(admin.length>256)throw Error('IT_HERO_ADMIN_TOKEN existuje, ale heslo je delší než 256 znaků. Uprav pouze hodnotu tohoto secretu.');
  if(admin===token)throw Error('Pro správu použij jiné heslo než Cloudflare API token.');
  const base=`https://api.cloudflare.com/client/v4/accounts/${account}`;
  async function api(route,{method='GET',body,form,allow404=false}={}){

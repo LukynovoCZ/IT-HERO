@@ -26,6 +26,7 @@ const url=await deploy({env,fetchImpl,log:message=>logs.push(message)});assert.e
 assert(calls.find(c=>c.url.endsWith('/query')));assert(calls.find(c=>c.url.endsWith('/secrets')));
 let changed=false;await assert.rejects(()=>deploy({env,fetchImpl:async()=>new Response(JSON.stringify({success:false,errors:[{code:10000}]}),{status:403}),log:()=>changed=true}),/HTTP 403/);assert.equal(changed,false);
 await assert.rejects(()=>deploy({env:{...env,CLOUDFLARE_API_TOKEN:''},fetchImpl}),/chybí CLOUDFLARE_API_TOKEN/);
-await assert.rejects(()=>deploy({env:{...env,IT_HERO_ADMIN_TOKEN:'short'},fetchImpl}),/32 až 256/);
+await assert.rejects(()=>deploy({env:{...env,IT_HERO_ADMIN_TOKEN:'short'},fetchImpl}),/kratší než 32/);
+await assert.rejects(()=>deploy({env:{...env,IT_HERO_ADMIN_TOKEN:''},fetchImpl}),/GitHub nepředal/);
 calls=[];await deploy({env,log:()=>{},fetchImpl:async(url,options={})=>{if(url.includes('/d1/database?'))return response([{uuid:'existing-db',name:'it-hero-community'}]);if(url.endsWith('/query')){assert(url.includes('existing-db'));return response([{success:true}]);}if(url.endsWith('/scripts/it-hero-community')){assert.equal(JSON.parse(await options.body.get('metadata').text()).bindings[0].id,'existing-db');return response({});}return fetchImpl(url,options);}});assert(!calls.some(c=>c.url.endsWith('/d1/database')&&c.options.method==='POST'));
 console.log('PASS deploy preparation: mocked API flow, module upload/bindings, additive migration, existing DB reuse, private secrets, permission failure and missing credentials. No Cloudflare account was contacted.');
