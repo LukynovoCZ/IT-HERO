@@ -169,7 +169,7 @@
   },
   {
     "id": "old_badger",
-    "name": "STARÝ JEZEVEC",
+    "name": "SENIOR MASTER",
     "groups": [
       {
         "id": "ambient",

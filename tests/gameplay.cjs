@@ -24,7 +24,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  await page.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.enemyShots.clear(true,true);s.floor=1;s.updateHUD();s.cameras.main.setScroll(0,4320-485-420);s.player.body.reset(680,4320-485-78);s.player.setVelocity(0);});
  await page.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').player.body.blocked.down);
  await page.keyboard.down('a');await page.keyboard.down('w');await page.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').player.x<580);await page.keyboard.up('a');await page.keyboard.up('w');
- await page.waitForFunction(()=>{const s=window.__testGame.scene.getScene('ITGame');return s.player.body.blocked.down&&Math.abs(s.player.body.bottom-(4320-485-100))<3;});
+ await page.waitForFunction(()=>{const s=window.__testGame.scene.getScene('ITGame');return s.player.body.blocked.down&&Math.abs(s.player.body.bottom-(4320-485-132))<3;});
  assert(await page.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame'),ground=4320-485-s.cameras.main.scrollY;return ground>350&&ground<470;}),'Ground must stay visible while using the upper route');
  await page.screenshot({path:'/tmp/it-hero-tests/gameplay-bridge.png'});
  // Moving cart carries a standing player; a timed door does not close on bodies.

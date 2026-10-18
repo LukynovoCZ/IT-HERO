@@ -1,4 +1,4 @@
-# Starý Jezevec (0.10.0)
+# Senior master (0.10.0)
 
 Součást společné verze 0.10.1 spolu se SAP minibossem, čitelnějšími manažery,
 IT kolegou a delšími hláškami.
@@ -11,7 +11,7 @@ IT kolegou a delšími hláškami.
   návrhu (2048 × 768): IDLE, WALK, BLOCK a stlačený STOMP_HIT. Výstup z výtahu
   a SINK jsou procedurální animace. Ořezy a kotvy jsou v `art`; výška 76 px.
 - `game.js`: načtení/vytvoření kontroleru, pořadí kolizí, průběžná aktualizace,
-  ochrana střel u nepřátel za Jezevcem a úklid při změně patra.
+  ochrana střel u nepřátel za Senior masterem a úklid při změně patra.
 - `index.html`, `character-preview.html/js`: modul, verze a dvanáctá postava
   v náhledu. „Útok“ zde ukazuje blokovací pózu, „Zastavení hráče“ stlačenou.
 - `tests/old-badger.cjs`: skutečné fyzikální interakce v Chromium.
@@ -40,7 +40,7 @@ Dveře jsou dočasná grafická vrstva; po výstupu opět platí „MIMO PROVOZ�
 
 ## Pravidla kolizí
 
-Jezevec není ve skupině `enemies`, nemá odečítané životy a nemá střelnou zbraň.
+Senior master není ve skupině `enemies`, nemá odečítané životy a nemá střelnou zbraň.
 Jeho Arcade tělo je nepohyblivé vůči hráči a bez gravitace, ale AI jím posouvá
 vodorovně. Chodí v centrální volné části patra mezi herními stoly.
 
@@ -50,11 +50,11 @@ vodorovně. Chodí v centrální volné části patra mezi herními stoly.
 - `enemyShots × oldBadger`: žádný collider ani overlap, žádná změna letu.
 - `player × oldBadger` z boku: běžná fyzická překážka, žádné poškození.
 - STOMP: kladná rychlost Y, předchozí spodní hrana hráče nad horní hranou
-  Jezevce (malá tolerance) a alespoň 6 px vodorovného překrytí. Vyhodnocuje se
+  Senior mastera (malá tolerance) a alespoň 6 px vodorovného překrytí. Vyhodnocuje se
   v process callbacku před fyzikálním oddělením těl. Výskok ani boční kontakt
   podmínky nesplní. Odměna i animace jsou jištěné příznakem `stomped`.
 
-Při porážce se tělo vypne ihned, hráč se odrazí, Jezevec se stlačí a přepne
+Při porážce se tělo vypne ihned, hráč se odrazí, Senior master se stlačí a přepne
 na hlavu s rukama. Geometrická maska skryje část pod podlahou; následují hvězdy
 a prach. Kamera po dobu efektu mírně sníží sledovací offset, aby animaci
 nezakryl spodní HUD; při úklidu se vrátí původní nastavení.
@@ -76,11 +76,11 @@ node tests/support.cjs
 node tests/browser.cjs
 ```
 
-Test Jezevce ověřuje automatický příchod, jedinou aktivní instanci, zákaz
+Test Senior mastera ověřuje automatický příchod, jedinou aktivní instanci, zákaz
 spawnu uvnitř hráče, pohyb, pauzu, skutečné střely disket/CD z obou stran,
 chráněného nepřítele za ním, průlet nepřátelské střely, boční i vzestupný kontakt,
 skok na pohybující se postavu, odraz, maskované propadnutí, 150 bodů právě jednou,
-živého Jezevce při změně patra, konec hry i restart scény.
+živého Senior mastera při změně patra, konec hry i restart scény.
 
 Pro místní ruční test lze na instanci scény použít `scene.oldBadger.spawn()`.
 Kontroler poskytuje `state.entity`, `state.clock`, `state.nextAt`, `group` a

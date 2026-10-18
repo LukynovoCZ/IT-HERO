@@ -1,4 +1,4 @@
-# Hratelnost 0.12.0
+# Hratelnost 0.12.1
 
 Samostatný modul `gameplay.js` obsahuje `ITHeroGameplay.config`, konfiguraci
 průchodů `routes` a stav aktuálního pokusu. `game.js` jej napojuje na ovládání,
@@ -25,8 +25,8 @@ Délky nápřahů lze změnit v `config.windup`, `config.trioWindup` a v konfigu
 
 Pozice a rychlosti jsou v `routes`, patra jsou číslovaná 1–9. Léčivé předměty
 se nepokládají do celé dráhy vozíku. Starý ajťák najde náhradní dostupné místo;
-Jezevec se u výtahu v těchto dvou patrech neobjeví, aby se nepřekrýval s vozíkem.
-Oba pomocníci, původní nepřátelé i Jezevec zůstávají součástí hry.
+Senior master se u výtahu v těchto dvou patrech neobjeví, aby se nepřekrýval s vozíkem.
+Oba pomocníci, původní nepřátelé i Senior master zůstávají součástí hry.
 
 ## Checkpoint
 
@@ -62,6 +62,15 @@ Při běžícím lokálním HTTP serveru na portu 8000:
 - `node tests/gameplay-mobile.cjs`: skutečný dotyk drženého ▼, finále a restart.
 - `node tests/touch-controls.cjs`: souběžné dotyky, schody, čtyři mobilní rozměry.
 - `node tests/browser.cjs`, `node tests/floors.cjs`: start, PC, průchod devíti patry.
-- Dosavadní testy SAP, pomocníků, Jezevce a zásahů zůstávají použitelné.
+- Dosavadní testy SAP, pomocníků, Senior mastera a zásahů zůstávají použitelné.
 
 Mobilní ověření používá emulované dotykové zařízení v Chromium, nikoli fyzický telefon.
+
+## Oprava schodů a lávek (0.12.1)
+
+- Držení skrčení přes přechod patra nezablokuje další schody. Pojistka se znovu připraví po opuštění dveří; podržení u příchodu nevynechá patro.
+- Neaktivní dveře jsou označeny PŘÍCHOD, pokračuje se protějšími SCHODY ↓.
+- Lávky ve 2., 4. a 7. patře mají výšku 128 px a mezi díly 65 px volného prostoru. Pod lávkou je místo pro stojícího hráče i nad deskou stolu. Nahoru se skáče ze stolu.
+- S / ↓ / dotykové ▼ na lávce umožní seskočit k nepřátelům. Podlaha a stoly zůstávají pevné; po seskoku je lávka znovu použitelná.
+- Starý Jezevec se nově zobrazuje jako SENIOR MASTER. Interní ID `old_badger` zůstává kvůli kompatibilitě hlášek.
+- Regrese: `node tests/stairs-platforms.cjs` ověřuje schody s drženým skrčením, skutečný skok ze stolu na lávku, seskočení a skok pod lávkou.

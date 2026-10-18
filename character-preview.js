@@ -55,7 +55,7 @@
           frames: ITHeroEnemyCatalog.createTextures(this, profile) });
       }
       this.entries.push({name:'IT KOLEGA',height:80,frames:ITHeroColleague.createTextures(this),frameWidth:96,frameHeight:88,body:null,attackPose:'offer_coffee',contactPose:'offer_candy',offerKeys:['colleague-coffee','colleague-candy']});
-      this.entries.push({name:'STARÝ JEZEVEC',height:76,frames:ITHeroOldBadger.createTextures(this),frameWidth:80,frameHeight:80,body:{width:36,height:70,x:22,y:10},attackPose:'block',contactPose:'stomp'});
+      this.entries.push({name:'SENIOR MASTER',height:76,frames:ITHeroOldBadger.createTextures(this),frameWidth:80,frameHeight:80,body:{width:36,height:70,x:22,y:10},attackPose:'block',contactPose:'stomp'});
       this.entries.forEach((entry, i) => {
         const x = 160 + (i % 3) * 320;
         entry.baseline = 260 + Math.floor(i / 3) * 400;

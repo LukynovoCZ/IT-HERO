@@ -4,10 +4,10 @@
   const config={windup:400,trioWindup:500,checkpointFloor:5,bonusWindow:360000,maxTimeBonus:1200,
     disconnectDuration:1200,finalWarning:900,finalShotGap:230,finalRecovery:900};
   const routes=[
-    {floor:2,bridges:[{x:430,rise:96,width:112},{x:550,rise:96,width:112}]},
+    {floor:2,bridges:[{x:415,rise:128,width:90},{x:570,rise:128,width:90}]},
     {floor:3,cart:{min:440,max:525,speed:30}},
-    {floor:4,bridges:[{x:425,rise:96,width:120},{x:555,rise:96,width:120}],door:{x:620,period:4400,closed:1400}},
-    {floor:7,bridges:[{x:430,rise:96,width:120},{x:560,rise:96,width:120}],door:{x:620,period:4600,closed:1400}},
+    {floor:4,bridges:[{x:415,rise:128,width:90},{x:570,rise:128,width:90}],door:{x:620,period:4400,closed:1400}},
+    {floor:7,bridges:[{x:415,rise:128,width:90},{x:570,rise:128,width:90}],door:{x:620,period:4600,closed:1400}},
     {floor:8,cart:{min:480,max:550,speed:24}}
   ];
   const checkpointKey='missionCheckpoint';
@@ -31,7 +31,7 @@
         const g=scene.add.graphics().setDepth(13);g.fillStyle(0x475e58).fillRect(spec.x-spec.width/2,ground-spec.rise+4,spec.width,4);
         for(let x=spec.x-spec.width/2+8;x<spec.x+spec.width/2;x+=20)g.fillStyle(0x91b5a3).fillRect(x,ground-spec.rise-1,9,2);
       }
-      if(route.bridges)scene.add.text(490,ground-117,'SERVISNÍ LÁVKA',{font:'bold 9px monospace',color:'#d7e3c9',backgroundColor:'#253e34',padding:{x:4,y:2}}).setOrigin(.5).setDepth(14);
+      if(route.bridges)scene.add.text(490,ground-Math.max(...route.bridges.map(b=>b.rise))-21,'SERVISNÍ LÁVKA',{font:'bold 9px monospace',color:'#d7e3c9',backgroundColor:'#253e34',padding:{x:4,y:2}}).setOrigin(.5).setDepth(14);
       if(route.cart){
         if(!scene.textures.exists('service-cart')){
           const g=scene.make.graphics({add:false});g.fillStyle(0x25322f).fillRect(0,6,64,32);g.fillStyle(0x858d89).fillRect(3,8,58,24);g.fillStyle(0xf1eedb).fillRect(0,4,64,5);

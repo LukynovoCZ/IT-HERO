@@ -49,7 +49,7 @@
       if(state.clock<e.nextQuote)return;
       const text=Phaser.Utils.Array.GetRandom(pool);e.nextQuote=state.clock+config.quoteInterval;
       e.speech?.destroy();e.speech=scene.add.text(e.x,e.body.top-16,text,{font:'bold 11px monospace',color:'#fff0c7',backgroundColor:'#27332e',wordWrap:{width:240},align:'center',padding:{x:6,y:5}}).setOrigin(0.5,1).setDepth(107);e.speechUntil=state.clock+2800;
-      scene.posters.showMessage(`STARÝ JEZEVEC\n${text}`,5000);
+      scene.posters.showMessage(`SENIOR MASTER\n${text}`,5000);
     }
     function impact(x,y,dust=false){
       const graphics=scene.add.graphics().setDepth(28);state.effects.push({graphics,x,y,started:state.clock,dust});
@@ -75,7 +75,7 @@
       // Keep the head/sink animation above the fixed lower HUD while the hero bounces.
       e.savedCameraOffset=scene.cameras.main.followOffset.clone();
       scene.cameras.main.setFollowOffset(e.savedCameraOffset.x,35);
-      scene.score+=config.scoreReward;scene.updateHUD();scene.popText(e.x,e.y-65,`+${config.scoreReward} JEZEVEC`,'#f7d887');scene.tone(80,0.16,'triangle');
+      scene.score+=config.scoreReward;scene.updateHUD();scene.popText(e.x,e.y-65,`+${config.scoreReward} SENIOR MASTER`,'#f7d887');scene.tone(80,0.16,'triangle');
       e.maskGraphics=scene.make.graphics({add:false}).fillStyle(0xffffff).fillRect(0,floors[e.floorIndex]-180,960,180);
       e.setMask(e.maskGraphics.createGeometryMask());e.stars=scene.add.graphics().setDepth(28);impact(e.x,floors[e.floorIndex]-2,true);return true;
     }

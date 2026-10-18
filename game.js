@@ -76,6 +76,7 @@
       this.transitioning = false;
       this.wasCrouching = false;
       this.stairsCrouchHeld = false;
+      this.dropThroughPlatform = null;
       this.isMuted = false;
       this.audioCtx = null;
       this.enemies = this.physics.add.group();
@@ -383,7 +384,7 @@
       g.fillStyle(0xdde9da).fillRect(x + 21, y - 49, 5, 10);
       for (let k = 0; k < 5; k++) g.fillStyle(0xa6ef5d).fillRect(x - 20 + k * 8, y - 21 - k * 9, 9, 5);
       g.fillStyle(0x0b1926).fillRect(x - 44, y - 123, 88, 23);
-      const label = isExit ? 'HDD ↓' : entry ? 'VÝSTUP' : 'SCHODY ↓';
+      const label = isExit ? 'HDD ↓' : entry ? 'PŘÍCHOD' : 'SCHODY ↓';
       this.add.text(x, y - 111, label, {
         font: 'bold 12px monospace', color: isExit ? '#ffdb8c' : '#b2ffee'
       }).setOrigin(0.5).setDepth(6);
@@ -513,7 +514,13 @@
     }
 
     configurePhysics() {
-      this.physics.add.collider(this.player, this.platforms);
+      // Ignore only the service bridge being dropped through; floors and desks stay solid.
+      this.physics.add.collider(this.player, this.platforms, undefined, (player, platform) => {
+        if (this.dropThroughPlatform !== platform) return true;
+        if (player.body.top <= platform.body.bottom + 2) return false;
+        this.dropThroughPlatform = null;
+        return true;
+      });
       this.physics.add.collider(this.player, this.obstacles);
       this.physics.add.collider(this.enemies, this.platforms);
       this.physics.add.collider(this.enemies, this.obstacles);
@@ -953,6 +960,8 @@
       if (Math.abs(this.player.x - door.x) > 74 || Math.abs(this.player.y - (door.y - 25)) > 110 || this.transitioning) return;
       if (door.kind === 'exit') { this.pacing.requestDisconnect(); return; }
       this.transitioning = true;
+      this.player.setVelocity(0, 0);
+      this.dropThroughPlatform = null;
       this.tone(740, 0.15, 'triangle');
       this.cameras.main.fadeOut(220, 7, 15, 28);
       this.time.delayedCall(230, () => {
@@ -1014,9 +1023,24 @@
       } else {
         this.player.setVelocityX(0);
       }
-      const grounded = this.player.body.blocked.down || this.player.body.touching.down;
+      if (this.dropThroughPlatform && (!this.dropThroughPlatform.active ||
+          this.player.body.top > this.dropThroughPlatform.body.bottom + 2)) {
+        this.dropThroughPlatform = null;
+      }
+      let grounded = this.player.body.blocked.down || this.player.body.touching.down;
       const crouchPressed = pressed('crouch');
       const crouchHeld = down('crouch') || crouchPressed;
+      if (grounded && crouchHeld) {
+        const bridge = this.pacing.bridges.find(b => b.active &&
+          Math.abs(this.player.body.bottom - b.body.top) < 5 &&
+          this.player.body.right > b.body.left && this.player.body.left < b.body.right);
+        if (bridge) {
+          this.dropThroughPlatform = bridge;
+          this.player.setVelocityY(80);
+          this.lastOnGroundAt = -5000;
+          grounded = false;
+        }
+      }
       const crouching = grounded && crouchHeld;
       if (crouching !== this.wasCrouching) {
         this.player.body.setSize(28, crouching ? 36 : 72);
@@ -1045,7 +1069,8 @@
         this.stairsCrouchHeld = true;
         this.interact();
       }
-      if (!crouchHeld) this.stairsCrouchHeld = false;
+      // Re-arm on leaving the doorway, even if a mobile player keeps ▼ held.
+      if (!crouchHeld || !atStairs) this.stairsCrouchHeld = false;
       // E remains an optional alternative for older controls.
       if (pressed('interact')) this.interact();
       this.pacing.objective(delta, {held: crouching || down('interact'), moving, grounded});
