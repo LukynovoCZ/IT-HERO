@@ -91,10 +91,9 @@
       g.lineStyle(4, 0x4a251d).lineBetween(d * 10, -42, d * 28, -48);
       g.lineStyle(2, 0x21171c).beginPath().moveTo(d * 28, -48).lineTo(d * 46, y).lineTo(d * 57, y + 16).lineTo(d * 46, y + 23).strokePath();
     } else if (enemy.profile.contactEffect === 'scream') {
-      // Exaggerated eyes, open mouth and sound rays, over the existing head.
-      const y = -enemy.profile.renderHeight + 17;
-      g.fillStyle(0xfff8e4).fillRect(-9, y, 8, 6).fillRect(2, y, 8, 6);
-      g.fillStyle(colors.ink).fillRect(-4, y + 1, 2, 4).fillRect(6, y + 1, 2, 4).fillRect(-2, y + 12, 7, 9);
+      const frames=enemy.poses||enemy.profile.frames;
+      if(frames?.scream)enemy.setTexture(phase%2?frames.scream_alt:frames.scream);
+      const y=-enemy.profile.renderHeight+18;
       g.lineStyle(2, colors.gold);
       for (const d of [-1, 1]) { g.lineBetween(d * 16, y + 5, d * (24 + phase * 3), y); g.lineBetween(d * 18, y + 13, d * (28 + phase * 3), y + 16); }
     }

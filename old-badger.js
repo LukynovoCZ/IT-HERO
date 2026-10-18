@@ -4,7 +4,7 @@
   const config={spawnIntervalMin:25000,spawnIntervalMax:45000,walkSpeed:28,minX:55,maxX:905,
     jumpVelocity:-520,jumpCooldown:700,lookAhead:24,
     pauseDuration:950,stompBounceVelocity:-330,sinkAnimationDuration:1250,scoreReward:150,
-    exitDuration:1200,quoteInterval:7000,stompTolerance:9};
+    exitDuration:1200,quoteInterval:7000,stompTolerance:9,eatDuration:1800};
   const lines=window.ITHeroDialogue.lines('old_badger','ambient');
   const blockLines=window.ITHeroDialogue.lines('old_badger','block');
   const art={path:'assets/characters/old_badger.png',poses:{idle:[104,114,344,594],walk:[578,116,388,601],block:[1062,119,378,589],stomp:[1542,493,442,218]},anchors:{idle:{x:170,y:594},walk:{x:169,y:601},block:{x:186,y:589},stomp:{x:226,y:218}}};
@@ -25,7 +25,7 @@
     const schedule=()=>state.nextAt=state.clock+Phaser.Math.Between(config.spawnIntervalMin,config.spawnIntervalMax);
     function clear(){
       const e=state.entity;
-      if(e){if(e.savedCameraOffset&&scene.cameras.main?.followOffset)scene.cameras.main.setFollowOffset(e.savedCameraOffset.x,e.savedCameraOffset.y);e.speech?.destroy();e.door?.destroy();e.stars?.destroy();e.clearMask(true);e.maskGraphics?.destroy();e.destroy();state.entity=null;}
+      if(e){if(e.savedCameraOffset&&scene.cameras.main?.followOffset)scene.cameras.main.setFollowOffset(e.savedCameraOffset.x,e.savedCameraOffset.y);e.snack?.destroy();e.speech?.destroy();e.door?.destroy();e.stars?.destroy();e.clearMask(true);e.maskGraphics?.destroy();e.destroy();state.entity=null;}
       state.effects.forEach(fx=>fx.graphics.destroy());state.effects=[];
     }
     function safeSpawn(){
@@ -70,7 +70,7 @@
     }
     function stomp(e){
       if(e!==state.entity||e.stomped||!e.body.enable||scene.gameState!=='playing')return false;
-      e.stomped=true;e.phase='sink';e.started=state.clock;e.setVelocity(0,0);e.body.enable=false;e.speech?.destroy();e.speech=null;
+      e.snack?.destroy();e.snack=null;e.stomped=true;e.phase='sink';e.started=state.clock;e.setVelocity(0,0);e.body.enable=false;e.speech?.destroy();e.speech=null;
       e.door?.destroy();e.door=null;
       scene.player.setVelocityY(config.stompBounceVelocity);
       // Keep the head/sink animation above the fixed lower HUD while the hero bounces.
@@ -128,6 +128,24 @@
       }
       if(e.speech){e.speech.setPosition(Phaser.Math.Clamp(e.x,135,825),e.body.top-16);if(state.clock>=e.speechUntil){e.speech.destroy();e.speech=null;}}
       speak(e,lines);
+      if(e.snack){
+        if(state.clock<e.eatingUntil){
+          e.setVelocityX(0);e.setTexture(frames.block);e.phase='eat';
+          e.snack.setPosition(e.x+(e.direction>0?13:-13),e.body.top+24+Math.floor(state.clock/180)%2*2);
+          return;
+        }
+        e.snack.destroy();e.snack=null;
+      }
+      const food=[...scene.coffees.getChildren(),...scene.aidItems.getChildren(),...scene.colleague.items.getChildren()]
+        .find(item=>item.active&&['coffee','colleague-coffee','hotdog'].includes(item.texture.key)&&Math.abs(item.x-e.x)<25&&Math.abs(item.y-e.body.bottom)<40);
+      if(food){
+        const key=food.texture.key;
+        food.getData('steam')?.destroy();food.getData('label')?.destroy();food.destroy();
+        e.snack=scene.add.image(e.x,e.body.top+25,key).setScale(.7).setDepth(24);
+        e.eatingUntil=state.clock+config.eatDuration;e.setVelocityX(0);e.phase='eat';
+        scene.popText(e.x,e.body.top-18,key==='hotdog'?'PÁREK SNĚDEN':'KÁVA VYPITA', '#ffe4a2',1800);
+        return;
+      }
       if(state.clock<e.blockUntil){e.setVelocityX(0);e.setTexture(frames.block);return;}
       if(e.x<=config.minX){e.direction=1;e.phase='idle';e.actionAt=state.clock+config.pauseDuration;e.setX(config.minX+1);}
       if(e.x>=config.maxX){e.direction=-1;e.phase='idle';e.actionAt=state.clock+config.pauseDuration;e.setX(config.maxX-1);}

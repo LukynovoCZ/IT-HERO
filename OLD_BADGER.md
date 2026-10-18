@@ -90,3 +90,11 @@ Pro místní ruční test lze na instanci scény použít `scene.oldBadger.spawn
 Kontroler poskytuje `state.entity`, `state.clock`, `state.nextAt`, `group` a
 `clear()`. Veřejná stránka instanci hry přímo neexportuje; testy ji zpřístupní
 jen lokální úpravou načítaného skriptu.
+
+## Občerstvení (0.13.3)
+
+Senior master spotřebuje kávu nebo párek, když se k nim přiblíží na 25 px
+vodorovně a 40 px od nohou. Krátce se zastaví a drží předmět u obličeje.
+`eatDuration` určuje délku animace (1800 ms aktivního hraní). Pauza ji zastaví.
+Předmět zmizí i s párou a popiskem; pak už jej hráč nesebere. Pivo a Sisinky
+Senior master nebere. Při porážce nebo opuštění patra zmizí i držený předmět.

@@ -28,6 +28,9 @@ const fs=require('node:fs');
    const s=window.__testGame.scene.getScene('ITGame');
    s.enemies.getChildren().filter(e=>!e.profile).forEach(e=>e.destroy());
    window.__design=s.enemyTrio.enemies.find(e=>e.kind==='design_manager');
+   // Isolate this character from the DBPM encounter now sharing floor four.
+   s.enemies.getChildren().filter(e=>e!==window.__design).forEach(e=>{e.defeated=true;e.body.enable=false;e.setActive(false);});
+   window.__design.lastAttack=Infinity;s.lastHit=Infinity;
    s.floor=3;s.updateHUD();s.player.body.reset(82,2865-40);s.player.setVelocity(0,0);
    s.cameras.main.centerOn(480,2865-180);
   });
@@ -48,7 +51,7 @@ const fs=require('node:fs');
    s.player.body.reset(window.__design.x,window.__design.y);s.player.setVelocity(0,0);
   });
   await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').energy===4);
-  assert.equal(await p.evaluate(()=>window.__design.texture.key),'trio-design_manager-explain');
+  assert.match(await p.evaluate(()=>window.__design.texture.key),/^trio-design_manager-scream/);
   await p.screenshot({path:'/tmp/it-hero-tests/design-explain.png'});
   await p.evaluate(()=>{
    const s=window.__testGame.scene.getScene('ITGame');s.enemyShots.clear(true,true);s.energy=5;s.lastHit=-3000;
@@ -66,6 +69,6 @@ const fs=require('node:fs');
   assert.deepEqual(hit,{hp:0,defeated:true,body:false,reward:100});
   await p.waitForFunction(()=>!window.__design.active);
   assert.deepEqual(errors,[]);
-  console.log('PASS actual design manager reference sprites in floors 4/8/9: transparent aligned poses, patrol, explanation contact, tablet attack, damage, CD/floppy defeat and score');
+  console.log('PASS actual design manager reference sprites in floors 4/8/9: transparent aligned poses, patrol, animated scream contact, tablet attack, damage, CD/floppy defeat and score');
  }finally{await b.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

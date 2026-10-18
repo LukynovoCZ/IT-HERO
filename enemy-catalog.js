@@ -38,7 +38,7 @@
       id:'design_manager',name:'MANAŽER DESIGNU',enabled:true,idleDuration:800,movementCycle:3800,
       health:4,speed:39,patrol:18,attackInterval:1950,attackRange:380,
       attackType:'office-weapons',projectile:'default',damage:1,score:100,
-      contactPose:'explain',attackPose:'tablet',contactEffect:'scream',
+      contactPose:'scream',attackPose:'tablet',contactEffect:'scream',
       projectiles:[{key:'golf-club',weight:1,spin:300},{key:'calculator',weight:1,spin:200}],
       frameWidth:80,frameHeight:112,renderHeight:108,
       body:{width:24,height:104,x:28,y:8},
@@ -88,6 +88,27 @@
         canvas.refresh();
       }
       frames[pose]=key;
+    }
+    if(profile.contactEffect==='scream'){
+      for(let i=0;i<2;i++){
+        const pose=i?'scream_alt':'scream',key=`trio-${profile.id}-${pose}`;frames[pose]=key;
+        if(scene.textures.exists(key))continue;
+        const canvas=scene.textures.createCanvas(key,profile.frameWidth,profile.frameHeight),c=canvas.context;
+        c.imageSmoothingEnabled=false;c.drawImage(scene.textures.get(frames.idle).getSourceImage(),0,0);
+        // Face animation is baked into the sprite, so eyes/mouth keep the head's anchor.
+        c.fillStyle='#e5a17c';c.fillRect(34,14,9,12);
+        for(const x of [32-i,39+i]){
+          c.fillStyle='#4a302b';c.fillRect(x,12,4,1);
+          c.fillStyle='#17212c';c.fillRect(x-1,15,6,3);c.fillRect(x,14,4,5);
+          c.fillStyle='#fff8e4';c.fillRect(x,15,4,3);
+          c.fillStyle='#17212c';c.fillRect(x+1,15,1,2);
+        }
+        c.fillStyle='#522c29';c.fillRect(35,22,6,5+i);
+        c.fillStyle='#17212c';c.fillRect(36,22,4,6+i);
+        c.fillStyle='#fff5da';c.fillRect(36,22,4,1);
+        c.fillStyle='#dc6974';c.fillRect(37,26+i,2,1);
+        canvas.refresh();
+      }
     }
     return frames;
   }

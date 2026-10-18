@@ -14,6 +14,7 @@
       this.floor = 0; this.gameState = 'playing';
       this.player = {x: -9999, body: {bottom: 0}};
       this.tone = () => {}; this.takeDamage = () => {};
+      ITHeroItems.create(this);
       ITHeroTrioAttacks.textures(this);
       ITHeroSAP.textures(this);
       ITHeroDBPM.textures(this);
@@ -29,12 +30,12 @@
       }
       // Match makeTextures() in game.js: identical source crops, scale and anchors.
       const legacy = [
-        {name:'AJŤÁK',body:{width:28,height:72,x:18,y:8},poses:{idle:[40,16,245,342],walk:[380,16,265,342]}},
-        {name:'SEKRETÁŘKA',body:{width:24,height:72,x:20,y:8},contactPose:'contact',poses:{idle:[65,365,210,358],contact:[385,362,267,361]}},
-        {name:'ODBORÁŘ',contactPose:'contact',poses:{idle:[730,365,285,358],contact:[1090,365,302,358]}},
-        {name:'MANAŽER',contactPose:'contact',poses:{idle:[35,725,279,337],contact:[375,728,298,336],walk:[733,728,292,336]}},
-        {name:'STARÝ AJŤÁK',support:true,attackPose:'offer',contactPose:'offer',poses:{idle:[85,12,370,482],walk:[580,120,430,374],offer:[1120,12,380,482]}},
-        {name:'SPECIALISTKA',support:true,body:{width:38,height:72,x:49,y:8},attackPose:'spray',contactPose:'flag',poses:{idle:[45,502,420,495],flag:[490,533,585,464],spray:[1070,533,465,464]}}
+        {name:'AJŤÁK',itemKeys:['floppy','cd'],body:{width:28,height:72,x:18,y:8},poses:{idle:[40,16,245,342],walk:[380,16,265,342]}},
+        {name:'SEKRETÁŘKA',itemKeys:['folder','mug'],body:{width:24,height:72,x:20,y:8},contactPose:'contact',poses:{idle:[65,365,210,358],contact:[385,362,267,361]}},
+        {name:'ODBORÁŘ',itemKeys:['hammer','gear'],contactPose:'contact',poses:{idle:[730,365,285,358],contact:[1090,365,302,358]}},
+        {name:'MANAŽER',itemKeys:['gold-card'],contactPose:'contact',poses:{idle:[35,725,279,337],contact:[375,728,298,336],walk:[733,728,292,336]}},
+        {name:'STARÝ AJŤÁK',itemKeys:['beer','hotdog'],support:true,attackPose:'offer',contactPose:'offer',poses:{idle:[85,12,370,482],walk:[580,120,430,374],offer:[1120,12,380,482]}},
+        {name:'SPECIALISTKA',itemKeys:['unicorn','rainbow-spray','rainbow-flag'],support:true,body:{width:38,height:72,x:49,y:8},attackPose:'spray',contactPose:'flag',poses:{idle:[45,502,420,495],flag:[490,533,585,464],spray:[1070,533,465,464]}}
       ];
       this.entries = legacy.map((entry, index) => {
         const frames = {}, frameWidth = entry.support ? 136 : 64;
@@ -57,7 +58,7 @@
       }
       const dbpmEntry=this.entries.find(e=>e.id==='dbpm');this.entries=this.entries.filter(e=>e.id!=='dbpm');
       this.entries.push({name:'IT KOLEGA',height:80,frames:ITHeroColleague.createTextures(this),frameWidth:96,frameHeight:88,body:null,attackPose:'offer_coffee',contactPose:'offer_candy',offerKeys:['colleague-coffee','colleague-candy']});
-      this.entries.push({name:'SENIOR MASTER',height:76,frames:ITHeroOldBadger.createTextures(this),frameWidth:80,frameHeight:80,body:{width:36,height:70,x:22,y:10},attackPose:'block',contactPose:'stomp'});
+      this.entries.push({name:'SENIOR MASTER',itemKeys:['coffee','hotdog'],height:76,frames:ITHeroOldBadger.createTextures(this),frameWidth:80,frameHeight:80,body:{width:36,height:70,x:22,y:10},attackPose:'block',contactPose:'stomp'});
       this.entries.push(dbpmEntry);
       this.entries.forEach((entry, i) => {
         const x = 160 + (i % 3) * 320;
@@ -65,9 +66,20 @@
         entry.sprite = this.add.sprite(x, entry.baseline, entry.frames.idle).setOrigin(0.5, 1);
         if (entry.id) {
           Object.assign(entry.sprite, {profile: entry, floorIndex: 0, facingDirection: 1, body: {bottom: entry.baseline}});
-          entry.projectiles.forEach((weapon, index) => this.add.image(x - 22 + index * 44, entry.baseline + 115, weapon.key));
+
         }
-        entry.offerKeys?.forEach((key,index)=>this.add.image(x-22+index*44,entry.baseline+115,key));
+        const keys=entry.itemKeys||entry.offerKeys||entry.projectiles?.map(w=>w.key)||[];
+        const labels={'gold-card':'Zlatá karta',floppy:'Disketa',cd:'CD',folder:'Šanon',mug:'Hrnek',hammer:'Kladivo',gear:'Kolečko',beer:'Pivo',hotdog:'Párek',coffee:'Káva',unicorn:'Jednorožec','rainbow-spray':'Sprej','rainbow-flag':'Vlajka','red-heel':'Střevíc','red-tennis-ball':'Tenisák','handcuffs':'Želízka',fireball:'Fireball','golf-club':'Golfová hůl',calculator:'Kalkulačka','colleague-coffee':'Káva','colleague-candy':'Sisinka','sap-helmet':'Helma','sap-pen':'Propiska','dbpm-laptop':'Notebook','dbpm-baguette':'Bageta'};
+        const role=entry.name==='SENIOR MASTER'?'JÍ A PIJE':entry.offerKeys||entry.name==='STARÝ AJŤÁK'?'NABÍZÍ':entry.name==='AJŤÁK'?'STŘELBA':'ÚTOKY';
+        this.add.text(x,entry.baseline+96,role,{font:'9px monospace',color:'#dfd4a0'}).setOrigin(.5,1);
+        entry.itemIcons=keys.map((key,index)=>{
+          const ix=x+(index-(keys.length-1)/2)*74;
+          this.add.rectangle(ix,entry.baseline+122,60,44,0x0a211f).setStrokeStyle(1,0x709a85);
+          const icon=this.add.image(ix,entry.baseline+122,key);
+          const scale=Math.min(2,48/icon.width,34/icon.height);icon.setScale(scale);
+          this.add.text(ix,entry.baseline+150,labels[key]||key.replaceAll('-',' '),{font:'10px monospace',color:'#edf2d5',align:'center',wordWrap:{width:70}}).setOrigin(.5,0);
+          return icon;
+        });
         this.add.text(x, entry.baseline + 45, entry.name, { fontFamily: 'monospace', fontSize: '17px', color: '#b0ee78' }).setOrigin(0.5);
         this.add.text(x, entry.baseline + 75, `${entry.height} px`, { fontFamily: 'monospace', fontSize: '16px', color: '#e6eee8' }).setOrigin(0.5);
       });

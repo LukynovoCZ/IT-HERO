@@ -142,3 +142,17 @@ HR a design manažer používají nový společný atlas
 plochami a vyšším kontrastem. Ořezy a kotvy jsou v jejich profilech v tomto katalogu.
 Herní výšky 92/108 px, hitboxy, parametry soubojů a umístění obou manažerů se nemění.
 Původní atlasy zůstávají jako podklady, nyní se ve hře nenačítají.
+
+## Čitelnost a přehled (0.13.3)
+
+`item-textures.js` sdílí původní textury střel a občerstvení mezi hrou a přehledem.
+V přehledu má každý z třinácti typů postav předměty v orámovaných polích s názvy;
+zahrnuty jsou i původní postavy, zlatá karta manažera a jídlo pomocníků.
+
+Design manager má novou kontaktní pózu `scream` a druhý snímek `scream_alt`,
+generované v `createTextures`. Zachovávají základnu a siluetu postavy; oči a ústa
+jsou součástí snímků, efekt přidává pouze animované paprsky řevu. Oba snímky
+používá hra i přehled. Kontakt i poškození mají stejná pravidla jako dříve.
+
+`node tests/readability-food.cjs` ověřuje předměty všech postav, kartu, řev,
+spotřebování občerstvení, úklid páry a popisků a odstranění duplicitních cedulí.

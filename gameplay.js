@@ -37,6 +37,8 @@
           const g=scene.make.graphics({add:false});g.fillStyle(0x25322f).fillRect(0,6,64,32);g.fillStyle(0x858d89).fillRect(3,8,58,24);g.fillStyle(0xf1eedb).fillRect(0,4,64,5);
           for(let x=8;x<58;x+=12)g.fillStyle(x%24?0x276b50:0xc7b57a).fillRect(x,0,8,4);
           g.fillStyle(0x101d23).fillRect(8,35,10,7).fillRect(46,35,10,7);g.fillStyle(0x9baca8).fillRect(11,37,4,3).fillRect(49,37,4,3);
+          g.lineStyle(2,0x101f28).strokeRect(1,5,62,32);g.fillStyle(0xffdf82).fillRect(3,5,58,3);
+          g.fillStyle(0xf2c253).fillRect(4,25,7,5).fillRect(53,25,7,5);
           g.generateTexture('service-cart',64,42);g.destroy();
         }
         const cart=scene.physics.add.image(route.cart.min,ground-21,'service-cart').setImmovable(true).setDepth(15);
@@ -49,7 +51,7 @@
         carts.push({sprite:cart,floor,...route.cart,direction:1});
       }
       if(route.door){
-        const spec=route.door,body=scene.addStatic(scene.obstacles,spec.x,ground-45,18,90,0x718a81,16);
+        const spec=route.door,body=scene.addStatic(scene.obstacles,spec.x,ground-45,18,90,0x315a62,16).setStrokeStyle(2,0xf0cd72);
         const glass=scene.add.rectangle(spec.x,ground-48,10,76,0xa9c4b3,.7).setDepth(17);
         const lamp=scene.add.rectangle(spec.x,ground-103,22,5,0x94df63).setDepth(17);
         scene.add.text(spec.x,ground-123,'DVEŘE',{font:'bold 8px monospace',color:'#dcebd1'}).setOrigin(.5).setDepth(17);
