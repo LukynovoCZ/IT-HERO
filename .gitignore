@@ -1,0 +1,8 @@
+# Local Cloudflare state/config and secrets; only examples belong in Git.
+cloud-api/node_modules/
+cloud-api/.wrangler/
+cloud-api/wrangler.toml
+cloud-api/.dev.vars
+cloud-api/.dev.vars.*
+cloud-api/.env
+cloud-api/.env.*

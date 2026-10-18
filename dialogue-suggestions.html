@@ -1,0 +1,14 @@
+<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IT HERO – navrhni hlášku</title><link rel="stylesheet" href="style.css?v=0.17.0"><script defer src="character-dialogue.js?v=0.17.0"></script><script defer src="community-config.js?v=0.17.0"></script><script defer src="dialogue-community.js?v=0.17.0"></script><script defer src="dialogue-suggestions.js?v=0.17.0"></script></head>
+<body><main class="layout community-page"><header class="heading"><h1>Navrhni hlášku</h1><span class="version">BUILD 0.17.0</span></header>
+<p>Máš novou hlášku pro manažera, starého ajťáka nebo jinou postavu? Vyber postavu a situaci, kdy má zaznít.</p><p id="suggestion-mode"></p>
+<form id="suggestion-form"><fieldset><legend>Nový návrh</legend>
+<label for="suggestion-character">Postava</label><select id="suggestion-character" name="character"></select>
+<label for="suggestion-group">Situace</label><select id="suggestion-group" name="group"></select>
+<label for="suggestion-lines">Hlášky</label><p id="suggestion-hint">Jedna hláška = jeden řádek. Odděluj Enterem, bez odrážek. Nejvýše 10 hlášek, každá do 200 znaků. Posílej nové texty; zveřejněné hlášky se nepřepisují.</p>
+<textarea id="suggestion-lines" name="lines" rows="6" maxlength="2010" required aria-describedby="suggestion-hint" placeholder="Tohle vyřeší další porada.&#10;Pošli mi na to ticket."></textarea>
+<label for="suggestion-author">Tvoje přezdívka (nepovinné, do 24 znaků)</label><input id="suggestion-author" name="author" maxlength="24" autocomplete="nickname">
+<div class="submission-trap" aria-hidden="true"><label>Web<input name="website" tabindex="-1" autocomplete="off"></label></div>
+<div class="dialogue-actions"><button type="submit">Odeslat ke kontrole</button><button type="button" id="suggestion-download">Stáhnout JSON místo odeslání</button></div>
+</fieldset></form><p id="suggestion-status" role="status" aria-live="polite"></p>
+<p>Návrhy se automaticky nepřidávají do hry. Autor je může převzít, zamítnout nebo smazat. Nepiš osobní údaje jiných lidí.</p>
+<p><a href="character-preview.html#dialogue-heading">Hlášky ve hře a vlastní rozepsané návrhy</a> · <a href="index.html">Zpět do hry</a></p></main></body></html>

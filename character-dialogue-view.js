@@ -10,6 +10,7 @@
   for(const character of window.ITHeroDialogue.characters){
     const card=document.createElement('article');card.className='dialogue-card';
     const heading=document.createElement('h3');heading.textContent=character.name;card.append(heading);
+    const propose=document.createElement('a');propose.href=`dialogue-suggestions.html?character=${encodeURIComponent(character.id)}`;propose.textContent='Poslat novou hlášku této postavě';card.append(propose);
     if(!character.groups.length){const empty=document.createElement('p');empty.textContent='Zatím bez vlastních hlášek. Níže můžeš připravit nové.';card.append(empty);}
     const groups=character.groups.length?character.groups:[{id:'proposed',label:'Návrh nových hlášek',lines:[]}];
     for(const group of groups){

@@ -100,3 +100,10 @@ Před zveřejněním ověřit: společný výsledek mezi dvěma izolovanými pro
 řazení a remízy, jeden zápis při souběžném opakování, chybný token/score,
 limit požadavků, výpadek a návrat sítě, pauzu/checkpoint a žádné ukázkové soupeře
 v databázi. Přepnutí na světový režim až po úspěchu těchto kontrol.
+
+## Připravená společná schránka hlášek (0.17.0)
+
+[Worker a návod](../../cloud-api/README.md) už obsahuje funkční cestu pro návrhy
+hlášek, oddělené tabulky, chráněnou správu a JSON export. Po nasazení může sdílet
+stejnou vazbu `DB` s budoucími cestami pro skóre. Skórové API z tohoto dokumentu
+stále zůstává návrhem; schránka hlášek jej sama neaktivuje.

@@ -1,0 +1,13 @@
+# Copy to ignored wrangler.toml; replace only the non-secret database ID.
+name = "it-hero-community"
+main = "worker.mjs"
+compatibility_date = "2026-10-01"
+workers_dev = true
+[vars]
+ALLOWED_ORIGIN = "https://lukynovocz.github.io"
+[[d1_databases]]
+binding = "DB"
+database_name = "it-hero-community"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+migrations_dir = "migrations"
+# ADMIN_TOKEN is a Worker secret, never a [vars] entry or part of browser JS.
