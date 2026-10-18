@@ -12,10 +12,10 @@ nebo počkat; kontakt neškodí a diskety/CD procházejí. Nemají HP ani skóre
 - Bezpečnost testuje celý příchod, dveře, výtah, hráče, nábytek, vozíky,
   DEMAND, předměty a další NPC. Při přiblížení nepřítele blokátor ustoupí.
   Nevzniká při boji s DBPM, na checkpointovém pátém ani závěrečném devátém patře.
-- Sedm průhledných procedurálních pixelových snímků obou variant; boty mají
+- Sedm průhledných pixelových snímků odvozených z ilustrovaného atlasu obou variant; boty mají
   stejnou základnu, oba sprity výšku 76 px. Telefon zůstává v ruce.
 - 20 přesných hlášek ve společné sekci `gen_z`, editor a přehled všech 15 postav.
-- Bez nových závislostí a externích API. Konfigurace, grafika a lifecycle jsou
+- Bez nových závislostí a externích API za běhu hry. Konfigurace, grafika a lifecycle jsou
   v `gen-z-blockers.js`; popis a nastavení jsou v `GEN_Z.md`.
 
 ### Původní překážky
@@ -57,3 +57,12 @@ a bílé tenisky u kluka. Oba mají čitelný batoh, sluchátka na krku a mobil.
 Nové světlé komiksové bubliny. Bez změn mechanik či kolizí.
 
 ![Gen Z – skutečné herní snímky 3×](https://github.com/LukynovoCZ/IT-HERO/blob/feature/gen-z-blockers/docs/gen-z-visuals-0.14.1.png?raw=true)
+
+### Sladění s ostatními postavami (0.14.2)
+
+Nový atlas `assets/characters/gen_z_duo.png` nahrazuje původní obdélníkové
+sprity. Dívka je výrazněji inspirovaná Max Mayfield, obě postavy mají přirozenější
+proporce a stejnou kresbu, obrysy a stínování jako původní kancelářští soupeři.
+Herní snímky se normalizují na 76 px a zachovávají společný hitbox.
+
+![Aktuální herní náhled](https://github.com/LukynovoCZ/IT-HERO/blob/feature/gen-z-blockers/docs/gen-z-visuals-0.14.2.png?raw=true)

@@ -54,6 +54,7 @@
       window.ITHeroEnemyCatalog.preload(this);
       window.ITHeroColleague.preload(this);
       window.ITHeroOldBadger.preload(this);
+      window.ITHeroGenZ.preload(this);
       this.load.image('support-art', 'assets/support.png');
       this.load.image('character-art', 'assets/characters.png');
       this.load.image('floor-art', 'assets/floors.png');

@@ -1,4 +1,4 @@
-# Gen Z dvojice – issue #2 (0.14.0)
+# Gen Z dvojice – issue #2 (0.14.2)
 
 Samostatná větev `feature/gen-z-blockers`, určená k review, bez automatického merge.
 Zadání: `tasks/GEN-Z-CODEX.md`, předloha: `assets/gen-z-duo-reference.svg`.
@@ -41,11 +41,12 @@ používá vlastní bezpečný spawn, jak dovoluje zadání.
 - `gen-z-blockers.js`, `config`: interval 25–45 s, doba blokování 5–8 s,
   rychlost, rozměry těla 26×64 px, vzdálenost od hráče a dveří, cooldown bubliny.
   `maxActive: 0` vypne vznik; návrh podporuje nejvýše jednu postavu.
-- `textures()`: původní procedurální pixel-art, průhledné snímky 64×80 px;
+- `art`, `preload()` a `textures()`: ilustrovaný pixel-art z atlasu
+  `assets/characters/gen_z_duo.png`, průhledné snímky 64×80 px;
   dívka má zrzavé vlasy, modrou oversize mikinu a sluchátka na krku, kluk
   tmavé kudrny, šedobílou mikinu a velká sluchátka. Oba mají cargo kalhoty,
   batoh, tenisky a telefon. Sedm snímků zachovává boty na stejné základně.
-  Žádné pozadí ani bitmapový výřez předlohy se nevkládá do hry.
+  Původní předloha s popisky se nevkládá do hry; používá se nový samostatný atlas.
 - `character-dialogue.js`, společné ID `gen_z`, skupiny `block`, `work`, `slang`:
   všech 20 přesných hlášek zadání. V přehledu lze číst a exportovat jejich návrhy.
 - `character-preview.html`: obě varianty vedle sebe na poslední řadě, celkem
@@ -82,3 +83,20 @@ a špičkou. Pravidla hry, kolize, časy a texty se touto vizuální revizí nem
 
 Zvětšený náhled skutečných herních snímků je `docs/gen-z-visuals-0.14.1.png`.
 Znovu jej vytvoří `node scripts/render_gen_z_preview.cjs` při běžícím serveru.
+
+## Sladění se stávajícími postavami (0.14.2)
+
+Původní obdélníkové kreslení bylo nahrazeno atlasem `assets/characters/gen_z_duo.png`
+se třemi ilustrovanými pózami každé postavy. Vychází z nové předlohy, stylu
+atlasu `managers_readable.png` a uživatelova požadavku přiblížit dívku Max
+Mayfield ze Stranger Things. Proporce, látky, obličeje i vlasy odpovídají
+stávajícím postavám. Kluk má stejný způsob vykreslení, kudrny a světlou mikinu.
+
+Atlas má tři sloupce (idle, walk, shrug) a dva řádky (girl, boy). `art` určuje
+zdroj a mapování sedmi herních stavů. Ořezy podle alfa kanálu, odstranění
+průsvitného lemu a normalizace na společnou výšku 76 px se provedou jednou
+při načtení. Pohyb palce a lehké vzhlédnutí se odvozují z malovaných snímků.
+Neběží žádné externí generování obrázků při hraní.
+
+Aktuální náhled je `docs/gen-z-visuals-0.14.2.png`; soubor 0.14.1 zachycuje
+předchozí návrh. Mechaniky, hitboxy, časy a dialogy zůstávají stejné.

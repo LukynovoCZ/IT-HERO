@@ -13,7 +13,7 @@ const fs=require('node:fs');
    const canvas=document.createElement('canvas');canvas.width=960;canvas.height=700;
    const c=canvas.getContext('2d');c.imageSmoothingEnabled=false;
    c.fillStyle='#102a26';c.fillRect(0,0,960,700);
-   c.fillStyle='#e6eddd';c.font='bold 20px monospace';c.textAlign='center';c.fillText('GEN Z • VIZUÁLNÍ NÁVRH 0.14.1',480,30);
+   c.fillStyle='#e6eddd';c.font='bold 20px monospace';c.textAlign='center';c.fillText('GEN Z • VIZUÁLNÍ NÁVRH 0.14.2',480,30);
    for(const [row,variant] of ['girl','boy'].entries()){
     const y=94+row*320;c.fillStyle=variant==='girl'?'#df9c78':'#8dcdd3';c.font='bold 17px monospace';c.textAlign='left';c.fillText(variant==='girl'?'GEN Z – HOLKA':'GEN Z – KLUČINA',22,y-29);
     for(const [col,[pose,label]] of [['idle','Klid'],['phone-scroll','Scrollování'],['shrug','Pokrčení ramen']].entries()){
@@ -26,7 +26,7 @@ const fs=require('node:fs');
    c.fillStyle='#adc2ba';c.font='12px monospace';c.textAlign='center';c.fillText('Skutečné herní snímky • ostré pixely • zvětšení 3× • společná výška 76 px',480,686);
    return canvas.toDataURL('image/png').split(',')[1];
   });
-  fs.writeFileSync('docs/gen-z-visuals-0.14.1.png',Buffer.from(data,'base64'));
-  console.log('Rendered docs/gen-z-visuals-0.14.1.png from actual game textures');
+  fs.writeFileSync('docs/gen-z-visuals-0.14.2.png',Buffer.from(data,'base64'));
+  console.log('Rendered docs/gen-z-visuals-0.14.2.png from actual game textures');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

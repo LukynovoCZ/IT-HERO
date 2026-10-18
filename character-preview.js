@@ -7,6 +7,7 @@
       ITHeroEnemyCatalog.preload(this);
       ITHeroColleague.preload(this);
       ITHeroOldBadger.preload(this);
+      ITHeroGenZ.preload(this);
       this.load.image('preview-hero-source', 'assets/characters.png');
       this.load.image('preview-support-source', 'assets/support.png');
     }
