@@ -4,7 +4,7 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
  await p.route('**/game.js*',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame=new Phaser.Game({')});});
  await p.goto('http://127.0.0.1:8000');await p.locator('#game-action').waitFor({state:'visible'});await p.keyboard.press('Enter');
  await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.enemies.clear(true,true);s.colleague.state.nextAt=Infinity;s.player.body.reset(s.posters.posters[0].placement.x,4280);s.player.setVelocity(0);});
- await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').posters.tooltip.visible);
+ await p.waitForFunction(()=>!window.__testGame.scene.getScene('ITGame').posters.tooltip.visible);
  const poster=await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').posters.tooltip.text);
  const result=await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.spawnHelper('lift','beer');s.updateHelper(1200);return {dropped:s.helperVisit.dropped,speech:s.helperVisit.speech.text};});
  assert.equal(result.dropped,false);
@@ -17,7 +17,7 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
  active(0);const matching=s.posters.tooltip.text===`STARÝ AJŤÁK\n${v.speech.text}`;
  s.updateHelper(2200);const prolonged=!!s.helperVisit?.speech.active;
  const text=s.posters.tooltip.text;s.posters.update(s.player,s.floor,false,9000);active(0);const paused=s.posters.tooltip.text===text;
- active(7100);const restored=s.posters.tooltip.text===poster&&s.posters.tooltip.visible;
+ active(7100);const restored=!s.posters.tooltip.visible;
  s.posters.showMessage('IT KOLEGA\nZkouška spodního panelu',7000);active(0);const colleague=s.posters.tooltip.text.startsWith('IT KOLEGA');
  s.posters.update(s.player,1,true,0);const cleared=!s.posters.tooltip.text.startsWith('IT KOLEGA')||!s.posters.tooltip.visible;
  return {matching,prolonged,paused,restored,colleague,cleared};},poster);
@@ -26,5 +26,5 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
  await p.keyboard.down('s');await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').floor===1);await p.keyboard.up('s');
  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').nextHelperAt),deadline,'Stairs must not shorten the old helper interval');
  assert.deepEqual(errors,[]);
- console.log('PASS helper dialogue: longer peek and offer, matching lower panel, paused duration, poster restored after expiry, shared colleague messages, floor cleanup and unchanged helper interval across stairs.');
+ console.log('PASS helper dialogue: longer peek and offer, matching lower panel, paused duration, panel hidden after expiry, shared colleague messages, floor cleanup and unchanged helper interval across stairs.');
 }finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});

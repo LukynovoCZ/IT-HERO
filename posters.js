@@ -6,7 +6,7 @@
   const defaults = {
     width: 144, height: 180, textureScale: 2, displayScale: 0.5,
     bgColor: '#e2dfcc', accentColor: '#29674b', textColor: '#465347',
-    depth: -7, tint: 0xd1d4c0, tooltipDistance: 92
+    depth: -7, tint: 0xd1d4c0, tooltipDistance: 92, showPosterText: false
   };
   const definitions = [
     {id:'friday',title:'NEJVĚTŠÍ INOVACE\nVZNIKAJÍ V PÁTEK V OFISU',subtitle:'Spolupráce. Energie. Přítomnost.',theme:'office / attendance / culture',icon:'chair',accentColor:'#537c46'},
@@ -133,6 +133,8 @@
           if(message.remaining>0){tooltip.setText(message.text).setVisible(true);return;}
           message=null;
         }
+        // Poster descriptions are optional; character messages above remain active.
+        if (!(options.showPosterText ?? defaults.showPosterText)) { tooltip.setVisible(false); return; }
         const nearest=active?posters.filter(p=>p.placement.floor===floor+1)
           .filter(p=>Math.abs(player.y-(floors[floor]-40))<120)
           .sort((a,b)=>Math.abs(a.placement.x-player.x)-Math.abs(b.placement.x-player.x))[0]:null;
