@@ -18,7 +18,8 @@
       for(const line of group.lines){const item=document.createElement('li');item.textContent=line;list.append(item);}
       card.append(list);
       const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Upravit / doplnit návrh';details.append(summary);
-      const input=document.createElement('textarea');input.rows=5;input.setAttribute('aria-label',`${character.name}: ${group.label}`);input.placeholder='Jedna hláška na každý řádek';
+      const input=document.createElement('textarea');input.rows=5;input.setAttribute('aria-label',`${character.name}: ${group.label}`);input.placeholder='Nejdřív kafe.\nPak zachraňuj svět!';
+      const hint=document.createElement('p');hint.id=`dialogue-hint-${character.id}-${group.id}`;hint.textContent='Jedna hláška = jeden řádek. Další odděl klávesou Enter. Bez odrážek a číslování; prázdné řádky se ignorují.';input.setAttribute('aria-describedby',hint.id);details.append(hint);
       const key=`${character.id}/${group.id}`;input.value=typeof saved[key]==='string'?saved[key]:group.lines.join('\n');input.addEventListener('input',save);details.append(input);card.append(details);
       editors.push({character:character.id,group:group.id,label:group.label,input});
     }

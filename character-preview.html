@@ -12,7 +12,7 @@
   <script defer src="sap-integrator.js?v=0.11.1"></script>
   <script defer src="it-colleague.js?v=0.11.1"></script>
   <script defer src="old-badger.js?v=0.11.1"></script>
-  <script defer src="character-dialogue-view.js?v=0.11.1"></script>
+  <script defer src="character-dialogue-view.js?v=0.11.1.1"></script>
   <script defer src="character-preview.js?v=0.11.1"></script>
 </head>
 <body>
@@ -30,7 +30,19 @@
     <p>Pod postavami jsou jejich střely. Póza „Zastavení hráče“ ukazuje kontaktní efekty. Chůze střídá dostupné pózy. Zvětšení mění pouze náhled; rozměry postav se přebírají přímo z herní konfigurace.</p>
     <section class="dialogue-section" aria-labelledby="dialogue-heading">
       <h2 id="dialogue-heading">Hlášky postav</h2>
-      <p>Texty používané ve hře podle postavy a situace. Rozbal „Upravit / doplnit návrh“, jeden řádek = jedna hláška. Návrhy zůstávají v tomto prohlížeči a veřejnou hru nemění. Pro zapracování mi pošli stažený JSON. Společný zdroj textů hry je <code>character-dialogue.js</code>.</p>
+      <p>Texty používané ve hře podle postavy a situace. Rozbal „Upravit / doplnit návrh“, jeden řádek = jedna hláška. Návrhy zůstávají v tomto prohlížeči a veřejnou hru nemění. </p>
+      <p><strong>Jak oddělovat hlášky:</strong> každou napiš na samostatný řádek. Mezi hláškami stiskni Enter. Nepřidávej odrážky, číslování ani uvozovky; čárka a středník hlášky neoddělují. Prázdné řádky se ignorují. Automatické zalomení dlouhého textu v úzkém poli stále patří k jedné hlášce.</p>
+      <p>Například dvě samostatné hlášky:</p>
+      <pre>Nejdřív kafe.
+Pak zachraňuj svět!</pre>
+      <h3>Jak dostat návrhy do hry</h3>
+      <ol>
+        <li>Uprav texty u požadované postavy a situace. Ukládají se automaticky pouze v tomto prohlížeči.</li>
+        <li>Klikni na „Stáhnout návrh hlášek“. Stáhne se soubor <strong>it-hero-hlasky.json</strong>.</li>
+        <li>Přilož soubor do našeho chatu a napiš, které návrhy chceš zapracovat. Tím mi dáš pokyn k jejich přidání; stránka je sama neodesílá a nemá schvalovací frontu.</li>
+        <li>Po zapracování a zveřejnění aktualizace se nové texty objeví ve hře i v tomto seznamu. U postav, které zatím nemluví, je potřeba také určit, kdy mají hlášky zaznít.</li>
+      </ol>
+      <p>Seznam nad editorem ukazuje zveřejněné texty, pole obsahuje tvůj rozepsaný návrh. Tlačítko „Obnovit texty ze hry“ přepíše tvoje návrhy aktuálně zveřejněnými texty.</p>
       <div class="dialogue-actions"><button type="button" id="dialogue-download">Stáhnout návrh hlášek</button><button type="button" id="dialogue-reset">Obnovit texty ze hry</button></div>
       <p id="dialogue-status" role="status" aria-live="polite"></p>
       <div id="character-dialogue"></div>
