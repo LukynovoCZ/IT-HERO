@@ -22,8 +22,8 @@
       this.paused = false;
       this.animationTime = 0;
       const graphics = this.add.graphics();
-      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 2060);
-      for (const baseline of [260, 660, 1060, 1460, 1860]) {
+      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 2460);
+      for (const baseline of [260, 660, 1060, 1460, 1860, 2260]) {
         graphics.lineStyle(1, 0x24453e);
         for (let y = baseline - 240; y < baseline; y += 20) graphics.lineBetween(0, y, 960, y);
         graphics.fillStyle(0x78867b).fillRect(0, baseline, 960, 24);
@@ -53,6 +53,8 @@
         return {...entry,frames,height:76,frameWidth,frameHeight:80,
           body:entry.body || (entry.support ? null : {width:38,height:72,x:13,y:8})};
       });
+      this.entries.forEach((entry,i)=>{window.ITHeroMotion.complete(this,entry.frames,{prefix:`preview-legacy-${i}`});entry.attackPose ||= 'attack';});
+      const secretary=this.entries[1];this.entries.splice(1,1,...window.ITHeroMotion.secretaries(this,secretary.frames).map(v=>({...secretary,name:`SEKRETÁŘKA – ${v.name}`,frames:v.frames,attackPose:'attack',contactPose:'contact'})));
       for (const profile of Object.values(ITHeroEnemyCatalog.profiles)) {
         this.entries.push({ ...profile, height: profile.previewHeight || profile.renderHeight,
           frames: ITHeroEnemyCatalog.createTextures(this, profile) });
@@ -72,7 +74,7 @@
 
         }
         const keys=entry.itemKeys||entry.offerKeys||entry.projectiles?.map(w=>w.key)||[];
-        const labels={'gold-card':'Zlatá karta',floppy:'Disketa',cd:'CD',folder:'Šanon',mug:'Hrnek',hammer:'Kladivo',gear:'Kolečko',beer:'Pivo',hotdog:'Párek',coffee:'Káva',unicorn:'Jednorožec','rainbow-spray':'Sprej','rainbow-flag':'Vlajka','red-heel':'Střevíc','red-tennis-ball':'Tenisák','handcuffs':'Želízka',fireball:'Fireball','golf-club':'Golfová hůl',calculator:'Kalkulačka','colleague-coffee':'Káva','colleague-candy':'Sisinka','sap-helmet':'Helma','sap-pen':'Propiska','dbpm-laptop':'Notebook','dbpm-baguette':'Bageta','gen-z-phone':'Mobil'};
+        const labels={'gold-card':'Zlatá karta',floppy:'Disketa',cd:'CD',folder:'Šanon',mug:'Hrnek',hammer:'Kladivo',gear:'Kolečko',beer:'Pivo',hotdog:'Párek',coffee:'Káva',unicorn:'Jednorožec','rainbow-spray':'Sprej','rainbow-flag':'Vlajka','red-heel':'Střevíc','red-tennis-ball':'Tenisák','handcuffs':'Želízka',fireball:'Fireball','golf-ball':'Golfový míček','golf-club':'Golfová hůl',calculator:'Kalkulačka','colleague-coffee':'Káva','colleague-candy':'Sisinka','sap-helmet':'Helma','sap-pen':'Propiska','dbpm-laptop':'Notebook','dbpm-baguette':'Bageta','gen-z-phone':'Mobil'};
         const role=entry.name.startsWith('GEN Z')?'SCROLLUJE':entry.name==='SENIOR MASTER'?'JÍ A PIJE':entry.offerKeys||entry.name==='STARÝ AJŤÁK'?'NABÍZÍ':entry.name==='AJŤÁK'?'STŘELBA':'ÚTOKY';
         this.add.text(x,entry.baseline+96,role,{font:'9px monospace',color:'#dfd4a0'}).setOrigin(.5,1);
         entry.itemIcons=keys.map((key,index)=>{
@@ -101,7 +103,8 @@
       this.bodyGraphics.clear().lineStyle(1, 0xffd269);
       for (const entry of this.entries) {
         let frame = pose === 'contact' ? entry.contactPose : pose === 'attack' ? entry.attackPose : pose;
-        if (pose === 'walk' && Math.floor(this.animationTime / 180) % 2 === 0) frame = entry.id === 'dbpm' ? 'walk_alt' : 'idle';
+        if (pose === 'walk' && Math.floor(this.animationTime / 180) % 2 === 0) frame = entry.frames.walk_alt ? 'walk_alt' : 'idle';
+        if(pose==='attack'&&entry.id==='design_manager')frame=Math.floor(this.animationTime/180)%2?'golf':'golf_follow';
         entry.sprite.setTexture(entry.frames[frame] || entry.frames.idle).setScale(zoom);
         if(entry.id==='dbpm'){entry.sprite.clearTint();if(pose==='hit'&&Math.floor(this.animationTime/90)%2)entry.sprite.setTintFill(0xffffff);}
         if (entry.id && !['sap','dbpm'].includes(entry.behavior)) {
@@ -126,7 +129,7 @@
     }
   }
   new Phaser.Game({
-    type: Phaser.AUTO, parent: 'game', width: 960, height: 2060,
+    type: Phaser.AUTO, parent: 'game', width: 960, height: 2460,
     pixelArt: true, roundPixels: true, antialias: false,
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [CharacterPreview]

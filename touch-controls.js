@@ -75,7 +75,7 @@
         modeButton.dataset.mode=movementMode;
         modeButton.setAttribute('aria-label',movementMode==='stick'?'Přepnout na směrová tlačítka':'Přepnout na ovladač pod palcem');
       }
-      if(hint)hint.textContent=movementMode==='stick'?'Polož levý palec na ovladač a táhni vlevo nebo vpravo. Tažení nahoru = skok, dolů = skrčení, schody a odpojení HDD. Střelba a další tlačítko skoku jsou napravo. Nejlépe na šířku.':'Drž ▼ pro skrčení; u schodů přejdeš dál a u HDD odpojíš disk. Pohyb, skok a střelbu můžeš kombinovat.';
+      if(hint)hint.textContent=movementMode==='stick'?'Polož levý palec na ovladač a táhni vlevo nebo vpravo. Tažení nahoru = skok, dolů = skrčení, schody a odpojení HDD. Napravo je pouze střelba. Nejlépe na šířku.':'Drž ▼ pro skrčení; u schodů přejdeš dál a u HDD odpojíš disk. Pohyb, skok a střelbu můžeš kombinovat.';
       resetStick();requestAnimationFrame(refresh);
     }
     scene.scale.on('resize',placeStart);listeners.push(()=>scene.scale.off('resize',placeStart));

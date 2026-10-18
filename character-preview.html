@@ -4,27 +4,28 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>IT HERO – porovnání postav</title>
-  <link rel="stylesheet" href="style.css?v=0.18.0">
+  <link rel="stylesheet" href="style.css?v=0.19.0">
   <script defer src="vendor/phaser.min.js"></script>
-  <script defer src="character-dialogue.js?v=0.18.0"></script>
-  <script defer src="item-textures.js?v=0.18.0"></script>
-  <script defer src="trio-attacks.js?v=0.18.0"></script>
-  <script defer src="enemy-catalog.js?v=0.18.0"></script>
-  <script defer src="dbpm.js?v=0.18.0"></script>
-  <script defer src="sap-integrator.js?v=0.18.0"></script>
-  <script defer src="it-colleague.js?v=0.18.0"></script>
-  <script defer src="gen-z-blockers.js?v=0.18.0"></script>
-  <script defer src="old-badger.js?v=0.18.0"></script>
-  <script defer src="character-dialogue-view.js?v=0.18.0"></script>
-  <script defer src="character-preview.js?v=0.18.0"></script>
+  <script defer src="character-dialogue.js?v=0.19.0"></script>
+  <script defer src="item-textures.js?v=0.19.0"></script>
+  <script defer src="trio-attacks.js?v=0.19.0"></script>
+  <script defer src="character-motion.js?v=0.19.0"></script>
+  <script defer src="enemy-catalog.js?v=0.19.0"></script>
+  <script defer src="dbpm.js?v=0.19.0"></script>
+  <script defer src="sap-integrator.js?v=0.19.0"></script>
+  <script defer src="it-colleague.js?v=0.19.0"></script>
+  <script defer src="gen-z-blockers.js?v=0.19.0"></script>
+  <script defer src="old-badger.js?v=0.19.0"></script>
+  <script defer src="character-dialogue-view.js?v=0.19.0"></script>
+  <script defer src="character-preview.js?v=0.19.0"></script>
 </head>
 <body class="character-preview">
   <main class="layout">
     <header class="heading">
       <h1>Porovnání postav</h1>
-      <span class="version">BUILD 0.18.0</span>
+      <span class="version">BUILD 0.19.0</span>
     </header>
-    <p>Všech patnáct postav ze hry ve skutečných herních proporcích. Každá řada má společnou podlahu.</p>
+    <p>Všech sedmnáct podob postav ze hry ve skutečných herních proporcích. Každá řada má společnou podlahu.</p>
     <p><a href="#dialogue-heading">Přejít na hlášky postav a úpravy návrhů ↓</a></p>
     <div class="controls">
       <label>Póza <select id="pose"><option value="idle">Klid</option><option value="walk">Chůze</option><option value="contact">Zastavení hráče</option><option value="attack">Útok</option><option value="jump">Skok DBPM</option><option value="throw_baguette">Hod bagety DBPM</option><option value="demand">DEMAND DBPM</option><option value="hit">Zásah</option><option value="defeat">Porážka</option></select></label>
@@ -32,7 +33,7 @@
       <button id="pause" type="button" aria-pressed="false">Pozastavit animaci</button>
       <label><input id="bodies" type="checkbox"> Ukázat zásahové oblasti</label>
     </div>
-    <div style="aspect-ratio:960/2060" id="game" aria-label="Zkušební scéna postav"></div>
+    <div style="aspect-ratio:960/2460" id="game" aria-label="Zkušební scéna postav"></div>
     <p>Pod postavami jsou jejich střely nebo nabízené předměty; Senior master uvedené občerstvení jí a pije. Póza „Zastavení hráče“ ukazuje kontaktní efekty. Chůze střídá dostupné pózy. Zvětšení mění pouze náhled; rozměry postav se přebírají přímo z herní konfigurace.</p>
     <section class="dialogue-section" aria-labelledby="dialogue-heading">
       <h2 id="dialogue-heading">Hlášky postav</h2>

@@ -33,6 +33,7 @@
       g.fillStyle(0xffe4ce).fillRect(13,4,2,4).fillRect(11,8,2,4)
         .fillRect(11,12,2,4).fillRect(13,16,2,4);
     });
+    make('golf-ball',g=>{g.fillStyle(0x17212c).fillCircle(16,16,8);g.fillStyle(0xfff8df).fillCircle(16,15,6);g.fillStyle(0x9fafb0).fillRect(13,13,2,2).fillRect(18,16,2,2).fillRect(14,18,2,2);});
     make('golf-club', g => {
       g.fillStyle(colors.ink).fillRect(13, 1, 5, 25).fillRect(15, 23, 14, 7);
       g.fillStyle(colors.steel).fillRect(14, 7, 2, 19).fillRect(16, 24, 11, 4);
@@ -52,10 +53,10 @@
     let pick = Math.random() * total;
     const weapon = pool.find(item => (pick -= item.weight) < 0) || pool[pool.length - 1];
     const direction = scene.player.x >= enemy.x ? 1 : -1;
-    const shot = scene.enemyShots.create(enemy.x + direction * 28, enemy.body.bottom - 34, weapon.key).setDepth(25);
+    const shot = scene.enemyShots.create(enemy.x + direction * 28, enemy.body.bottom - (weapon.key==='golf-ball'?16:34), weapon.key).setDepth(25);
     shot.setFlipX(direction < 0).setVelocity(direction * (weapon.speed || 245), -30);
     shot.body.setAllowGravity(false);
-    shot.body.setSize(weapon.key === 'fireball' ? 22 : 20, 22, true);
+    shot.body.setSize(weapon.key==='golf-ball'?12:weapon.key === 'fireball' ? 22 : 20, weapon.key==='golf-ball'?12:22, true);
     if (weapon.spin) shot.setAngularVelocity(direction * weapon.spin);
     shot.setData('expires', scene.time.now + 1900).setData('damage', enemy.profile.damage).setData('floor', enemy.floorIndex);
     scene.tone(weapon.key === 'fireball' ? 110 : 210, 0.07, 'triangle');

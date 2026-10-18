@@ -38,8 +38,8 @@
       id:'design_manager',name:'MANAŽER DESIGNU',enabled:true,idleDuration:800,movementCycle:3800,
       health:4,speed:39,patrol:18,attackInterval:1950,attackRange:380,
       attackType:'office-weapons',projectile:'default',damage:1,score:100,
-      contactPose:'scream',attackPose:'tablet',contactEffect:'scream',
-      projectiles:[{key:'golf-club',weight:1,spin:300},{key:'calculator',weight:1,spin:200}],
+      contactPose:'scream',attackPose:'golf',contactEffect:'scream',
+      projectiles:[{key:'golf-ball',weight:1,speed:310,spin:240}],
       frameWidth:80,frameHeight:112,renderHeight:108,
       body:{width:24,height:104,x:28,y:8},
       art:{
@@ -110,6 +110,13 @@
         canvas.refresh();
       }
     }
+    window.ITHeroMotion.complete(scene,frames,{prefix:`trio-${profile.id}`,sameWalk:profile.behavior==='sap'});
+    if(profile.id==='design_manager'){
+      for(const phase of ['golf','golf_follow']){
+        const key=`trio-${profile.id}-${phase}`;frames[phase]=key;
+        if(!scene.textures.exists(key)){const t=scene.textures.createCanvas(key,profile.frameWidth,profile.frameHeight),c=t.context;c.imageSmoothingEnabled=false;c.save();c.translate(profile.frameWidth,0);c.scale(-1,1);c.drawImage(scene.textures.get(frames.idle).getSourceImage(),0,0);c.restore();c.strokeStyle='#17212c';c.lineWidth=4;c.beginPath();c.moveTo(43,57);c.lineTo(phase==='golf'?67:62,phase==='golf'?25:96);c.stroke();c.strokeStyle='#c8d9df';c.lineWidth=2;c.stroke();c.fillStyle='#d5e4dc';c.fillRect(phase==='golf'?64:59,phase==='golf'?23:94,10,4);c.fillStyle='#efb68d';c.fillRect(40,54,7,5);t.refresh();}
+      }
+    }
     return frames;
   }
   function create(scene,floors,options={}) {
@@ -144,13 +151,13 @@
         if(e.floorIndex!==scene.floor){e.setVelocityX(0);return;}
         if(scene.pacing?.isWinding(e)){e.setVelocityX(0);return;}
         if(time<e.hitUntil){e.setVelocityX(0);pose(e,'hit');return;}
-        if(time<e.contactUntil||time<e.poseUntil){e.setVelocityX(0);return;}
+        if(time<e.contactUntil||time<e.poseUntil){e.setVelocityX(0);if(e.kind==='design_manager')pose(e,time<e.contactUntil?(Math.floor(time/100)%2?'scream':'scream_alt'):time<e.poseUntil-170?'golf':'golf_follow');return;}
         if(e.x<e.baseX-e.patrol)e.direction=1;
         if(e.x>e.baseX+e.patrol)e.direction=-1;
         const resting=time%(e.profile.movementCycle||3400)<(e.profile.idleDuration||0);
         e.facingDirection=e.direction;
         e.setVelocityX(resting?0:e.direction*e.profile.speed);
-        pose(e,resting?'idle':Math.floor(time/180)%2?'walk':'idle');
+        pose(e,resting?'idle':Math.floor(time/180)%2?'walk':'walk_alt');
         if(Math.abs(e.x-scene.player.x)<e.profile.attackRange&&Math.abs(e.y-scene.player.y)<100&&time-e.lastAttack>e.profile.attackInterval){
           e.lastAttack=time;
           if(scene.pacing)scene.pacing.queue(e,()=>manager.attack(e),()=>{e.facingDirection=scene.player.x>=e.x?1:-1;pose(e,e.profile.attackPose);});

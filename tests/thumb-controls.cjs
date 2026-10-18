@@ -19,9 +19,10 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  const base=await center('#touch-stick-base');assert(Math.abs(base.x-origin.x)<2&&Math.abs(base.y-origin.y)<2,'Floating origin follows the finger');
  await move(1,{x:origin.x+6,y:origin.y+6});assert.deepEqual(await actions(),[],'Dead zone ignores jitter');
  await move(1,{x:origin.x+40,y:origin.y});await p.waitForFunction(()=>s.player.body.velocity.x>0);
- await start(2,await center(button('shoot')));await start(3,await center(button('jump')));
+ assert.equal(await p.locator('.touch-actions [data-touch-action=jump]').count(),0);
+ await start(2,await center(button('shoot')));await move(1,{x:origin.x+40,y:origin.y-46});
  await p.waitForFunction(()=>s.player.body.velocity.y<0);assert.deepEqual(await actions(),['right','jump','shoot']);
- await end(3);await end(2);assert.deepEqual(await actions(),['right']);
+ await move(1,{x:origin.x+40,y:origin.y});await end(2);assert.deepEqual(await actions(),['right']);
  await move(1,{x:origin.x-40,y:origin.y});assert.deepEqual(await actions(),['left']);
  await move(1,{x:origin.x,y:origin.y-40});assert.deepEqual(await actions(),['jump'],'Up activates jump on the thumb control');
  await move(1,{x:origin.x+8,y:origin.y+46});assert.deepEqual(await actions(),['crouch'],'Down tolerates horizontal jitter without drift');
@@ -67,5 +68,5 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  }
  origin=await center(zone);await start(11,origin);await move(11,{x:origin.x-40,y:origin.y});await p.setViewportSize({width:390,height:844});await p.waitForTimeout(100);assert.deepEqual(await actions(),[]);
  await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});points.clear();assert.deepEqual(errors,[]);
- console.log('PASS floating thumb: origin/dead zone, left/right/up/down/diagonal, one jump per up gesture, real three-finger jump/fire, capture/cancel/pause/rotation, button fallback, Gen Z thumb jump, stairs, HDD victory, restart and four mobile layouts with all controls outside the canvas.');
+ console.log('PASS floating thumb: origin/dead zone, left/right/up/down/diagonal, one jump per up gesture, simultaneous thumb jump/fire, capture/cancel/pause/rotation, button fallback, Gen Z thumb jump, stairs, HDD victory, restart and four mobile layouts with all controls outside the canvas.');
 }finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});

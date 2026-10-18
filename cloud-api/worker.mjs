@@ -58,6 +58,12 @@ export default {async fetch(request,env){
    if(request.method==='PATCH'||request.method==='DELETE'){
     const data=await jsonBody(request),ids=idsOf(data),placeholders=ids.map(()=>'?').join(',');let result;
     if(request.method==='DELETE')result=await env.DB.prepare(`DELETE FROM dialogue_suggestions WHERE id IN (${placeholders})`).bind(...ids).run();
+    else if(Object.hasOwn(data,'lines')){
+     if(ids.length!==1)fail(400,'Upravuj vždy jeden návrh.');
+     const row=await env.DB.prepare('SELECT * FROM dialogue_suggestions WHERE id=?').bind(ids[0]).first();if(!row)fail(404,'Návrh neexistuje.');
+     const edited=proposal({requestId:row.request_id,characterId:row.character_id,groupId:row.group_id,lines:data.lines,author:row.author});
+     result=await env.DB.prepare("UPDATE dialogue_suggestions SET lines_json=?,status='pending',updated_at=? WHERE id=?").bind(JSON.stringify(edited.lines),now,row.id).run();
+    }
     else{if(!statuses.includes(data.status))fail(400,'Neplatný stav.');result=await env.DB.prepare(`UPDATE dialogue_suggestions SET status=?,updated_at=? WHERE id IN (${placeholders})`).bind(data.status,now,...ids).run();}
     return reply({changed:result.meta.changes});
    }

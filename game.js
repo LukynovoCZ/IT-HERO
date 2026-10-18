@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.18.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.19.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -117,7 +117,7 @@
       this.cameras.main.fadeIn(350, 6, 13, 26);
       this.updateHUD();
       if (!restored) this.showOverlay('IT HERO', 'NO MORE MEETING',
-        'Jsi ajťák na životně důležité misi.\nProjdi 9 pater a odpoj HDD u vedení.\nPo SAP bossovi v 5. patře se uloží záloha.',
+        'Jsi ajťák na životně důležité misi.\nProjdi 9 pater a odpoj HDD u vedení.\nJakákoliv podobnost s čímkoliv z reálného světa a s čímkoliv jiným či podobným je čistě strategická.',
         'ENTER nebo kliknutí = HRÁT');
     }
 
@@ -162,6 +162,9 @@
         canvas.context.drawImage(supportSource,x,y,w,h,left,80-height,width,height);
         canvas.refresh();
       });
+      this.heroFrames=window.ITHeroMotion.complete(this,{idle:'hero',walk:'hero-walk',contact:'hero-duck'},{prefix:'hero-motion'});
+      this.secretaryVariants=window.ITHeroMotion.secretaries(this);
+      this.legacyFrames={};for(const kind of ['secretary','union','manager','specialist'])this.legacyFrames[kind]=window.ITHeroMotion.complete(this,{idle:kind,contact:kind==='secretary'?'secretary-scream':kind==='union'?'union-whistle':kind==='manager'?'manager-stomp-0':'specialist-flag'},{prefix:`legacy-${kind}`});
       window.ITHeroItems.create(this);
     }
 
@@ -324,6 +327,9 @@
         e.direction = i % 2 ? 1 : -1;
         e.lastAttack = 0;
         e.shotsThrown = 0;
+        e.visualFrames=spec.kind==='secretary'?this.secretaryVariants[spec.floor%3].frames:this.legacyFrames[spec.kind];
+        e.variant=spec.kind==='secretary'?this.secretaryVariants[spec.floor%3].id:null;
+        e.setTexture(e.visualFrames.idle);
         e.contactUntil = 0;
         e.lastStomp = -1000;
         e.attackDelay = spec.delay;
@@ -704,6 +710,8 @@
     }
 
     fire() {
+      this.playerAttackUntil=this.time.now+160;
+      this.player.setTexture(this.heroFrames.attack);
       const x = this.player.x + this.facing * 22;
       const y = this.player.y - 5;
       const bullet = this.playerShots.create(x, y, this.weapon);
@@ -737,7 +745,7 @@
       enemy.contactUntil = this.time.now + 1000;
       enemy.setVelocityX(0);
       if (enemy.kind === 'secretary') {
-        enemy.setTexture('secretary-scream');
+        enemy.setTexture(enemy.visualFrames.contact);
         this.enemyDialogue(enemy, 'contact');
         this.tone(1250, 0.35, 'sawtooth');
       } else if (enemy.kind === 'union') {
@@ -762,6 +770,7 @@
         this.specialistAttack(enemy, Math.abs(this.player.x-enemy.x)<135 ? 'rainbow-spray' : 'unicorn');
         return;
       }
+      enemy.setTexture(enemy.visualFrames.attack);enemy.poseUntil=this.time.now+350;
       const direction = this.player.x >= enemy.x ? 1 : -1;
       const near = Math.abs(this.player.x - enemy.x) < 180;
       const alternate = enemy.shotsThrown++ % 2;
@@ -780,6 +789,7 @@
 
     specialistAttack(enemy, projectile) {
       const direction = this.player.x >= enemy.x ? 1 : -1;
+      enemy.setTexture(projectile==='rainbow-spray'?'specialist-spray':enemy.visualFrames.attack);enemy.poseUntil=this.time.now+350;
       const short = projectile !== 'unicorn';
       const item = this.enemyShots.create(enemy.x + direction*(short ? 52 : 27),enemy.y-5,projectile).setDepth(26);
       item.body.setAllowGravity(false);
@@ -801,6 +811,7 @@
       shot.destroy();
       this.pacing.cancel(enemy);
       enemy.hp -= damage;
+      if(!enemy.profile){enemy.hitUntil=this.time.now+160;enemy.setTexture(enemy.visualFrames.hit);}
       if (enemy.profile) this.enemyTrio.hit(enemy);
       enemy.setTintFill(0xffffff);
       this.time.delayedCall(90, () => { if (enemy.active) enemy.clearTint(); });
@@ -810,7 +821,7 @@
         this.score += enemy.profile ? enemy.profile.score : enemy.kind === 'manager' ? 250 : 100;
         this.popText(enemy.x, enemy.y - 27, enemy.profile ? `+${enemy.profile.score}` : enemy.kind === 'manager' ? '+250 ŠÉF' : '+100', '#91ffe0');
         if (enemy.profile) this.enemyTrio.defeat(enemy);
-        else enemy.destroy();
+        else {enemy.defeated=true;enemy.body.enable=false;enemy.setTexture(enemy.visualFrames.defeat);this.tweens.add({targets:enemy,alpha:0,duration:220,onComplete:()=>enemy.destroy()});}
         if (enemy.kind === 'sap_integrator') this.pacing.checkpoint();
         this.updateHUD();
       }
@@ -831,6 +842,8 @@
     takeDamage(sourceX, damage = 1) {
       if (this.gameState !== 'playing' || this.time.now - this.lastHit < 1250) return;
       this.lastHit = this.time.now;
+      this.playerHitUntil=this.time.now+180;
+      this.player.setTexture(this.heroFrames.hit);
       this.pacing.interrupt();
       this.energy = Math.max(0, this.energy - damage);
       this.player.setVelocityX(this.player.x < sourceX ? -280 : 280);
@@ -968,6 +981,8 @@
       if (crouching) this.player.setTexture('hero-duck');
       else if (grounded && moving) this.player.setTexture(Math.floor(time / 130) % 2 ? 'hero' : 'hero-walk');
       else this.player.setTexture('hero');
+      if(!crouching&&time<(this.playerAttackUntil||0))this.player.setTexture(this.heroFrames.attack);
+      if(time<(this.playerHitUntil||0))this.player.setTexture(this.heroFrames.hit);
       const shootPressed = pressed('shoot');
       if ((down('shoot') || shootPressed) && time - this.lastShot > 240) {
         this.lastShot = time;
@@ -1015,7 +1030,8 @@
           }
           return;
         }
-        e.setTexture(e.kind);
+        if(time<(e.hitUntil||0)||time<(e.poseUntil||0)){e.setVelocityX(0);return;}
+        e.setTexture(e.visualFrames[Math.floor(time/170)%2?'walk':'walk_alt']);
         if (e.x < e.baseX - e.patrol) e.direction = 1;
         if (e.x > e.baseX + e.patrol) e.direction = -1;
         e.setVelocityX(e.direction * (e.kind === 'manager' ? 34 : 49));

@@ -58,7 +58,7 @@ const fs=require('node:fs');
    s.player.body.reset(window.__design.x-90,window.__design.y);s.player.setVelocity(0,0);
    window.__design.contactUntil=0;window.__design.lastAttack=s.time.now-2000;
   });
-  await p.waitForFunction(()=>window.__design.texture.key==='trio-design_manager-tablet');
+  await p.waitForFunction(()=>window.__design.texture.key==='trio-design_manager-golf'||window.__design.texture.key==='trio-design_manager-golf_follow');
   await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').energy===4);
   const hit=await p.evaluate(()=>{
    const s=window.__testGame.scene.getScene('ITGame'),e=window.__design;
@@ -69,6 +69,6 @@ const fs=require('node:fs');
   assert.deepEqual(hit,{hp:0,defeated:true,body:false,reward:100});
   await p.waitForFunction(()=>!window.__design.active);
   assert.deepEqual(errors,[]);
-  console.log('PASS actual design manager reference sprites in floors 4/8/9: transparent aligned poses, patrol, animated scream contact, tablet attack, damage, CD/floppy defeat and score');
+  console.log('PASS actual design manager reference sprites in floors 4/8/9: transparent aligned poses, patrol, animated scream contact, golf swing attack, damage, CD/floppy defeat and score');
  }finally{await b.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

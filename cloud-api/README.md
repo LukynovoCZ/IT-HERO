@@ -23,6 +23,9 @@ ověřování správce, omezení odesílání a ruční vyřízení jako pro hl�
 - Správce: `dialogue-admin.html`. Po zadání správcovského klíče vidí čekající,
   převzaté a zamítnuté návrhy. Klíč je pouze v paměti otevřené stránky, nikoli
   v souboru konfigurace, adrese nebo localStorage; odchod ze stránky jej zahodí.
+- Text v návrhu lze upravit a uložit tlačítkem **Uložit úpravy ke kontrole**.
+  Uložení vždy vrátí stav na čekající; zachová autora a čas odeslání.
+  Neuložené úpravy nelze exportovat ani označit jako převzaté.
 - Vybrat návrhy → Exportovat vybrané JSON. Soubor `it-hero-hlasky-navrhy.json`
   používá stejnou strukturu jako dřívější export hlášek: postava → situace → lines.
   Duplicitní texty pro stejnou postavu a situaci se v exportu sloučí.

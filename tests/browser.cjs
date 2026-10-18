@@ -105,7 +105,7 @@ const assert=require('node:assert/strict');
   // Exercise legacy enemy behavior independently of the separately tested trio.
   await combat.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemies.getChildren().filter(e=>e.profile).forEach(e=>e.destroy()));
   for(const [kind,shots,pose] of [
-    ['secretary',['folder','mug'],'secretary-scream'],
+    ['secretary',['folder','mug'],'secretary-blonde-contact'],
     ['union',['hammer','gear'],'union-whistle'],
     ['manager',['gold-card','gold-card'],'manager-stomp-']
   ]) {
@@ -136,7 +136,7 @@ const assert=require('node:assert/strict');
       const s=window.__testGame.scene.getScene('ITGame');s.player.body.reset(82,4280);
       s.physics.world.resume();
     });
-    await combat.waitForFunction(kind=>window.__contactEnemy.texture.key===kind,kind);
+    await combat.waitForFunction(()=>{const e=window.__contactEnemy;return e.body.velocity.x!==0&&[e.visualFrames.walk,e.visualFrames.walk_alt].includes(e.texture.key);});
     console.log(`PASS ${kind}: projectiles, real contact overlap, one damage, reaction and recovery`);
   }
   assert.deepEqual(combatErrors,[]);await combat.close();
