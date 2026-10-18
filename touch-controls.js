@@ -2,31 +2,55 @@
 (() => {
   'use strict';
   let preferred=null;
+  let movementMode='stick';
+  const stickConfig={radius:46,deadZone:.25,downThreshold:.52,downDominance:1.1};
   function attach(scene){
     const panel=document.getElementById('touch-controls'),area=document.getElementById('play-area');
     if(!panel||!area)return null;
     const toggle=document.getElementById('touch-toggle'),toolbar=document.getElementById('touch-toolbar');
     const pause=document.getElementById('touch-pause'),sound=document.getElementById('touch-sound'),fullscreen=document.getElementById('touch-fullscreen');
     const hint=document.getElementById('touch-hint'),start=document.getElementById('game-action');
+    const modeButton=document.getElementById('touch-mode'),stickZone=document.getElementById('touch-stick-zone');
+    const stickBase=document.getElementById('touch-stick-base');
     const buttons=[...panel.querySelectorAll('[data-touch-action]')];
     const pointers=new Map(),pressed=new Set(),listeners=[];
     let enabled=preferred??(navigator.maxTouchPoints>0||matchMedia('(any-pointer: coarse)').matches),lastSync='',destroyed=false;
     const listen=(node,event,handler,options)=>{node.addEventListener(event,handler,options);listeners.push(()=>node.removeEventListener(event,handler,options));};
-    const isDown=action=>[...pointers.values()].some(pointer=>pointer.action===action);
+    const holds=(pointer,action)=>pointer.actions?pointer.actions.has(action):pointer.action===action;
+    const isDown=action=>[...pointers.values()].some(pointer=>holds(pointer,action));
+    function resetStick(){
+      if(!stickZone)return;
+      stickZone.dataset.active='false';stickBase.style.left='50%';stickBase.style.top='50%';
+      stickBase.style.setProperty('--stick-dx','0px');stickBase.style.setProperty('--stick-dy','0px');
+    }
+    function moveStick(pointer,event){
+      const dx=event.clientX-pointer.x,dy=event.clientY-pointer.y,distance=Math.hypot(dx,dy);
+      const scale=distance>stickConfig.radius?stickConfig.radius/distance:1;
+      stickBase.style.setProperty('--stick-dx',`${dx*scale}px`);stickBase.style.setProperty('--stick-dy',`${dy*scale}px`);
+      const actions=new Set(),threshold=stickConfig.radius*stickConfig.deadZone;
+      // A mostly vertical pull is down only, so stairs/HDD do not cause horizontal drift.
+      const down=dy>stickConfig.radius*stickConfig.downThreshold;
+      if(Math.abs(dx)>threshold&&!(down&&dy>Math.abs(dx)*stickConfig.downDominance))actions.add(dx<0?'left':'right');
+      if(down)actions.add('crouch');
+      for(const action of actions)if(!isDown(action))pressed.add(action);
+      pointer.actions=actions;paint();
+    }
     function paint(){buttons.forEach(button=>{const held=isDown(button.dataset.touchAction);button.classList.toggle('held',held);button.setAttribute('aria-pressed',String(held));});}
     function release(id){
       const pointer=pointers.get(id);if(!pointer)return;
       pointers.delete(id);
+      if(pointer.kind==='stick')resetStick();
       try{if(pointer.capture.hasPointerCapture(id))pointer.capture.releasePointerCapture(id);}catch(_){/* Already cancelled by the browser. */}
       paint();
     }
-    function cancel(id){const pointer=pointers.get(id);release(id);if(pointer&&!isDown(pointer.action))pressed.delete(pointer.action);}
+    function cancel(id){const pointer=pointers.get(id);release(id);for(const action of pointer?.actions||[pointer?.action])if(!isDown(action))pressed.delete(action);}
     function clear(){[...pointers.keys()].forEach(release);pressed.clear();}
     function sync(){
       if(destroyed)return;
       const key=[scene.gameState,scene.weapon,scene.isMuted,enabled,start?.hidden,start?.textContent].join('/');
       if(key===lastSync)return;lastSync=key;
       if(scene.gameState!=='playing')clear();
+      stickZone?.setAttribute('aria-disabled',String(scene.gameState!=='playing'));
       buttons.forEach(button=>{button.disabled=scene.gameState!=='playing';});
       pause.disabled=!['playing','paused'].includes(scene.gameState);
       pause.textContent=scene.gameState==='paused'?'▶ Pokračovat':'|| Pauza';
@@ -42,14 +66,34 @@
       start.style.top=`${canvas.top-shell.top+canvas.height*0.70}px`;
     }
     function refresh(){if(!destroyed){scene.scale.refresh();placeStart();}}
+    function setMovementMode(value){
+      clear();movementMode=stickZone?value:'buttons';panel.dataset.movement=movementMode;
+      document.body.classList.toggle('touch-stick-layout',enabled&&movementMode==='stick');
+      if(modeButton){
+        modeButton.textContent=movementMode==='stick'?'Ovládání: palec':'Ovládání: tlačítka';
+        modeButton.dataset.mode=movementMode;
+        modeButton.setAttribute('aria-label',movementMode==='stick'?'Přepnout na směrová tlačítka':'Přepnout na ovladač pod palcem');
+      }
+      if(hint)hint.textContent=movementMode==='stick'?'Polož levý palec na ovladač a táhni vlevo nebo vpravo. Tažení dolů = skrčení, schody a odpojení HDD. Skok a střelba jsou napravo. Nejlépe na šířku.':'Drž ▼ pro skrčení; u schodů přejdeš dál a u HDD odpojíš disk. Pohyb, skok a střelbu můžeš kombinovat.';
+      resetStick();requestAnimationFrame(refresh);
+    }
     scene.scale.on('resize',placeStart);listeners.push(()=>scene.scale.off('resize',placeStart));
     function mode(value){
       clear();enabled=value;panel.hidden=!enabled;toolbar.hidden=!enabled;hint.hidden=!enabled;
       document.body.classList.toggle('touch-layout',enabled);
+      document.body.classList.toggle('touch-stick-layout',enabled&&movementMode==='stick');
       toggle.setAttribute('aria-expanded',String(enabled));toggle.textContent=enabled?'Skrýt dotykové ovládání':'Dotykové ovládání';
       lastSync='';sync();requestAnimationFrame(refresh);
     }
     listen(panel,'pointerdown',event=>{
+      if(stickZone?.contains(event.target)){
+        if(!enabled||movementMode!=='stick'||scene.gameState!=='playing'||event.button!==0||[...pointers.values()].some(p=>p.kind==='stick'))return;
+        event.preventDefault();event.stopPropagation();
+        const r=stickZone.getBoundingClientRect(),pointer={kind:'stick',capture:stickZone,x:event.clientX,y:event.clientY,actions:new Set()};
+        pointers.set(event.pointerId,pointer);stickZone.setPointerCapture(event.pointerId);
+        stickBase.style.left=`${event.clientX-r.left}px`;stickBase.style.top=`${event.clientY-r.top}px`;stickZone.dataset.active='true';
+        moveStick(pointer,event);return;
+      }
       const button=event.target.closest('[data-touch-action]');
       if(!button||button.disabled||event.button!==0||!enabled)return;
       event.preventDefault();event.stopPropagation();
@@ -61,6 +105,7 @@
     listen(panel,'pointermove',event=>{
       const pointer=pointers.get(event.pointerId);if(!pointer)return;
       event.preventDefault();
+      if(pointer.kind==='stick'){moveStick(pointer,event);return;}
       const button=document.elementFromPoint(event.clientX,event.clientY)?.closest('[data-touch-action]');
       if(!button||!panel.contains(button)||button.disabled){cancel(event.pointerId);return;}
       if(button.dataset.touchAction!==pointer.action){pointer.action=button.dataset.touchAction;pressed.add(pointer.action);paint();}
@@ -90,6 +135,7 @@
       listen(button,'click',event=>{if(event.detail!==0&&performance.now()-touchAt<650)return;handler();});
     }
     activate(toggle,()=>{preferred=!enabled;mode(preferred);});
+    if(modeButton)activate(modeButton,()=>setMovementMode(movementMode==='stick'?'buttons':'stick'));
     activate(pause,()=>{clear();scene.togglePause();sync();});
     const unlockAudio=()=>{if(!scene.isMuted&&scene.audioCtx?.state==='suspended')scene.audioCtx.resume().catch(()=>{});};
     listen(area,'pointerdown',unlockAudio,{capture:true});
@@ -100,8 +146,8 @@
       catch(_){if(!destroyed)hint.textContent='Celou obrazovku tady prohlížeč nepovolil.';}
     });
     listen(document,'fullscreenchange',()=>{clear();fullscreen.textContent=document.fullscreenElement?'Zmenšit':'[ ] Celá obrazovka';requestAnimationFrame(refresh);});
-    mode(enabled);
-    const controller={get enabled(){return enabled;},isDown,justPressed(action){const result=pressed.has(action);pressed.delete(action);return result;},clear,sync,
+    setMovementMode(movementMode);mode(enabled);
+    const controller={get enabled(){return enabled;},get movementMode(){return movementMode;},stickConfig,isDown,justPressed(action){const result=pressed.has(action);pressed.delete(action);return result;},clear,sync,
       destroy(){destroyed=true;clear();listeners.forEach(remove=>remove());}};
     scene.events.once('shutdown',()=>controller.destroy());return controller;
   }

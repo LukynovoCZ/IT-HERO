@@ -5,21 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111a2a">
   <title>IT HERO | Save the world — but first, coffee</title>
-  <link rel="stylesheet" href="style.css?v=0.14.2">
+  <link rel="stylesheet" href="style.css?v=0.15.0">
   <script defer src="vendor/phaser.min.js"></script>
-  <script defer src="character-dialogue.js?v=0.14.2"></script>
-  <script defer src="posters.js?v=0.14.2"></script>
-  <script defer src="item-textures.js?v=0.14.2"></script>
-  <script defer src="trio-attacks.js?v=0.14.2"></script>
-  <script defer src="enemy-catalog.js?v=0.14.2"></script>
-  <script defer src="dbpm.js?v=0.14.2"></script>
-  <script defer src="sap-integrator.js?v=0.14.2"></script>
-  <script defer src="it-colleague.js?v=0.14.2"></script>
-  <script defer src="gen-z-blockers.js?v=0.14.2"></script>
-  <script defer src="old-badger.js?v=0.14.2"></script>
-  <script defer src="touch-controls.js?v=0.14.2"></script>
-  <script defer src="gameplay.js?v=0.14.2"></script>
-  <script defer src="game.js?v=0.14.2"></script>
+  <script defer src="character-dialogue.js?v=0.15.0"></script>
+  <script defer src="posters.js?v=0.15.0"></script>
+  <script defer src="item-textures.js?v=0.15.0"></script>
+  <script defer src="trio-attacks.js?v=0.15.0"></script>
+  <script defer src="enemy-catalog.js?v=0.15.0"></script>
+  <script defer src="dbpm.js?v=0.15.0"></script>
+  <script defer src="sap-integrator.js?v=0.15.0"></script>
+  <script defer src="it-colleague.js?v=0.15.0"></script>
+  <script defer src="gen-z-blockers.js?v=0.15.0"></script>
+  <script defer src="old-badger.js?v=0.15.0"></script>
+  <script defer src="touch-controls.js?v=0.15.0"></script>
+  <script defer src="gameplay.js?v=0.15.0"></script>
+  <script defer src="game.js?v=0.15.0"></script>
 </head>
 <body>
   <main class="layout">
@@ -28,7 +28,7 @@
         <span class="eyebrow">PTG PIXEL OFFICE ARCADE</span>
         <h1>IT<span>HERO</span><small> / Save the world — but first, coffee</small></h1>
       </div>
-      <span class="version">BUILD 0.14.2</span>
+      <span class="version">BUILD 0.15.0</span>
     </header>
     <section id="play-area" class="play-area" aria-label="Herní plocha a ovládání">
     <div class="game-shell">
@@ -42,8 +42,13 @@
       <button type="button" id="touch-pause">|| Pauza</button>
       <button type="button" id="touch-sound" aria-pressed="true">Zvuk: zap.</button>
       <button type="button" id="touch-fullscreen">[ ] Celá obrazovka</button>
+      <button type="button" id="touch-mode" data-mode="stick">Ovládání: palec</button>
     </div>
     <div id="touch-controls" class="touch-controls" role="group" aria-label="Dotykové ovládání hry" aria-describedby="touch-hint" hidden>
+      <div id="touch-stick-zone" class="touch-stick-zone" role="group" aria-label="Levý palec: tažením doleva a doprava pohyb, dolů skrčení a schody" aria-disabled="true" data-active="false">
+        <div id="touch-stick-base" class="touch-stick-base" aria-hidden="true"><span class="touch-stick-knob"></span><span class="touch-stick-down">▼</span></div>
+        <span class="touch-stick-hint" aria-hidden="true">↔ POHYB · ↓ SKRČENÍ / SCHODY</span>
+      </div>
       <div class="touch-movement">
         <button type="button" data-touch-action="left" aria-label="Pohyb doleva" aria-pressed="false">◀</button>
         <button type="button" data-touch-action="right" aria-label="Pohyb doprava" aria-pressed="false">▶</button>

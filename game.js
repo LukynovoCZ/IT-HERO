@@ -1033,7 +1033,8 @@
       this.promptText.setText(nearDoor ? `[ ${stairsKey} ]  ${door.kind === 'exit' ? 'ODPOJIT HDD' : 'DALŠÍ PATRO'}` : '');
       this.tipText.setVisible(!this.posters.tooltip.visible);
       if (!this.isMuted || !this.tipText.text.startsWith('ZVUK')) {
-        this.tipText.setText(this.touchControls?.enabled ? (nearDoor ? (door.kind === 'exit' ? 'U HDD podrž ▼ a stůj na místě' : 'U schodů podrž ▼') : '◀ / ▶ • POHYB   ↑ • SKOK   ▼ • SKRČENÍ   ● • STŘELBA') : (nearDoor ? (door.kind === 'exit' ? 'U HDD podrž S / ↓ nebo E a stůj na místě' : 'U schodů se skrč: S nebo ↓') : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD'));
+        const thumb = this.touchControls?.movementMode === 'stick';
+        this.tipText.setText(this.touchControls?.enabled ? (nearDoor ? (door.kind === 'exit' ? (thumb ? 'Drž levý palec dole a stůj na místě' : 'U HDD podrž ▼ a stůj na místě') : (thumb ? 'U schodů táhni levý palec dolů' : 'U schodů podrž ▼')) : (thumb ? 'PALEC ↔ • POHYB   ↓ • SKRČENÍ   ↑ • SKOK   ● • STŘELBA' : '◀ / ▶ • POHYB   ↑ • SKOK   ▼ • SKRČENÍ   ● • STŘELBA')) : (nearDoor ? (door.kind === 'exit' ? 'U HDD podrž S / ↓ nebo E a stůj na místě' : 'U schodů se skrč: S nebo ↓') : 'A / D • POHYB   W • SKOK   S • SKRČENÍ   J • DISKETY / CD'));
       }
       if (time - this.lastHit < 1250) this.player.alpha = Math.floor(time / 90) % 2 ? 0.4 : 1;
       else this.player.alpha = 1;

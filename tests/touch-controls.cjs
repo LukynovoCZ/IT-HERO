@@ -5,6 +5,7 @@ require('node:fs').mkdirSync('/tmp/it-hero-tests',{recursive:true});
  await p.route('**/game.js*',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame=new Phaser.Game({')});});
  await p.goto('http://127.0.0.1:8000');await p.locator('#game-action').waitFor({state:'visible'});
  assert(await p.locator('#touch-controls').isVisible());assert((await p.locator('#game-action').innerText()).includes('KLEPNI'));
+ await p.locator('#touch-mode').tap(); // Exercise the retained directional-button mode.
  await p.locator('#game-action').tap();await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').gameState==='playing');
  await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.enemies.getChildren().forEach(e=>{e.body.enable=false;e.lastAttack=Infinity;});});
  const cdp=await p.context().newCDPSession(p),points=new Map();

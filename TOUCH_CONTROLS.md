@@ -1,27 +1,35 @@
-# Ovládání na mobilu a PC – 0.11.0
+# Ovládání na mobilu a PC – 0.15.0
 
 Stejná hra a stejný odkaz fungují s klávesnicí i dotykem. Na zařízení s dotykem
 se panel zobrazí automaticky. Tlačítkem „Dotykové ovládání“ pod hrou ho lze
 zapnout i na PC nebo skrýt. Klávesnice funguje současně s dotykovým panelem.
 
-## Mobil
+## Mobil: plovoucí ovladač pod palcem
 
-- ◀ / ▶: držení pro pohyb.
-- ↑: skok.
-- ▼: držení pro skrčení; u schodů přechod do dalšího patra.
-- ●: střelba, při držení opakovaná. Platí i pro CD.
-- Pauza / Pokračovat a zvuk mají samostatná tlačítka.
-- Celá obrazovka se nabízí pouze tam, kde ji prohlížeč podporuje.
+Výchozí režim je **Palec**. Polož levý palec do levé spodní části hry na šířku
+(nebo na ovládací plochu pod hrou na výšku). Střed ovladače vznikne v místě dotyku.
 
-Lze současně držet pohyb, střílet a skákat třemi prsty. Prstem lze přejet mezi
-směry. Opuštění panelu, zrušení dotyku, změna rozměrů nebo ztráta zaměření
-uvolní držené akce. Při skrytí stránky (např. přepnutí aplikace) se hra pozastaví;
-pokračování je záměrně ruční. Krátké klepnutí na střelbu se neztratí mezi snímky.
+- Táhni vlevo / vpravo: pohyb. Návrat ke středu: zastavení.
+- Táhni dolů: skrčení, u schodů další patro, u HDD podržení pro odpojení.
+- Převážně svislé tažení toleruje drobný pohyb do stran, takže hráč neujíždí od HDD.
+- Šikmo dolů: pomalý pohyb ve skrčení. Tažení nahoru neskáče.
+- Pravé tlačítko ↑: skok; pravé ●: střelba, při držení opakovaná (i CD).
+- **Palec / Tlač.** v pravém panelu přepne na původní směrová tlačítka.
+- Pauza, zvuk a podporovaná celá obrazovka mají vlastní tlačítka.
 
-Tlačítka jsou mimo herní plátno. Rozložení na šířku využívá většinu výšky pro
-hru a spodní řádek pro ovládání. Na výšku zůstává běžná stránka se čtvercovými
-tlačítky pod hrou. Hru je obvykle pohodlnější hrát na šířku. Plná obrazovka
-není podmínkou; například některé verze Safari ji pro tento typ prvku nenabízejí.
+Pohyb lze současně kombinovat se skokem i střelbou. Aktivní levý prst si ovladač
+zachytí a sleduje ho i mimo původní plochu. Zvednutí nebo zrušení dotyku, pauza,
+změna režimu, otočení telefonu a ztráta zaměření uvolní všechny příslušné akce.
+Při skrytí stránky se hra pozastaví; pokračování je ruční. Krátké klepnutí na
+střelbu se neztratí mezi snímky.
+
+Na šířku je průhledný levý ovladač přes spodní levou část plátna. Pravá tlačítka
+zůstávají mimo plátno, hra získává šířku původního levého pruhu. Na výšku je
+ovladač pod hrou. Přepnutí na tlačítka obnoví původní boční pruhy. Režim se
+zachová při restartu hry; obnovení stránky vybere znovu Palec.
+
+Plná obrazovka není podmínkou. Uvolní prostor rozhraní prohlížeče, pokud ji
+zařízení podporuje; některé verze Safari ji pro tento prvek nenabízejí.
 
 ## PC
 
@@ -44,28 +52,30 @@ klávesnice. Kontroler neposílá syntetické klávesové události a při resta
 odregistruje své posluchače. Nesdílí držené klávesy s prsty, takže uvolnění
 jednoho způsobu vstupu nezruší jiný současně držený vstup.
 
+## Nastavení palce
+
+`stickConfig` v `touch-controls.js`: poloměr 46 CSS pixelů, mrtvá zóna 25 %,
+práh dolů 52 % a převaha svislého směru 1,1. Tyto hodnoty ovlivňují citlivost,
+nikoli rychlost hráče. Jeden aktivní prst řídí pohyb; ostatní mohou mačkat akce.
+Rozměry a umístění ovladače upravují `.touch-stick-*` v `style.css`.
+
 ## Ověření
 
 Playwright s Chromium, místní server na portu 8000:
 
 ```
+node tests/thumb-controls.cjs
 node tests/touch-controls.cjs
+node tests/gameplay-mobile.cjs
+node tests/gen-z-impact.cjs
 node tests/browser.cjs
-node tests/floors.cjs
-node tests/intro-death.cjs
-node tests/character-preview.cjs
+node tests/gameplay.cjs
 ```
 
-Dotykový test posílá skutečné vícebodové dotyky přes Chromium DevTools Protocol:
-3 prsty současně, nezávislé uvolnění, klepnutí, skrčení, schody, pauza druhým
-prstem, zvuk, fullscreen, přesun prstu, cancel, otočení, návrat ze skryté stránky
-a restart. Kontroluje viewporty 390×844, 320×568, 844×390 a 568×320, minimálně 44px
-ovládací cíle, neexistenci vodorovného přetečení a umístění tlačítek mimo plátno.
-Fyzický telefon s Androidem ani iOS zde nebyl k dispozici; jde o browserovou
-emulaci dotykového zařízení a samostatné testování desktopové klávesnice.
-
-## Rozložení 0.11.1
-Na mobilu na šířku (výška okna do 540 px) jsou tlačítka v bočních pruzích.
-Herní plátno využívá celou dostupnou výšku, zachovává poměr 16:9 a tlačítka
-nepřekrývají dění. Na výšku zůstávají tlačítka pod hrou. Fullscreen `[ ]`
-uvolní také prostor zabraný rozhraním prohlížeče, pokud jej zařízení podporuje.
+Nový test posílá skutečné vícebodové dotyky přes Chromium DevTools Protocol:
+plovoucí střed, mrtvá zóna, všechny směry, tři prsty, zachycení mimo plochu,
+zrušení, pauza a otočení. Ověřuje přeskočení Gen Z, schody i úplné odpojení HDD
+s malou vodorovnou odchylkou palce. Samostatný test zachovává kontrolu původních
+tlačítek a klávesnice. Layouty 390×844, 320×568, 844×390 a 568×320 kontrolují
+minimálně 44px cíle, dostupnost pravých tlačítek a chybějící vodorovné přetečení.
+Fyzický telefon zde nebyl k dispozici; ověření proběhlo v emulaci prohlížeče.

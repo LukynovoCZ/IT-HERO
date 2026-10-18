@@ -1,6 +1,7 @@
-# Gen Z dvojice – issue #2 (0.14.2)
+# Gen Z dvojice – issue #2 (0.15.0)
 
-Samostatná větev `feature/gen-z-blockers`, určená k review, bez automatického merge.
+Původní větev `feature/gen-z-blockers`; na výslovný pokyn uživatele začleněna
+do vydání 0.15.0 společně s ovladačem pod palcem.
 Zadání: `tasks/GEN-Z-CODEX.md`, předloha: `assets/gen-z-duo-reference.svg`.
 
 ## Chování
@@ -100,3 +101,22 @@ Neběží žádné externí generování obrázků při hraní.
 
 Aktuální náhled je `docs/gen-z-visuals-0.14.2.png`; soubor 0.14.1 zachycuje
 předchozí návrh. Mechaniky, hitboxy, časy a dialogy zůstávají stejné.
+
+
+## Vliv na hratelnost – kontrola 0.15.0
+
+- Skok s vrcholem přibližně 106 px překoná 64px kolizi blokátoru.
+  `tests/gen-z-impact.cjs` ověřuje skutečný skok z obou stran vedle stolu
+  i pod jednostrannou lávkou ve druhém patře. `tests/thumb-controls.cjs`
+  ověřuje přeskočení kombinací levého palce a pravého tlačítka skoku.
+- Blokování trvá nejvýše 8 sekund; příchozí nepřítel nebo Senior master
+  do 70 px postavu okamžitě odstraní. Nezvyšuje HP nepřátel ani poškození.
+- Střely hráče skrz postavu procházejí. Checkpoint SAP v pátém a finále
+  v devátém patře jsou vyloučené; živý DBPM rovněž brání výskytu.
+- Interval 25–45 sekund a nejvýše jedna postava omezují zdržování. Hrubý
+  podíl blokovací fáze při dostupném místě je kolem 19 % aktivního času;
+  hráč může přeskočit, nemusí čekat. Časovač mise během čekání pokračuje.
+- V zaplněném patře nemusí existovat bezpečné místo. Po 2 sekundách se hledá
+  znovu; výskyt tedy není garantovaný v každém patře. Uvolnění prostoru po
+  poražení protivníků nebo sebrání předmětů rozšíří dostupná místa. Test
+  vypisuje počty bezpečných pozic s živými protivníky v každém patře.
