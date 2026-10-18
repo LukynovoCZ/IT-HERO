@@ -1,4 +1,4 @@
 {
-  "request": "initial-community-deployment-2026-10-18",
+  "request": "community-deployment-diagnostics-2026-10-18",
   "purpose": "Deploy the authorized community inbox with repository secrets"
 }

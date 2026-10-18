@@ -7,6 +7,7 @@ const workerName='it-hero-community',databaseName='it-hero-community';
 export async function deploy({env=process.env,fetchImpl=fetch,log=console.log}={}){
  const token=env.CLOUDFLARE_API_TOKEN,account=env.CLOUDFLARE_ACCOUNT_ID,admin=env.IT_HERO_ADMIN_TOKEN;
  if(!token)throw Error('V GitHub repository secrets chybí CLOUDFLARE_API_TOKEN.');
+ if(!/^[\x21-\x7e]+$/.test(token))throw Error('Cloudflare API token obsahuje mezery nebo neplatné znaky. Vlož samotný token.');
  if(!/^[a-f0-9]{32}$/i.test(account||''))throw Error('Chybí platné CLOUDFLARE_ACCOUNT_ID.');
  if(!admin||admin.length<32||admin.length>256)throw Error('Přidej GitHub secret IT_HERO_ADMIN_TOKEN: soukromé heslo pro správu, 32 až 256 znaků.');
  if(admin===token)throw Error('Pro správu použij jiné heslo než Cloudflare API token.');
@@ -49,4 +50,4 @@ export async function deploy({env=process.env,fetchImpl=fetch,log=console.log}={
  if(env.GITHUB_STEP_SUMMARY)await fs.appendFile(env.GITHUB_STEP_SUMMARY,`## Schránka hlášek je připravená\n\nVeřejná adresa API: **${url}**\n\nNásledující krok připojí ověřenou adresu k formuláři hry. Soukromé klíče se nikam neposílají. Pro přihlášení do správy použij své heslo uložené jako IT_HERO_ADMIN_TOKEN.\n`);
  return url;
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))deploy().then(async url=>{if(process.env.GITHUB_OUTPUT)await fs.appendFile(process.env.GITHUB_OUTPUT,`api_url=${url}\n`);}).catch(error=>{console.error(error instanceof Error?error.message:'Nasazení se nepodařilo.');process.exitCode=1;});
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))deploy().then(async url=>{if(process.env.GITHUB_OUTPUT)await fs.appendFile(process.env.GITHUB_OUTPUT,`api_url=${url}\n`);}).catch(error=>{const message=error instanceof Error?error.message:'Nasazení se nepodařilo.';console.error(message);if(process.env.GITHUB_ACTIONS)console.error('::error title=Cloudflare nasazení::'+message.replace(/%/g,'%25').replace(/\r/g,'%0D').replace(/\n/g,'%0A'));process.exitCode=1;});
