@@ -1,5 +1,41 @@
 # Připojení Cloudflare pro nasazení
 
+## Doporučená alternativa, pokud mobilní Codex neukazuje nastavení
+
+Není potřeba hledat tajné údaje v rozhraní Codexu. Repozitář má ručně
+spouštěné nasazení `.github/workflows/deploy-community.yml`.
+
+1. Otevři https://github.com/LukynovoCZ/IT-HERO/settings/secrets/actions
+   jako vlastník repozitáře. **New repository secret**.
+2. Název `CLOUDFLARE_API_TOKEN`, do pole Secret vlož vytvořený Cloudflare
+   token. Potvrď Add secret. Hodnotu nikdy nevkládej do chatu nebo souboru.
+3. Stejným postupem přidej `IT_HERO_ADMIN_TOKEN`: jiné soukromé heslo délky
+   32 až 256 znaků pro přihlášení do správy hlášek. Ulož si ho do správce hesel.
+   Není to Cloudflare token a nesmí být stejné jako on.
+4. Otevři https://github.com/LukynovoCZ/IT-HERO/actions/workflows/deploy-community.yml
+   → Run workflow → main → Run workflow. Na mobilu může být tlačítko níže
+   nebo vyžadovat zobrazení pro počítače.
+5. Po úspěchu otevři souhrn běhu. Obsahuje veřejnou adresu API. Tuto adresu
+   lze poslat Codexu, který ji zapojí do `community-config.js` a zveřejní hru.
+   Soukromé hodnoty tajných údajů nikdo nepotřebuje vidět.
+
+Account ID `ff0e90e8eadd6238a7f6b31057c00a7f` je již ve workflow, není to tajný údaj.
+Workflow se nespouští automaticky při změně hry. Má pouze právo číst repozitář.
+Nasadí jen schránku hlášek, ne dosud navržené API pro globální skóre.
+
+Nasazovací skript používá Cloudflare API: nejdříve ověří přístup čtením,
+použije existující D1 se stejným názvem nebo vytvoří novou, přidá tabulky,
+nahraje Worker a jeho privátní klíč. Po nasazení ověří CORS i přihlášené čtení.
+Nepřepisuje uživatelské návrhy a nevypisuje klíče. Jestli Cloudflare odmítne
+oprávnění, vypíše cestu a stav chyby; nic neoznačí za funkční bez ověření.
+Veřejný web zůstane v režimu stahování souboru, dokud se nezapojí adresa API.
+
+Lokální ověření: `node tests/deploy-community.mjs` testuje průběh s náhradním
+API bez kontaktování účtu. Skutečný běh Cloudflare dosud nebyl proveden.
+
+## Alternativa: tajné údaje v prostředí Codexu
+
+
 V tomto běhu nebylo nalezeno přihlášení Wrangleru ani Cloudflare proměnné.
 Cloudflare účet nelze propojit prostřednictvím již existujícího GitHub přihlášení.
 

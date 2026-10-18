@@ -1,0 +1,23 @@
+name: Nasadit komunitní databázi
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: it-hero-community-deploy
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ff0e90e8eadd6238a7f6b31057c00a7f
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      IT_HERO_ADMIN_TOKEN: ${{ secrets.IT_HERO_ADMIN_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Nasadit schránku hlášek
+        run: node scripts/deploy_community.mjs

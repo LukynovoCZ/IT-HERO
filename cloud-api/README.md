@@ -25,7 +25,13 @@ pouze přidá vlastní tabulky a nevytváří ani nemaže tabulky skóre.
 - Načítá se po 50 návrzích, další tlačítkem Načíst další. Jedna hromadná změna
   nebo smazání přijímá nejvýše 100 ID. Není zde veřejné čtení cizích návrhů.
 
-## Nasazení – až po připojení účtu Cloudflare
+## Nasazení z GitHubu (bez nastavení prostředí Codexu)
+
+[Postup přes GitHub Actions a repository secrets](CONNECTION.md) je připravený
+pro mobilní rozhraní. Nevyžaduje přihlášení Wrangleru ani předání tokenu do chatu.
+Skutečné nasazení nastane až po doplnění tajných údajů a ručním spuštění workflow.
+
+## Alternativní nasazení přes Wrangler – až po připojení účtu Cloudflare
 
 Tyto příkazy zatím nebyly spuštěné proti žádnému účtu. Správcovský klíč
 se zadává zabezpečeně při `secret put`, neposílá se do chatu ani commitu.
