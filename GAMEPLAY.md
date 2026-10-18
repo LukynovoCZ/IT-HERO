@@ -74,3 +74,15 @@ Mobilní ověření používá emulované dotykové zařízení v Chromium, niko
 - S / ↓ / dotykové ▼ na lávce umožní seskočit k nepřátelům. Podlaha a stoly zůstávají pevné; po seskoku je lávka znovu použitelná.
 - Starý Jezevec se nově zobrazuje jako SENIOR MASTER. Interní ID `old_badger` zůstává kvůli kompatibilitě hlášek.
 - Regrese: `node tests/stairs-platforms.cjs` ověřuje schody s drženým skrčením, skutečný skok ze stolu na lávku, seskočení a skok pod lávkou.
+
+## Oprava zamrznutí po zásahu vozíku (0.13.1)
+
+Při kolizi dynamického sprite se skupinou Phaser předává sprite jako první
+argument callbacku. Původní obsluha zničila vozík místo střely a následná
+aktualizace pohybu vyvolala výjimku, která zastavila herní smyčku.
+Kolize nyní výslovně používají pořadí vozík/skupina a ničí druhý argument
+(střelu). Oprava platí pro hráčovy i nepřátelské projektily ve 3. a 8. patře.
+
+`node tests/cart-projectiles.cjs` ověřuje skutečné zásahy disketou, CD
+a nepřátelskou střelou do obou vozíků, pokračující pohyb a herní čas,
+skok i přechod ze třetího patra po kolizích.

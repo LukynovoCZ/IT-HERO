@@ -42,7 +42,10 @@
         const cart=scene.physics.add.image(route.cart.min,ground-21,'service-cart').setImmovable(true).setDepth(15);
         cart.body.setAllowGravity(false);cart.body.setSize(64,38);cart.body.pushable=false;
         scene.physics.add.collider(scene.player,cart);scene.physics.add.collider(scene.enemies,cart);
-        scene.physics.add.collider(scene.playerShots,cart,shot=>shot.destroy());scene.physics.add.collider(scene.enemyShots,cart,shot=>shot.destroy());
+        // Phaser puts the sprite first for sprite/group collisions. Keep that order
+        // explicit: destroying the first argument here would remove the cart and stop the game loop.
+        scene.physics.add.collider(cart,scene.playerShots,(_cart,shot)=>shot.destroy());
+        scene.physics.add.collider(cart,scene.enemyShots,(_cart,shot)=>shot.destroy());
         carts.push({sprite:cart,floor,...route.cart,direction:1});
       }
       if(route.door){
