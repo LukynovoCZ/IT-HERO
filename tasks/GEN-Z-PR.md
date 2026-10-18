@@ -48,3 +48,12 @@ Izolovaný browser test v reálném herním patře, ostatní soupeři jsou vypnu
 
 Mobil je testovaný emulací v prohlížeči, ne fyzickým telefonem.
 **Neslučovat automaticky.**
+
+### Vizuální revize podle nových uživatelských předloh (0.14.1)
+
+Detailnější vlnité zrzavé vlasy, modrá bomber bunda, olivové cargo kalhoty a
+červenobílé tenisky u dívky; tmavé kudrny, světlá mikina, černé cargo kalhoty
+a bílé tenisky u kluka. Oba mají čitelný batoh, sluchátka na krku a mobil.
+Nové světlé komiksové bubliny. Bez změn mechanik či kolizí.
+
+![Gen Z – skutečné herní snímky 3×](https://github.com/LukynovoCZ/IT-HERO/blob/feature/gen-z-blockers/docs/gen-z-visuals-0.14.1.png?raw=true)

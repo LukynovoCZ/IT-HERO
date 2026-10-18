@@ -68,3 +68,17 @@ Playwright a Chromium `/usr/bin/chromium`.
 
 Snímky `docs/gen-z-girl.png` a `docs/gen-z-boy.png` vznikají v reálném herním
 patře při izolovaném browser testu; ostatní soupeři jsou v tomto testu vypnutí.
+
+## Vizuální revize 0.14.1
+
+Podle nově dodaných referencí: dívka má vlnité měděné vlasy, modrou otevřenou
+bomber bundu s oranžovožlutými proužky přes šedé tričko, olivové cargo kalhoty,
+červenobílé tenisky, batoh a sluchátka na krku. Kluk má bohaté tmavé kudrny,
+světlou oversize mikinu s jednoduchým abstraktním motivem, černé cargo kalhoty,
+bílé tenisky s modrým detailem, tmavý batoh a velká sluchátka na krku.
+Siluety používají tvarované obrysy, stíny a zvýrazněné švy místo původních
+jednoduchých obdélníků. Hlášky mají světlou komiksovou bublinu s tmavým okrajem
+a špičkou. Pravidla hry, kolize, časy a texty se touto vizuální revizí nemění.
+
+Zvětšený náhled skutečných herních snímků je `docs/gen-z-visuals-0.14.1.png`.
+Znovu jej vytvoří `node scripts/render_gen_z_preview.cjs` při běžícím serveru.
