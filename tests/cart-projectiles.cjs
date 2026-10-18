@@ -8,8 +8,8 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
   await page.evaluate(({floor,group,texture})=>{s.floor=floor;s.updateHUD();s.enemyShots.clear(true,true);s.playerShots.clear(true,true);s.player.body.reset(160,4320-floor*485-40);s.player.setVelocity(0);window.cart=s.pacing.carts.find(c=>c.floor===floor).sprite;window.shot=s[group].create(cart.x+50,cart.y,texture);shot.body.setAllowGravity(false);shot.setVelocityX(-200);shot.setData('floor',floor).setData('expires',s.time.now+5000);},{floor,group,texture});
   await page.waitForFunction(()=>!shot.active);
   const alive=await page.evaluate(()=>({active:cart.active,body:!!cart.body}));assert.deepEqual(alive,{active:true,body:true},`Floor ${floor+1}: ${group}/${texture} must destroy the projectile, not the cart`);
-  const before=await page.evaluate(()=>({clock:s.time.now,x:cart.x}));await page.waitForTimeout(250);
-  assert(await page.evaluate(before=>s.time.now>before.clock+100&&Math.abs(cart.x-before.x)>1,before),'Game and cart must keep moving after impact');
+  const before=await page.evaluate(()=>({clock:s.time.now,x:cart.x}));
+  await page.waitForFunction(before=>s.time.now>before.clock+100&&cart.active&&cart.body&&Math.abs(cart.x-before.x)>1,before);
   console.log(`PASS floor ${floor+1}: ${group}/${texture} impact removes shot and preserves moving cart`);
  }
  // Jump and stairs must remain usable after the projectile collisions.
