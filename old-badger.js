@@ -4,9 +4,8 @@
   const config={spawnIntervalMin:25000,spawnIntervalMax:45000,walkSpeed:28,walkDistance:70,
     pauseDuration:950,stompBounceVelocity:-330,sinkAnimationDuration:1250,scoreReward:150,
     exitDuration:1200,quoteInterval:7000,stompTolerance:9};
-  const lines=['UHNI, MLADÍKU!','JÁ TADY PRACUJU!','TO ZA NÁS NEBÝVALO!','ZASE NĚJAKÁ NOVINKA?',
-    'KLID, JÁ TO VYŘEŠÍM!','JÁ NIKAM NESPĚCHÁM!','TEN VÝTAH VŽDYCKY FUNGOVAL!'];
-  const blockLines=['NA MĚ SI NEPŘIJDEŠ!','TO MĚ NEROZHODÍ!'];
+  const lines=window.ITHeroDialogue.lines('old_badger','ambient');
+  const blockLines=window.ITHeroDialogue.lines('old_badger','block');
   const art={path:'assets/characters/old_badger.png',poses:{idle:[104,114,344,594],walk:[578,116,388,601],block:[1062,119,378,589],stomp:[1542,493,442,218]},anchors:{idle:{x:170,y:594},walk:{x:169,y:601},block:{x:186,y:589},stomp:{x:226,y:218}}};
   function preload(scene){scene.load.image('badger-source',art.path);}
   function createTextures(scene){

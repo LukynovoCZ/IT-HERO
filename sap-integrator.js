@@ -7,8 +7,7 @@
     helmetSpeed: 220, helmetGravity: 330, helmetLifetime: 1800,
     penSpeed: 410, penGap: 150, penLifetime: 1150, quoteInterval: 6500
   };
-  const quotes = ['TO JE GLOBÁLNÍ ŘEŠENÍ!','CO₂ MUSÍ DOLŮ!','TO MUSÍME INTEGROVAT!',
-    'SAP TO VYŘEŠÍ!','JEZDĚTE NA KOLE!','KDE MÁTE ROADMAPU?','NEJDŘÍV TO ALAJNUJEME!'];
+  const quotes = window.ITHeroDialogue.lines('sap_integrator','combat');
   const profile = {
     id:'sap_integrator',name:'ŠÉF SAP',enabled:true,behavior:'sap',health:8,speed:32,
     patrol:65,attackRange:460,attackInterval:1750,attackType:'sap',damage:1,score:500,

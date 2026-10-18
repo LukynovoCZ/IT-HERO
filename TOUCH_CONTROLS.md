@@ -63,3 +63,9 @@ a restart. Kontroluje viewporty 390×844, 320×568, 844×390 a 568×320, minimá
 ovládací cíle, neexistenci vodorovného přetečení a umístění tlačítek mimo plátno.
 Fyzický telefon s Androidem ani iOS zde nebyl k dispozici; jde o browserovou
 emulaci dotykového zařízení a samostatné testování desktopové klávesnice.
+
+## Rozložení 0.11.1
+Na mobilu na šířku (výška okna do 540 px) jsou tlačítka v bočních pruzích.
+Herní plátno využívá celou dostupnou výšku, zachovává poměr 16:9 a tlačítka
+nepřekrývají dění. Na výšku zůstávají tlačítka pod hrou. Fullscreen `[ ]`
+uvolní také prostor zabraný rozhraním prohlížeče, pokud jej zařízení podporuje.

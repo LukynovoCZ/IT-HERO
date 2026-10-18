@@ -3,8 +3,7 @@
   'use strict';
   const config={intervalMin:20000,intervalMax:35000,peekDuration:750,dropAt:1100,
     visitMin:2800,visitMax:3800,fadeDuration:400,itemLifetime:12000,blinkDuration:2000,heal:1};
-  const quotes={coffee:['Dáš si restart v kelímku?','Nejdřív kafe. Pak zachraňuj svět.'],
-    candy:['Sisinka. Hotfix na náladu.','Malá záloha energie na cestu.']};
+  const quotes={coffee:window.ITHeroDialogue.lines('it_colleague','coffee'),candy:window.ITHeroDialogue.lines('it_colleague','candy')};
   const art={path:'assets/characters/it_colleague.png',poses:{idle:[60,14,343,861],peek:[495,370,385,496],offer_coffee:[935,26,347,849],offer_candy:[1381,26,342,848]},anchors:{idle:{x:185,y:861},peek:{x:213,y:496},offer_coffee:{x:198,y:849},offer_candy:{x:195,y:848}}};
   function preload(scene){scene.load.image('colleague-source',art.path);}
   function createTextures(scene){

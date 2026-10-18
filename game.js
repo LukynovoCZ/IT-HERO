@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.11.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.11.1 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -43,24 +43,9 @@
   ];
 
   const OLD_HELPER_TIMING = {offerAt:1800,visitDuration:6500,panelDuration:7000};
-  const OLD_HELPER_LINES = {
-    beer: ['Ááá, plznička ', 'Chcaní bez prdu, to je jak láska bez mrd.. polibku teda…', 'Neviděli jste tu Laca?'],
-    hotdog: ['Srát na tousty, dej si párek!', 'Teplej páreka a studená němka. nebo tak nějak to bylo.'],
-    peek: ['Hele…ryba', 'a ten stál a čuměl.']
-  };
+  const OLD_HELPER_LINES = Object.fromEntries(['beer','hotdog','peek'].map(key=>[key,window.ITHeroDialogue.lines('old_it',key)]));
 
-  const DEATH_LINES = [
-    'Jdeš na povinné školení řízení vysokozdvižných vozíků v serverovnách s vodním chlazením. Plavky s sebou.',
-    'Vyplníš dotazník „Nechceme jíst maso v závodní jídelně“. Má 94 otázek. Všechny jsou povinné.',
-    'Jdeš nastavit přístupová hesla ke kávě zdarma pro kolegu Jimma. Každý nápoj musí mít jiné heslo a dvoufázové ověření.',
-    'Čeká tě rychlá porada o tom, proč jsou porady příliš dlouhé. Rezervováno do pátku.',
-    'Byl jsi jmenován koordinátorem přechodu z disket na diskety s vyšší kapacitou.',
-    'Jdeš ručně inventarizovat cloud. Žebřík si vyzvedni na recepci.',
-    'Musíš obnovit smazanou prezentaci o důležitosti zálohování. Záloha neexistuje.',
-    'Dostal jsi za úkol opravit výtahy. Přístupová karta je v devátém patře.',
-    'Jdeš schválit žádost o přístup k formuláři pro podání žádosti o přístup.',
-    'Povinný brainstorming právě začíná. Téma: Jak dostat ajťáky zpátky do práce.'
-  ];
+  const DEATH_LINES = window.ITHeroDialogue.lines('hero','death');
 
   class ITGame extends Phaser.Scene {
     constructor() { super('ITGame'); }
@@ -816,11 +801,11 @@
       enemy.setVelocityX(0);
       if (enemy.kind === 'secretary') {
         enemy.setTexture('secretary-scream');
-        this.popText(enemy.x, enemy.y - 55, 'ÁÁÁÁ!', '#ffb4d3');
+        this.popText(enemy.x, enemy.y - 55, window.ITHeroDialogue.lines('secretary','contact')[0], '#ffb4d3');
         this.tone(1250, 0.35, 'sawtooth');
       } else if (enemy.kind === 'union') {
         enemy.setTexture('union-whistle');
-        this.popText(enemy.x, enemy.y - 55, 'PÍÍÍÍ!', '#79caff');
+        this.popText(enemy.x, enemy.y - 55, window.ITHeroDialogue.lines('union','contact')[0], '#79caff');
         this.tone(2300, 0.4, 'sine');
       } else if (enemy.kind === 'specialist') {
         enemy.setTexture('specialist-flag');
@@ -828,7 +813,7 @@
         this.tone(320,0.12,'triangle');
       } else {
         enemy.setTexture('manager-stomp-0');
-        this.popText(enemy.x, enemy.y - 55, 'DUP! DUP!', '#ff9a85');
+        this.popText(enemy.x, enemy.y - 55, window.ITHeroDialogue.lines('manager','contact')[0], '#ff9a85');
       }
     }
 

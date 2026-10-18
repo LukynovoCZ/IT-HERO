@@ -79,3 +79,36 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
  .touch-layout #touch-sound[aria-pressed="false"]::after{content:'Zvuk ×'}
  .touch-layout #touch-fullscreen::after{content:'[ ]';font-size:15px}
 }
+
+/* Landscape: side rails leave the full viewport height to the game. */
+@media(max-height:540px) and (orientation:landscape){
+ .touch-layout .layout{padding:4px max(8px,env(safe-area-inset-right)) 20px max(8px,env(safe-area-inset-left))}
+ .touch-layout .play-area{--touch-rail:64px;gap:0}
+ .touch-layout .game-shell{width:calc(100% - 2 * var(--touch-rail));margin-inline:auto}
+ .touch-layout .touch-controls{position:absolute;inset:0;display:block;padding:0;pointer-events:none}
+ .touch-layout .touch-movement,.touch-layout .touch-actions{position:absolute;width:var(--touch-rail);align-items:center;flex-direction:column;gap:6px;pointer-events:auto}
+ .touch-layout .touch-movement{left:0;top:50%;transform:translateY(-50%)}
+ .touch-layout .touch-actions{right:0;bottom:4px}
+ .touch-layout .touch-controls button{width:56px;min-height:56px}
+ .touch-layout .touch-toolbar{top:4px;right:0;bottom:auto;left:auto;transform:none;width:var(--touch-rail);flex-direction:column;align-items:center;gap:4px}
+ .touch-layout .touch-toolbar button{flex:none}
+ .touch-layout .play-area:fullscreen{padding:max(4px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+ .touch-layout .play-area:fullscreen .touch-movement{left:max(8px,env(safe-area-inset-left))}
+ .touch-layout .play-area:fullscreen .touch-actions,.touch-layout .play-area:fullscreen .touch-toolbar{right:max(8px,env(safe-area-inset-right))}
+}
+@media(max-width:650px) and (max-height:540px) and (orientation:landscape){
+ .touch-layout .play-area{--touch-rail:52px}
+ .touch-layout .touch-controls button{width:48px;min-height:48px}
+}
+.dialogue-section{margin:32px 0;padding-top:16px;border-top:1px solid #3d6851;line-height:1.65}
+#character-dialogue{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:14px}
+.dialogue-card{padding:16px;background:#10362b;border:1px solid #3d6851;overflow-wrap:anywhere}
+.dialogue-card h3{color:#a4e963;margin:0 0 12px;font-size:17px}
+.dialogue-card h4{color:#f4e3a2;font-size:14px;margin:18px 0 6px}
+.dialogue-card ul{padding-left:20px;margin:0}.dialogue-card li{margin:8px 0}
+.dialogue-card p{color:#b4cbb8}.dialogue-section code{overflow-wrap:anywhere}
+.dialogue-card summary{cursor:pointer;color:#a4e963;padding:10px 0}
+.dialogue-card textarea{display:block;resize:vertical;width:100%;min-height:130px;background:#071e19;color:#edf3ff;border:1px solid #73965f;padding:10px;font:16px/1.5 ui-monospace,monospace}
+.dialogue-actions{display:flex;flex-wrap:wrap;gap:10px}
+.dialogue-actions button{min-height:44px;padding:10px;background:#214d3b;color:#edf3ff;border:1px solid #73965f;cursor:pointer;font:inherit}
+#dialogue-status{color:#f4e3a2;font-size:14px}
