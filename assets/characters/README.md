@@ -23,3 +23,11 @@ podle reference. Jeho vlastní ořezy, kotvy, návštěvy a předměty jsou v
 `old_badger.png` (2048 × 768): komická nezničitelná překážka Starý Jezevec.
 Čtyři transparentní pózy, ořezy a normalizace v `old-badger.js`, popis a
 konfigurace v `OLD_BADGER.md`. Propadnutí je animované s maskou podlahy.
+
+## Gen Z dvojice
+
+`gen_z_duo.png`: nový ilustrovaný atlas 1536×1024, tři sloupce (idle / walk /
+shrug) a dva řádky (dívka / kluk), připravený podle uživatelských referencí
+a stylu `managers_readable.png`. `gen-z-blockers.js` jej načte, ořízne podle alfa
+kanálu, odstraní průsvitný lem a zarovná sedm výsledných póz na výšku 76 px.
+Verze 0.14.2 nahrazuje starší procedurální návrh; gameplay používá stejná těla.

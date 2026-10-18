@@ -54,6 +54,7 @@
       window.ITHeroEnemyCatalog.preload(this);
       window.ITHeroColleague.preload(this);
       window.ITHeroOldBadger.preload(this);
+      window.ITHeroGenZ.preload(this);
       this.load.image('support-art', 'assets/support.png');
       this.load.image('character-art', 'assets/characters.png');
       this.load.image('floor-art', 'assets/floors.png');
@@ -103,6 +104,7 @@
       this.createOverlay();
       this.posters = window.ITHeroPosters.mount(this, FLOORS);
       this.pacing = window.ITHeroGameplay.create(this, FLOORS, !!data.resumeCheckpoint);
+      this.genZ = window.ITHeroGenZ.create(this, FLOORS);
       const restored = this.pacing.restore();
 
       this.cameras.main.setBounds(0, 0, WIDTH, WORLD_HEIGHT);
@@ -907,6 +909,7 @@
       this.posters.update(this.player, this.floor, this.gameState === 'playing' && !this.transitioning, delta);
       this.pacing.tick(delta);
       this.dbpm.tick(delta);
+      this.genZ.update(delta);
       this.colleague.update(delta);
       this.oldBadger.update(delta);
       // START/PAUZA/RESTART mají přímou DOM obsluhu, nezávislou na Phaser input.
