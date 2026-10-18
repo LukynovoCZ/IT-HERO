@@ -15,12 +15,15 @@ spouštěné nasazení `.github/workflows/deploy-community.yml`.
 4. Otevři https://github.com/LukynovoCZ/IT-HERO/actions/workflows/deploy-community.yml
    → Run workflow → main → Run workflow. Na mobilu může být tlačítko níže
    nebo vyžadovat zobrazení pro počítače.
-5. Po úspěchu otevři souhrn běhu. Obsahuje veřejnou adresu API. Tuto adresu
-   lze poslat Codexu, který ji zapojí do `community-config.js` a zveřejní hru.
+5. Po úspěchu otevři souhrn běhu. Obsahuje veřejnou adresu API. Workflow ji
+   po kontrole provozu zapíše do `community-config.js` a `cloud-api/deployment.json`.
+   Codex následně ověří propojení a spustí publikaci webu standardním Git pushem.
    Soukromé hodnoty tajných údajů nikdo nepotřebuje vidět.
 
 Account ID `ff0e90e8eadd6238a7f6b31057c00a7f` je již ve workflow, není to tajný údaj.
-Workflow se nespouští automaticky při změně hry. Má pouze právo číst repozitář.
+Workflow se nespouští při běžných změnách hry. Lze ho ručně spustit přes Run workflow
+nebo výslovnou změnou `cloud-api/deploy-request.json` na main. Má právo zápisu
+kvůli připojení veřejné adresy API po úspěšném ověření; tajné údaje do Gitu nepíše.
 Nasadí jen schránku hlášek, ne dosud navržené API pro globální skóre.
 
 Nasazovací skript používá Cloudflare API: nejdříve ověří přístup čtením,
@@ -28,7 +31,8 @@ použije existující D1 se stejným názvem nebo vytvoří novou, přidá tabul
 nahraje Worker a jeho privátní klíč. Po nasazení ověří CORS i přihlášené čtení.
 Nepřepisuje uživatelské návrhy a nevypisuje klíče. Jestli Cloudflare odmítne
 oprávnění, vypíše cestu a stav chyby; nic neoznačí za funkční bez ověření.
-Veřejný web zůstane v režimu stahování souboru, dokud se nezapojí adresa API.
+Při neúspěchu se konfigurace webu nemění. Při úspěchu se změní i cache klíč
+konfigurace obou formulářů, aby nečetly starý prázdný endpoint.
 
 Lokální ověření: `node tests/deploy-community.mjs` testuje průběh s náhradním
 API bez kontaktování účtu. Skutečný běh Cloudflare dosud nebyl proveden.

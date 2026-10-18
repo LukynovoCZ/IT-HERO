@@ -1,8 +1,11 @@
 name: Nasadit komunitní databázi
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [cloud-api/deploy-request.json]
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: it-hero-community-deploy
   cancel-in-progress: false
@@ -20,4 +23,17 @@ jobs:
         with:
           node-version: '24'
       - name: Nasadit schránku hlášek
+        id: cloudflare
         run: node scripts/deploy_community.mjs
+      - name: Připojit ověřené API do hry
+        env:
+          COMMUNITY_API_URL: ${{ steps.cloudflare.outputs.api_url }}
+        run: |
+          node scripts/connect_community.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add community-config.js dialogue-suggestions.html dialogue-admin.html cloud-api/deployment.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Connect verified community API"
+            git push origin HEAD:main
+          fi

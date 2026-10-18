@@ -46,7 +46,7 @@ export async function deploy({env=process.env,fetchImpl=fetch,log=console.log}={
  }
  if(!healthy)throw Error(`Worker byl nahrán, ale ověření provozu neprošlo. Veřejná adresa: ${url}. Zkontroluj nasazení v Cloudflare; web hry zatím nepřepojuj.`);
  log(`Schránka byla nasazena a ověřena: ${url}`);
- if(env.GITHUB_STEP_SUMMARY)await fs.appendFile(env.GITHUB_STEP_SUMMARY,`## Schránka hlášek je připravená\n\nVeřejná adresa API: **${url}**\n\nPošli tuto adresu Codexu, aby připojil formulář hry. Soukromé klíče se nikam neposílají. Pro přihlášení do správy použij své heslo uložené jako IT_HERO_ADMIN_TOKEN.\n`);
+ if(env.GITHUB_STEP_SUMMARY)await fs.appendFile(env.GITHUB_STEP_SUMMARY,`## Schránka hlášek je připravená\n\nVeřejná adresa API: **${url}**\n\nNásledující krok připojí ověřenou adresu k formuláři hry. Soukromé klíče se nikam neposílají. Pro přihlášení do správy použij své heslo uložené jako IT_HERO_ADMIN_TOKEN.\n`);
  return url;
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))deploy().catch(error=>{console.error(error instanceof Error?error.message:'Nasazení se nepodařilo.');process.exitCode=1;});
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))deploy().then(async url=>{if(process.env.GITHUB_OUTPUT)await fs.appendFile(process.env.GITHUB_OUTPUT,`api_url=${url}\n`);}).catch(error=>{console.error(error instanceof Error?error.message:'Nasazení se nepodařilo.');process.exitCode=1;});
