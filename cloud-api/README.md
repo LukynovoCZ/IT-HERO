@@ -1,8 +1,9 @@
 # Společná schránka návrhů hlášek
 
-**Stav:** funkční Worker, SQL migrace a webové formuláře jsou připravené a lokálně
-ověřené. V cloudu zatím nenasazeno. `community-config.js` má prázdnou URL,
-proto veřejný formulář nabízí stažení souboru místo předstírání online odeslání.
+**Stav:** nasazeno 18. 10. 2026 na
+`https://it-hero-community.l-baborak.workers.dev`. GitHub Actions ověřil CORS
+veřejného formuláře i autorizované načtení správy a připojil adresu do
+`community-config.js`. Záznam nasazení je v `deployment.json`.
 Databáze D1 může být stejná jako pro plánovaný společný žebříček; tato migrace
 pouze přidá vlastní tabulky a nevytváří ani nemaže tabulky skóre.
 
