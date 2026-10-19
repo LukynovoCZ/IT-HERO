@@ -16,6 +16,7 @@
     const pointers=new Map(),pressed=new Set(),listeners=[];
     let enabled=preferred??(navigator.maxTouchPoints>0||matchMedia('(any-pointer: coarse)').matches),lastSync='',destroyed=false;
     const listen=(node,event,handler,options)=>{node.addEventListener(event,handler,options);listeners.push(()=>node.removeEventListener(event,handler,options));};
+    const activeState=()=>scene.outdoorVisit?.scene?.gameState||scene.gameState;
     const holds=(pointer,action)=>pointer.actions?pointer.actions.has(action):pointer.action===action;
     const isDown=action=>[...pointers.values()].some(pointer=>holds(pointer,action));
     function resetStick(){
@@ -48,18 +49,18 @@
     function clear(){[...pointers.keys()].forEach(release);pressed.clear();}
     function sync(){
       if(destroyed)return;
-      const key=[scene.gameState,scene.weapon,scene.isMuted,enabled,start?.hidden,start?.textContent].join('/');
+      const key=[activeState(),scene.weapon,scene.isMuted,enabled,start?.hidden,start?.textContent].join('/');
       if(key===lastSync)return;lastSync=key;
-      if(scene.gameState!=='playing')clear();
-      stickZone?.setAttribute('aria-disabled',String(scene.gameState!=='playing'));
-      buttons.forEach(button=>{button.disabled=scene.gameState!=='playing';});
-      pause.disabled=!['playing','paused'].includes(scene.gameState);
-      pause.textContent=scene.gameState==='paused'?'▶ Pokračovat':'|| Pauza';
-      pause.dataset.paused=String(scene.gameState==='paused');
+      if(activeState()!=='playing')clear();
+      stickZone?.setAttribute('aria-disabled',String(activeState()!=='playing'));
+      buttons.forEach(button=>{button.disabled=activeState()!=='playing';});
+      pause.disabled=!['playing','paused'].includes(activeState());
+      pause.textContent=activeState()==='paused'?'▶ Pokračovat':'|| Pauza';
+      pause.dataset.paused=String(activeState()==='paused');
       sound.textContent=scene.isMuted?'Zvuk: vyp.':'Zvuk: zap.';
       sound.setAttribute('aria-pressed',String(!scene.isMuted));
-      const retry=scene.gameState==='lose'&&scene.pacing?.state.checkpoint?'OBNOVIT ZÁLOHU':'ZNOVU';
-      if(start&&!start.hidden){start.textContent=enabled?(scene.gameState==='menu'?'KLEPNI = HRÁT':scene.gameState==='paused'?'KLEPNI = POKRAČOVAT':`KLEPNI = ${retry}`):(scene.gameState==='menu'?'ENTER nebo kliknutí = HRÁT':scene.gameState==='paused'?'ESC / KLIK = POKRAČOVAT':`ENTER / R / KLIK = ${retry}`);}
+      const retry=activeState()==='lose'&&scene.pacing?.state.checkpoint?'OBNOVIT ZÁLOHU':'ZNOVU';
+      if(start&&!start.hidden){start.textContent=enabled?(activeState()==='menu'?'KLEPNI = HRÁT':activeState()==='paused'?'KLEPNI = POKRAČOVAT':`KLEPNI = ${retry}`):(activeState()==='menu'?'ENTER nebo kliknutí = HRÁT':activeState()==='paused'?'ESC / KLIK = POKRAČOVAT':`ENTER / R / KLIK = ${retry}`);}
     }
     function placeStart(){
       const canvas=scene.game.canvas.getBoundingClientRect(),shell=area.querySelector('.game-shell').getBoundingClientRect();
@@ -88,7 +89,7 @@
     }
     listen(panel,'pointerdown',event=>{
       if(stickZone?.contains(event.target)){
-        if(!enabled||movementMode!=='stick'||scene.gameState!=='playing'||event.button!==0||[...pointers.values()].some(p=>p.kind==='stick'))return;
+        if(!enabled||movementMode!=='stick'||activeState()!=='playing'||event.button!==0||[...pointers.values()].some(p=>p.kind==='stick'))return;
         event.preventDefault();event.stopPropagation();
         const r=stickZone.getBoundingClientRect(),pointer={kind:'stick',capture:stickZone,x:event.clientX,y:event.clientY,actions:new Set()};
         pointers.set(event.pointerId,pointer);stickZone.setPointerCapture(event.pointerId);
@@ -128,7 +129,7 @@
     listen(window,'keyup',event=>{if(event.code in keyboardIds)release(keyboardIds[event.code]);},{capture:true});
     listen(window,'blur',clear);
     listen(window,'resize',()=>{clear();requestAnimationFrame(refresh);});
-    listen(document,'visibilitychange',()=>{clear();if(document.hidden&&scene.gameState==='playing')scene.togglePause();});
+    listen(document,'visibilitychange',()=>{clear();if(document.hidden&&activeState()==='playing')scene.togglePause();});
     function activate(button,handler){
       let touchAt=-Infinity;
       // A second finger may not produce a compatibility click; handle its release directly.

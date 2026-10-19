@@ -8,6 +8,7 @@
       ITHeroColleague.preload(this);
       ITHeroOldBadger.preload(this);
       ITHeroGenZ.preload(this);
+      ITHeroOutdoor.preload(this,true);
       this.load.image('preview-hero-source', 'assets/characters.png');
       this.load.image('preview-support-source', 'assets/support.png');
     }
@@ -22,8 +23,8 @@
       this.paused = false;
       this.animationTime = 0;
       const graphics = this.add.graphics();
-      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 2460);
-      for (const baseline of [260, 660, 1060, 1460, 1860, 2260]) {
+      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 3260);
+      for (const baseline of [260, 660, 1060, 1460, 1860, 2260, 2660, 3060]) {
         graphics.lineStyle(1, 0x24453e);
         for (let y = baseline - 240; y < baseline; y += 20) graphics.lineBetween(0, y, 960, y);
         graphics.fillStyle(0x78867b).fillRect(0, baseline, 960, 24);
@@ -66,6 +67,12 @@
       this.entries.push(dbpmEntry);
       const genZ=ITHeroGenZ.textures(this);
       for(const variant of ITHeroGenZ.variants)this.entries.push({name:variant==='girl'?'GEN Z – HOLKA':'GEN Z – KLUČINA',height:76,frames:genZ[variant],frameWidth:64,frameHeight:80,body:{width:26,height:64,x:19,y:16},itemKeys:['gen-z-phone'],contactPose:'phone-scroll',attackPose:'shrug'});
+      ITHeroOutdoor.textures(this);
+      const ambient=(name,height,frameWidth,frameHeight,frames,activity)=>({name,height,frameWidth,frameHeight,frames,activity,outdoor:true,body:null,itemKeys:[]});
+      this.entries.push(ambient('JARDA – SKLÁDAČKA',94,160,100,{idle:'outdoor-jarda-0',walk:'outdoor-jarda-1',walk_alt:'outdoor-jarda-0'},'PROJÍŽDÍ'));
+      for(let i=0;i<3;i++)this.entries.push(ambient(i===2?'KOLEGYNĚ U KOŠE':`KOLEGA U KOŠE ${i+1}`,76,80,80,{idle:`outdoor-smoker-${i}`},'PAUZA U KOŠE'));
+      this.entries.push(ambient('SOJKA',30,48,36,{idle:'outdoor-jay'},'POZORUJE A HLÁSÍ'));
+      for(let i=0;i<2;i++)this.entries.push(ambient(`HNĚDÝ KRÁLÍK ${i+1}`,26,36,30,{idle:'outdoor-rabbit-0',walk:'outdoor-rabbit-1',walk_alt:'outdoor-rabbit-0'},'POSKAKUJE'));
       this.entries.forEach((entry, i) => {
         const x = 160 + (i % 3) * 320;
         entry.baseline = 260 + Math.floor(i / 3) * 400;
@@ -76,7 +83,7 @@
         }
         const keys=entry.itemKeys||entry.offerKeys||entry.projectiles?.map(w=>w.key)||[];
         const labels={'pingpong-ball':'Pingpongový míček','gold-card':'Zlatá karta',floppy:'Disketa',cd:'CD',folder:'Šanon',mug:'Hrnek',hammer:'Kladivo',gear:'Kolečko',beer:'Pivo',hotdog:'Párek',coffee:'Káva',unicorn:'Jednorožec','rainbow-spray':'Sprej','rainbow-flag':'Vlajka','red-heel':'Střevíc','red-tennis-ball':'Tenisák','handcuffs':'Želízka',fireball:'Fireball','golf-ball':'Golfový míček','golf-club':'Golfová hůl',calculator:'Kalkulačka','colleague-coffee':'Káva','colleague-candy':'Sisinka','sap-helmet':'Helma','sap-pen':'Propiska','dbpm-laptop':'Notebook','dbpm-baguette':'Bageta','gen-z-phone':'Mobil'};
-        const role=entry.name.startsWith('GEN Z')?'SCROLLUJE':entry.name==='SENIOR MASTER'?'JÍ A PIJE':entry.offerKeys||entry.name==='STARÝ AJŤÁK'?'NABÍZÍ':entry.name==='AJŤÁK'?'STŘELBA':'ÚTOKY';
+        const role=entry.activity|| (entry.name.startsWith('GEN Z')?'SCROLLUJE':entry.name==='SENIOR MASTER'?'JÍ A PIJE':entry.offerKeys||entry.name==='STARÝ AJŤÁK'?'NABÍZÍ':entry.name==='AJŤÁK'?'STŘELBA':'ÚTOKY');
         this.add.text(x,entry.baseline+96,role,{font:'9px monospace',color:'#dfd4a0'}).setOrigin(.5,1);
         entry.itemIcons=keys.map((key,index)=>{
           const ix=x+(index-(keys.length-1)/2)*74;
@@ -131,7 +138,7 @@
     }
   }
   new Phaser.Game({
-    type: Phaser.AUTO, parent: 'game', width: 960, height: 2460,
+    type: Phaser.AUTO, parent: 'game', width: 960, height: 3260,
     pixelArt: true, roundPixels: true, antialias: false,
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [CharacterPreview]

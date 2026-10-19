@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.20.2 – mini plošinovka v Phaser 3.
+ * IT HERO 0.21.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -56,6 +56,7 @@
       window.ITHeroOldBadger.preload(this);
       window.ITHeroGenZ.preload(this);
       window.ITHeroEnding.preload(this);
+      window.ITHeroOutdoor.preload(this);
       this.load.image('support-art', 'assets/support.png');
       this.load.image('character-art', 'assets/characters.png');
       this.load.image('floor-art', 'assets/floors.png');
@@ -92,12 +93,15 @@
       this.playTime = 0;
       this.nextHelperAt = 7000;
       this.helperVisit = null;
+      this.outdoorVisit=null;this.outdoorCooldown=0;
+      if(!data.resumeCheckpoint)this.outdoorRewards={cd:[false,false,false],coffee:false};
 
       if(!data.resumeCheckpoint)this.registry.remove('trainingRun');
       ITHeroAppearance.state.training=!!data.resumeCheckpoint&&!!this.registry.get('trainingRun')||ITHeroAppearance.state.god;
       if(ITHeroAppearance.state.training)this.registry.set('trainingRun',true);
       this.makeTextures();
       this.buildOffice();
+      window.ITHeroOutdoor.door(this,4320);
       this.createActors();
       this.dbpm = window.ITHeroDBPM.create(this, FLOORS);
       this.configurePhysics();
@@ -570,6 +574,7 @@
     }
 
     togglePause() {
+      if(this.outdoorVisit){this.outdoorVisit.scene.togglePause();return;}
       if (this.gameState === 'playing') {
         this.gameState = 'paused';
         this.physics.world.pause();
@@ -896,6 +901,7 @@
     }
 
     interact() {
+      if(window.ITHeroOutdoor.nearDoor(this)){window.ITHeroOutdoor.enter(this);return;}
       const door = this.doors[this.floor];
       if (Math.abs(this.player.x - 500) < 65) {
         this.popText(500, this.player.y - 65, 'VÝTAH NEFUNGUJE • POUŽIJ SCHODY', '#ffce83');
@@ -1013,12 +1019,14 @@
       }
       const stairs = this.doors[this.floor];
       const atStairs = Math.abs(this.player.x-stairs.x)<74 && Math.abs(this.player.y-(stairs.y-25))<110;
-      if (crouching && atStairs && !this.stairsCrouchHeld) {
+      const atBonusDoor=window.ITHeroOutdoor.nearDoor(this);
+      const atAnyDoor=atStairs||atBonusDoor;
+      if (crouching && atAnyDoor && !this.stairsCrouchHeld) {
         this.stairsCrouchHeld = true;
         this.interact();
       }
       // Re-arm on leaving the doorway, even if a mobile player keeps ▼ held.
-      if (!crouchHeld || !atStairs) this.stairsCrouchHeld = false;
+      if (!crouchHeld || !atAnyDoor) this.stairsCrouchHeld = false;
       // E remains an optional alternative for older controls.
       if (pressed('interact')) this.interact();
       this.pacing.objective(delta, {held: crouching || down('interact'), moving, grounded});
@@ -1071,9 +1079,10 @@
       }));
       const door = this.doors[this.floor];
       const nearDoor = Math.abs(this.player.x - door.x) < 74 && Math.abs(this.player.y - (door.y - 25)) < 110;
-      this.promptText.setVisible(nearDoor && door.kind !== 'exit');
+      const nearBonusDoor=window.ITHeroOutdoor.nearDoor(this);
+      this.promptText.setVisible(nearBonusDoor || nearDoor && door.kind !== 'exit');
       const stairsKey = this.touchControls?.enabled ? '▼' : 'S / ↓';
-      this.promptText.setText(nearDoor ? `[ ${stairsKey} ]  ${door.kind === 'exit' ? 'ODPOJIT HDD' : 'DALŠÍ PATRO'}` : '');
+      this.promptText.setText(nearBonusDoor?`[ ${stairsKey} ]  DVEŘMI VEN • BONUS`:nearDoor ? `[ ${stairsKey} ]  ${door.kind === 'exit' ? 'ODPOJIT HDD' : 'DALŠÍ PATRO'}` : '');
       this.tipText.setVisible(!this.posters.tooltip.visible);
       if (!this.isMuted || !this.tipText.text.startsWith('ZVUK')) {
         const thumb = this.touchControls?.movementMode === 'stick';
@@ -1104,6 +1113,6 @@
       default: 'arcade',
       arcade: { gravity: { x: 0, y: 1200 }, debug: false }
     },
-    scene: [ITGame, window.ITHeroEnding.Scene]
+    scene: [ITGame, window.ITHeroEnding.Scene, window.ITHeroOutdoor.Scene]
   });
 })();

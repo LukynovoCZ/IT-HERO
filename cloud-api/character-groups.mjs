@@ -179,5 +179,15 @@ export const catalog=[
         "label": "Slang / odchod"
       }
     ]
+  },
+  {
+    "id": "jay",
+    "name": "SOJKA",
+    "groups": [
+      {
+        "id": "ambient",
+        "label": "Nad stromem na nádvoří"
+      }
+    ]
   }
 ];

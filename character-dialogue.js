@@ -324,6 +324,21 @@
         ]
       }
     ]
+  },
+  {
+    "id": "jay",
+    "name": "SOJKA",
+    "groups": [
+      {
+        "id": "ambient",
+        "label": "Nad stromem na nádvoří",
+        "lines": [
+          "tjantumbejk!",
+          "no,ale hlásit se to musí,",
+          "pijé, tak já letím"
+        ]
+      }
+    ]
   }
 ];
  window.ITHeroDialogue={characters,lines(id,group){return characters.find(c=>c.id===id)?.groups.find(g=>g.id===group)?.lines || [];}};
