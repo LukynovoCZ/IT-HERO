@@ -19,11 +19,15 @@
    r('#f7cf48',4,3,48,30);r('#26332f',15,11,3,5);r('#26332f',36,11,3,5);r('#26332f',16,25,22,3);r('#26332f',12,20,4,5);r('#26332f',38,20,4,5);
   }else if(kind==='union'){
    const im=c.getImageData(0,0,w,h),d=im.data;for(let y=0;y<35;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,R=d[i],G=d[i+1],B=d[i+2];if(d[i+3]&&R>65&&G>45&&R>G*1.02&&R<G*1.42&&G>B*1.3){const light=(R+G)/500;d[i]=Math.round(98*light);d[i+1]=Math.round(61*light);d[i+2]=Math.round(37*light);}}c.putImageData(im,0,0);
-   r('#3d2a20',22,19,4,13);r('#885b37',22,20,2,11);r('#b59b62',22,19,4,2);r('#513522',20,29,5,4);
+   r('#493326',23,18,3,5);r('#674b35',22,21,4,9);r('#937454',23,21,2,7);r('#493326',22,29,3,3);r('#b59b62',23,21,3,1);
+   // The original white beard belongs to the same brown hair palette.
+   const beard=c.getImageData(0,0,w,h);for(let y=19;y<32;y++)for(let x=28;x<47;x++){const i=(y*w+x)*4,d=beard.data;if(d[i+3]&&Math.max(d[i],d[i+1],d[i+2])-Math.min(d[i],d[i+1],d[i+2])<35&&d[i]>95){const l=d[i]/255;d[i]=Math.round(62+97*l);d[i+1]=Math.round(43+80*l);d[i+2]=Math.round(29+61*l);}}c.putImageData(beard,0,0);
   }else if(kind==='manager'){
-   r('#483832',28,24,9,5);r('#66514a',30,27,5,5);r('#c6b5a2',31,28,2,3);
+   // Stepped jaw edges and the silver hair palette keep the goatee in the face.
+   r('#626569',29,25,7,2);r('#96999b',30,26,5,3);r('#bfc0bd',31,27,3,3);r('#73777a',31,30,3,1);
   }else if(kind==='design'){
-   r('#3b2924',32,22,13,3);r('#3b2924',29,19,4,5);r('#3b2924',44,18,4,6);r('#efc19a',30,19,2,2);r('#efc19a',45,18,2,3);
+   // A one-pixel curl follows the cheeks; highlights match his grey hair.
+   r('#666b70',32,23,5,2);r('#666b70',39,23,5,2);r('#92989b',33,23,3,1);r('#92989b',40,23,3,1);r('#666b70',30,21,2,3);r('#bfc1bb',30,21,1,2);r('#666b70',44,20,2,4);r('#bfc1bb',44,20,1,2);
   }else if(kind==='sap'){
    const im=c.getImageData(0,0,w,h),d=im.data;let top=40;
    for(let y=8;y<38;y++){let count=0;for(let x=45;x<65;x++){const i=(y*w+x)*4;if(d[i+3]&&d[i]>d[i+1]*1.1&&d[i+1]>d[i+2]*1.1)count++;}if(count>=6){top=y;break;}}
@@ -35,7 +39,7 @@
     if((y<18||key.includes('stomp')&&y>50&&y<65)&&x>23&&x<57){const l=(d[i]+d[i+1]+d[i+2])/3;d[i]=Math.min(255,170+l*.3);d[i+1]=Math.min(255,115+l*.3);d[i+2]=Math.min(255,83+l*.25);}
    }c.putImageData(im,0,0);
    // Rounded bald crown replaces the pointed grey hair, preserving the beard.
-   if(!key.includes('stomp')){c.clearRect(23,0,35,15);for(let y=7;y<17;y++){const half=Math.round(13*Math.sqrt(Math.max(0,1-((y-17)/11)**2)));r(y<10?'#dca07c':'#eeb58a',40-half,y,half*2,1);}r('#f8c99a',34,10,8,2);}
+   if(!key.includes('stomp')){c.clearRect(23,0,35,15);for(let y=7;y<17;y++){const half=Math.round(13*Math.sqrt(Math.max(0,1-((y-17)/11)**2)));r(y<10?'#dca07c':'#eeb58a',40-Math.min(half,11),y,Math.min(half,11)*2,1);}r('#f8c99a',34,10,8,2);}
   }else if(kind==='specialist'){
    if(key.includes('spray'))return;
    // Replace only saturated cloth pixels. Pole, body, hair and poses stay intact.
