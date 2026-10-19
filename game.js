@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.20.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.20.1 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -115,6 +115,7 @@
       this.trainingHud=this.add.text(480,74,'',{font:'bold 12px monospace',color:'#ffdd85',backgroundColor:'#182b28'}).setOrigin(.5).setScrollFactor(0).setDepth(110);
       window.ITHeroLobby?.mount(this);
       const restored = this.pacing.restore();
+      if(restored)window.ITHeroPlayStats?.started();
 
       this.cameras.main.setBounds(0, 0, WIDTH, WORLD_HEIGHT);
       this.cameras.main.setRoundPixels(true);
@@ -659,6 +660,7 @@
       if (window.ITHeroScores?.isOpen() || window.ITHeroEnding?.isRunning()) return;
       if (this.gameState === 'menu') {
         this.gameState = 'playing';
+        window.ITHeroPlayStats?.started();
         this.hideOverlay();
         this.tone(420, 0.07, 'triangle');
       } else if (this.gameState === 'paused') {

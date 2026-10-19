@@ -26,6 +26,13 @@ async function authorize(request,env){
 }
 function idsOf(data){if(!Array.isArray(data?.ids)||!data.ids.length||data.ids.length>100||data.ids.some(id=>!Number.isSafeInteger(id)||id<1))fail(400,'Vyber 1 až 100 návrhů.');return [...new Set(data.ids)];}
 const same=(row,p)=>row.character_id===p.characterId&&row.group_id===p.groupId&&row.lines_json===JSON.stringify(p.lines)&&row.author===p.author;
+export function playPeriods(timestamp=Date.now()){
+ const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(timestamp));
+ const part=name=>parts.find(p=>p.type===name).value;
+ const today=`${part('year')}-${part('month')}-${part('day')}`;
+ const monday=new Date(today+'T00:00:00Z');monday.setUTCDate(monday.getUTCDate()-(monday.getUTCDay()+6)%7);
+ return {today,monday:monday.toISOString().slice(0,10)};
+}
 export default {async fetch(request,env){
  const origin=request.headers.get('Origin'),headers={'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','Vary':'Origin'};
  if(origin===env.ALLOWED_ORIGIN)headers['Access-Control-Allow-Origin']=origin;
@@ -35,6 +42,22 @@ export default {async fetch(request,env){
   if(!env.DB||!env.ALLOWED_ORIGIN||!env.ADMIN_TOKEN||env.ADMIN_TOKEN.length<32)fail(503,'Schránka zatím není nakonfigurovaná.');
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'Access-Control-Allow-Methods':'GET, POST, PATCH, DELETE, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Access-Control-Max-Age':'600'}});
   const url=new URL(request.url),now=Math.floor(Date.now()/1000);
+  if(url.pathname==='/v1/play-stats'&&request.method==='GET'){
+   const period=playPeriods();const counts=await env.DB.prepare('SELECT COUNT(DISTINCT CASE WHEN play_day=? THEN player_hash END) AS today,COUNT(DISTINCT CASE WHEN play_day>=? AND play_day<=? THEN player_hash END) AS week,COUNT(DISTINCT player_hash) AS total FROM arcade_plays').bind(period.today,period.monday,period.today).first();
+   return reply({...counts,timeZone:'Europe/Prague',weekStartsOn:'Monday'});
+  }
+  if(url.pathname==='/v1/plays'&&request.method==='POST'){
+   if(!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'Použij application/json.');
+   const data=await jsonBody(request);if(typeof data?.playerId!=='string'||! /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(data.playerId))fail(400,'Neplatný identifikátor hráče.');
+   const hex=bytes=>Array.from(bytes,n=>n.toString(16).padStart(2,'0')).join('');
+   const player=hex(await digest(`it-hero-player/v1/${data.playerId.toLowerCase()}`)),day=playPeriods().today;
+   if(await env.DB.prepare('SELECT 1 AS present FROM arcade_plays WHERE player_hash=? AND play_day=?').bind(player,day).first())return reply({recorded:true,duplicate:true},202);
+   const bucket=hex(await digest(`plays/${env.ADMIN_TOKEN}/${request.headers.get('CF-Connecting-IP')||'unknown'}/${Math.floor(now/600)}`));
+   await env.DB.prepare('DELETE FROM dialogue_rate_limits WHERE expires_at < ?').bind(now).run();
+   await env.DB.prepare('INSERT INTO dialogue_rate_limits(bucket,count,expires_at) VALUES(?,0,?) ON CONFLICT(bucket) DO NOTHING').bind(bucket,now+1200).run();
+   if(!await env.DB.prepare('UPDATE dialogue_rate_limits SET count=count+1 WHERE bucket=? AND count<300 RETURNING count').bind(bucket).first())fail(429,'Příliš mnoho nových hráčů. Zkus to později.');
+   await env.DB.prepare('INSERT INTO arcade_plays(player_hash,play_day) VALUES(?,?) ON CONFLICT(player_hash,play_day) DO NOTHING').bind(player,day).run();return reply({recorded:true},202);
+  }
   if(url.pathname==='/v1/scores'&&request.method==='GET'){
    const {results}=await env.DB.prepare('SELECT name,score FROM arcade_scores ORDER BY score DESC,created_at,id LIMIT 10').all();return reply({items:results});
   }

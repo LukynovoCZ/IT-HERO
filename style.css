@@ -175,3 +175,5 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
 .score-form[hidden]{display:none}
 
 .secret-console{box-sizing:border-box;width:min(92vw,540px);max-width:calc(100vw - 24px)}
+
+.play-statistics{margin:24px 0;padding:20px;border:1px solid #527c68;background:#102d26}.play-statistics h2{font-size:18px;color:#b3ed78}.play-stat-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;text-align:center}.play-stat-values>div{padding:15px 6px;border:1px solid #456552;background:#122e28}.play-stat-values dt{font-size:12px;color:#d4dfcf}.play-stat-values dd{margin:10px 0 0;font-size:28px;color:#b6ed7d;font-weight:bold;overflow-wrap:anywhere}.play-stats-note{font-size:11px;line-height:1.6;color:#a5b7ac}

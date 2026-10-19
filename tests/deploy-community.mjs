@@ -7,6 +7,7 @@ const fetchImpl=async(url,options={})=>{
  calls.push({url,options});
  if(url.includes('.workers.dev/')){
   if(options.method==='OPTIONS')return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':'https://lukynovocz.github.io'}});
+  if(url.endsWith('/v1/play-stats'))return Response.json({today:0,week:0,total:0});
   if(url.endsWith('/v1/scores'))return Response.json({items:[]});
   assert.equal(options.headers.Authorization,`Bearer ${env.IT_HERO_ADMIN_TOKEN}`);return Response.json({items:[]});
  }

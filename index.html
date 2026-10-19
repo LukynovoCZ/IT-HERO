@@ -5,30 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111a2a">
   <title>IT HERO | Save the world — but first, coffee</title>
-  <link rel="stylesheet" href="style.css?v=0.20.0">
+  <link rel="stylesheet" href="style.css?v=0.20.1">
   <script defer src="vendor/phaser.min.js"></script>
-  <script defer src="character-dialogue.js?v=0.20.0"></script>
-  <script defer src="posters.js?v=0.20.0"></script>
-  <script defer src="item-textures.js?v=0.20.0"></script>
-  <script defer src="trio-attacks.js?v=0.20.0"></script>
-  <script defer src="appearance-mode.js?v=0.20.0"></script>
-  <script defer src="character-motion.js?v=0.20.0"></script>
-  <script defer src="enemy-catalog.js?v=0.20.0"></script>
-  <script defer src="dbpm.js?v=0.20.0"></script>
-  <script defer src="sap-integrator.js?v=0.20.0"></script>
-  <script defer src="it-colleague.js?v=0.20.0"></script>
-  <script defer src="gen-z-blockers.js?v=0.20.0"></script>
-  <script defer src="old-badger.js?v=0.20.0"></script>
-  <script defer src="touch-controls.js?v=0.20.0"></script>
-  <script defer src="gameplay.js?v=0.20.0"></script>
+  <script defer src="character-dialogue.js?v=0.20.1"></script>
+  <script defer src="posters.js?v=0.20.1"></script>
+  <script defer src="item-textures.js?v=0.20.1"></script>
+  <script defer src="trio-attacks.js?v=0.20.1"></script>
+  <script defer src="appearance-mode.js?v=0.20.1"></script>
+  <script defer src="character-motion.js?v=0.20.1"></script>
+  <script defer src="enemy-catalog.js?v=0.20.1"></script>
+  <script defer src="dbpm.js?v=0.20.1"></script>
+  <script defer src="sap-integrator.js?v=0.20.1"></script>
+  <script defer src="it-colleague.js?v=0.20.1"></script>
+  <script defer src="gen-z-blockers.js?v=0.20.1"></script>
+  <script defer src="old-badger.js?v=0.20.1"></script>
+  <script defer src="touch-controls.js?v=0.20.1"></script>
+  <script defer src="gameplay.js?v=0.20.1"></script>
   <script defer src="community-config.js?v=cloud-9e7cbf2f4eb1"></script>
-  <script defer src="dialogue-community.js?v=0.20.0"></script>
-  <script defer src="score-table.js?v=0.20.0"></script>
-  <script defer src="ending-scene.js?v=0.20.0"></script>
-  <script defer src="secret-console.js?v=0.20.0"></script>
-  <script defer src="final-manager.js?v=0.20.0"></script>
-  <script defer src="lobby.js?v=0.20.0"></script>
-  <script defer src="game.js?v=0.20.0"></script>
+  <script defer src="dialogue-community.js?v=0.20.1"></script>
+  <script defer src="play-stats.js?v=0.20.1"></script>
+  <script defer src="score-table.js?v=0.20.1"></script>
+  <script defer src="ending-scene.js?v=0.20.1"></script>
+  <script defer src="secret-console.js?v=0.20.1"></script>
+  <script defer src="final-manager.js?v=0.20.1"></script>
+  <script defer src="lobby.js?v=0.20.1"></script>
+  <script defer src="game.js?v=0.20.1"></script>
 </head>
 <body>
   <main class="layout">
@@ -37,7 +38,7 @@
         <span class="eyebrow">PTG PIXEL OFFICE ARCADE</span>
         <h1>IT<span>HERO</span><small> / Save the world — but first, coffee</small></h1>
       </div>
-      <span class="version">BUILD 0.20.0</span>
+      <span class="version">BUILD 0.20.1</span>
     </header>
     <section id="play-area" class="play-area" aria-label="Herní plocha a ovládání">
     <div class="game-shell">
@@ -71,6 +72,9 @@
     <p id="touch-hint" class="touch-hint" hidden>Drž ▼ pro skrčení; u schodů přejdeš dál a u HDD odpojíš disk. Pohyb, skok a střelbu můžeš kombinovat. <span>Na mobilu zkus otočit telefon na šířku.</span></p>
     </section>
     <button type="button" id="touch-toggle" class="touch-toggle" aria-controls="touch-controls" aria-expanded="false">Dotykové ovládání</button>
+    <section class="play-statistics" aria-labelledby="play-stats-title"><h2 id="play-stats-title">KOLIK NÁS HRAJE</h2>
+    <dl class="play-stat-values"><div><dt>Dnes</dt><dd id="players-today">—</dd></div><div><dt>Tento týden</dt><dd id="players-week">—</dd></div><div><dt>Celkem</dt><dd id="players-total">—</dd></div></dl>
+    <p id="play-stats-status" role="status">Načítám statistiku…</p><p class="play-stats-note">Počítají se hráči, kteří spustili hru, podle anonymního ID prohlížeče. Opakované pokusy se v daném období nesčítají. Jiný prohlížeč nebo smazání dat znamená nového hráče. Den i týden počítáme podle českého času, týden od pondělí. Starší hraní před spuštěním počítadla není zahrnuto.</p></section>
     <section class="employee-hall" aria-labelledby="employee-title"><h2 id="employee-title">HALL OF FAME · ZAMĚSTNANEC ROKU</h2><p>Zde můžeš být i ty.</p><div id="employee-portraits" class="employee-portraits"></div>
     <h3>NEJLEPŠÍ SCORE</h3><p id="lobby-status" role="status">Načítám společné výsledky…</p><table class="lobby-table"><thead><tr><th scope="col">#</th><th scope="col">HRÁČ</th><th scope="col">SCORE</th></tr></thead><tbody id="lobby-scores"></tbody></table></section>
     <details class="mission-story">

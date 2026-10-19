@@ -121,3 +121,17 @@ samotnou IP neukládá. Předané skóre není ověřeno serverovým přehrání
 Žebříček je na úvodu; při výpadku zůstávají dostupné lokální výsledky.
 Nasazovací skript provádí všechny přidávající SQL migrace v pořadí a ověřuje
 čtení žebříčku i autorizovanou správu návrhů.
+
+## Počty hráčů (0.20.1)
+
+`GET /v1/play-stats` vrací unikátní prohlížeče za dnešek, aktuální kalendářní
+týden od pondělí a celkem. Dny se určují na serveru v `Europe/Prague`, včetně
+přechodů letního času. `POST /v1/plays` se volá až při skutečném spuštění nebo
+obnovení hry, nikoliv při návštěvě stránky. Náhodné UUID zůstává v localStorage;
+server ukládá jen jeho jednosměrný hash a den. Neukládá IP, jméno ani fingerprint.
+Nové zařízení nebo smazaná data znamenají nový prohlížeč. Bez dostupného úložiště
+se identita zachová pouze po dobu návštěvy. Historická hraní se nedopočítávají.
+Migrace `0003_play_stats.sql` přidává vlastní tabulku bez změny hlášek a skóre.
+Ochranný limit pro nové identity je 300 za deset minut ze stejné IP, aby bylo
+možné hrát i ze sdílené firemní sítě. Opakované spuštění již započítaným
+prohlížečem tento limit nespotřebovává. Hashování identit nezávisí na heslu správce.

@@ -1,0 +1,10 @@
+/* Count actual play starts, not page views. Persistent random ID, no fingerprinting. */
+(()=>{'use strict';const key='it-hero-anonymous-player-v1';let memoryId=null,inflight=null,loading=null;
+ function playerId(){if(memoryId)return memoryId;try{const saved=localStorage.getItem(key);if(/^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(saved||''))return memoryId=saved;memoryId=crypto.randomUUID();localStorage.setItem(key,memoryId);}catch{memoryId||=crypto.randomUUID();}return memoryId;}
+ function refresh(){if(loading)return loading;const status=document.getElementById('play-stats-status');if(!status)return Promise.resolve();
+  loading=(async()=>{try{const data=await ITHeroCommunity.request('/v1/play-stats');for(const field of ['today','week','total'])if(!Number.isSafeInteger(data[field])||data[field]<0)throw Error('Neplatná statistika.');for(const field of ['today','week','total'])document.getElementById('players-'+field).textContent=data[field].toLocaleString('cs-CZ');status.textContent='Unikátní prohlížeče · společná statistika všech hráčů';}catch{for(const field of ['today','week','total'])document.getElementById('players-'+field).textContent='—';status.textContent='Statistika je dočasně nedostupná.';}finally{loading=null;}})();return loading;
+ }
+ function started(){if(inflight)return inflight;inflight=(async()=>{try{await ITHeroCommunity.request('/v1/plays',{method:'POST',body:{playerId:playerId()}});if(loading)await loading;await refresh();}catch{/* Network failures never interrupt a game or invent a count. */}finally{inflight=null;}})();return inflight;}
+ const ready=()=>{refresh();const timer=setInterval(()=>{if(!document.hidden)refresh();},60000);window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();window.ITHeroPlayStats={started,refresh};
+})();
