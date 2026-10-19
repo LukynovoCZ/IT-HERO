@@ -49,7 +49,10 @@
           "PÍÍÍÍ!",
           "Ne, když hlídám já!",
           "Ukaž mi kartičku.",
-          "Byl si na schůzi, mladíků?"
+          "Byl si na schůzi, mladíků?",
+          "Počítám s tebou brácho.",
+          "Ještě jednou a máme pohotovost!",
+          "Tady nejste v Německu pane kolego."
         ]
       }
     ]
@@ -158,6 +161,14 @@
         "lines": [
           "Tohle ti změní paradigma."
         ]
+      },
+      {
+        "id": "contact",
+        "label": "Při kontaktu",
+        "lines": [
+          "Uhni citróne!",
+          "Už máš diplom surfaře?"
+        ]
       }
     ]
   },
@@ -189,7 +200,9 @@
         "label": "Nabídka kávy",
         "lines": [
           "restart v kelímku?",
-          "Nejdřív kafe. Pak zázraky."
+          "Nejdřív kafe. Pak zázraky.",
+          "Nazdar chlapíci!",
+          "Klídek, všechno dobře dopadne."
         ]
       },
       {
@@ -197,7 +210,9 @@
         "label": "Nabídka Sisinky",
         "lines": [
           "Sisinka. Hotfix trudomyslnosti",
-          "Cukr a kafe, víc není třeba "
+          "Cukr a kafe, víc není třeba ",
+          "Nazdar chlapíci!",
+          "Klídek, všechno dobře dopadne."
         ]
       }
     ]

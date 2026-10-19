@@ -35,6 +35,22 @@ export default {async fetch(request,env){
   if(!env.DB||!env.ALLOWED_ORIGIN||!env.ADMIN_TOKEN||env.ADMIN_TOKEN.length<32)fail(503,'Schránka zatím není nakonfigurovaná.');
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'Access-Control-Allow-Methods':'GET, POST, PATCH, DELETE, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Access-Control-Max-Age':'600'}});
   const url=new URL(request.url),now=Math.floor(Date.now()/1000);
+  if(url.pathname==='/v1/scores'&&request.method==='GET'){
+   const {results}=await env.DB.prepare('SELECT name,score FROM arcade_scores ORDER BY score DESC,created_at,id LIMIT 10').all();return reply({items:results});
+  }
+  if(url.pathname==='/v1/scores'&&request.method==='POST'){
+   if(!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'Použij application/json.');
+   const d=await jsonBody(request);if(!d||d.training!==false||d.completed!==true||!Number.isSafeInteger(d.score)||d.score<0||d.score>100000||!Number.isSafeInteger(d.elapsedMs)||d.elapsedMs<1000||d.elapsedMs>86400000||typeof d.requestId!=='string'||! /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(d.requestId))fail(400,'Neplatný výsledek nebo tréninková hra.');
+   const name=clean(d.name,12);if(!name)fail(400,'Vyplň přezdívku.');
+   const lookup=()=>env.DB.prepare('SELECT * FROM arcade_scores WHERE request_id=?').bind(d.requestId).first();let row=await lookup();
+   const matches=r=>r.name===name&&r.score===d.score&&r.elapsed_ms===d.elapsedMs;
+   if(row){if(!matches(row))fail(409,'Tento zápis již má jiný obsah.');return reply({id:row.id,duplicate:true},202);}
+   const hash=await digest(`scores/${env.ADMIN_TOKEN}/${request.headers.get('CF-Connecting-IP')||'unknown'}/${Math.floor(now/600)}`),bucket=Array.from(hash,n=>n.toString(16).padStart(2,'0')).join('');
+   await env.DB.prepare('DELETE FROM dialogue_rate_limits WHERE expires_at < ?').bind(now).run();
+   await env.DB.prepare('INSERT INTO dialogue_rate_limits(bucket,count,expires_at) VALUES(?,0,?) ON CONFLICT(bucket) DO NOTHING').bind(bucket,now+1200).run();
+   const rate=await env.DB.prepare('UPDATE dialogue_rate_limits SET count=count+1 WHERE bucket=? AND count<5 RETURNING count').bind(bucket).first();if(!rate)fail(429,'Příliš mnoho zápisů. Zkus to za 10 minut.');
+   await env.DB.prepare('INSERT INTO arcade_scores(request_id,name,score,elapsed_ms,created_at) VALUES(?,?,?,?,?) ON CONFLICT(request_id) DO NOTHING').bind(d.requestId,name,d.score,d.elapsedMs,now).run();row=await lookup();if(!matches(row))fail(409,'Tento zápis již má jiný obsah.');return reply({id:row.id},202);
+  }
   if(url.pathname==='/v1/dialogue-suggestions'&&request.method==='POST'){
    if(!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'Použij application/json.');
    const p=proposal(await jsonBody(request)),lookup=()=>env.DB.prepare('SELECT * FROM dialogue_suggestions WHERE request_id=?').bind(p.requestId).first();

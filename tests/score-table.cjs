@@ -1,7 +1,7 @@
 const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('node:fs');
 (async()=>{fs.mkdirSync('/tmp/it-hero-tests',{recursive:true});const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});try{
  const errors=[];
- async function page(options={}){const p=await b.newPage(options);p.setDefaultTimeout(20000);p.on('pageerror',e=>errors.push(e.message));await p.route('**/game.js*',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__g=new Phaser.Game({')});});return p;}
+ async function page(options={}){const p=await b.newPage(options);p.setDefaultTimeout(20000);p.on('pageerror',e=>errors.push(e.message));await p.route('**/community-config.js*',r=>r.fulfill({contentType:'text/javascript',body:'window.ITHeroCommunityConfig={apiBaseUrl:""};'}));await p.route('**/game.js*',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__g=new Phaser.Game({')});});return p;}
  async function win(p){await p.goto('http://127.0.0.1:8000');await p.locator('#game-action').waitFor({state:'visible'});await p.locator('#game-action').click();await p.evaluate(()=>{const s=__g.scene.getScene('ITGame');s.score=900;s.energy=5;s.finishMission(100,'00:42');});await p.locator('#ending-skip').click();await p.locator('dialog[open]').waitFor();assert((await p.locator('.score-result').innerText()).includes('002000'));}
  const p=await page();await win(p);
  const demo=await p.evaluate(()=>({names:ITHeroScores.demoNames,rows:ITHeroScores.demoRows(2000),tiny:ITHeroScores.demoRows(1),zero:ITHeroScores.demoRows(0)}));
@@ -19,7 +19,7 @@ await p.locator('#score-name').fill('Žluťák');await p.locator('#score-name').
  const mobile=await page({viewport:{width:844,height:390},hasTouch:true,isMobile:true});await win(mobile);
  for(const viewport of [{width:844,height:390},{width:568,height:320},{width:390,height:844},{width:320,height:568}]){
   await mobile.setViewportSize(viewport);await mobile.waitForTimeout(120);await mobile.locator('#score-name').fill('MOBIL');await mobile.locator('#score-name').tap();
-  assert(await mobile.evaluate(()=>{const d=document.querySelector('dialog').getBoundingClientRect();return d.left>=0&&d.right<=innerWidth&&d.top>=0&&d.bottom<=innerHeight;}),'Dialog fits mobile viewport');
+  assert(await mobile.evaluate(()=>{const d=document.querySelector('.score-dialog[open]').getBoundingClientRect();return d.left>=0&&d.right<=innerWidth&&d.top>=0&&d.bottom<=innerHeight;}),'Dialog fits mobile viewport');
   await mobile.locator('.score-again').scrollIntoViewIfNeeded();assert(await mobile.locator('.score-again').isVisible());
   await mobile.screenshot({path:`/tmp/it-hero-tests/score-table-${viewport.width}.png`});
  }

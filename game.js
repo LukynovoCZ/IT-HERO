@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.19.0 – mini plošinovka v Phaser 3.
+ * IT HERO 0.20.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -93,6 +93,9 @@
       this.nextHelperAt = 7000;
       this.helperVisit = null;
 
+      if(!data.resumeCheckpoint)this.registry.remove('trainingRun');
+      ITHeroAppearance.state.training=!!data.resumeCheckpoint&&!!this.registry.get('trainingRun')||ITHeroAppearance.state.god;
+      if(ITHeroAppearance.state.training)this.registry.set('trainingRun',true);
       this.makeTextures();
       this.buildOffice();
       this.createActors();
@@ -106,6 +109,11 @@
       this.posters = window.ITHeroPosters.mount(this, FLOORS);
       this.pacing = window.ITHeroGameplay.create(this, FLOORS, !!data.resumeCheckpoint);
       this.genZ = window.ITHeroGenZ.create(this, FLOORS);
+      ITHeroFinalManager.textures(this);
+      ITHeroAppearance.prepare(this);
+      this.secretConsole=ITHeroConsole.attach(this);
+      this.trainingHud=this.add.text(480,74,'',{font:'bold 12px monospace',color:'#ffdd85',backgroundColor:'#182b28'}).setOrigin(.5).setScrollFactor(0).setDepth(110);
+      window.ITHeroLobby?.mount(this);
       const restored = this.pacing.restore();
 
       this.cameras.main.setBounds(0, 0, WIDTH, WORLD_HEIGHT);
@@ -325,7 +333,7 @@
         e.baseX = spec.x;
         e.patrol = spec.patrol;
         e.direction = i % 2 ? 1 : -1;
-        e.lastAttack = 0;
+        e.lastAttack = spec.kind==='manager'?Infinity:0;
         e.shotsThrown = 0;
         e.visualFrames=spec.kind==='secretary'?this.secretaryVariants[spec.floor%3].frames:this.legacyFrames[spec.kind];
         e.variant=spec.kind==='secretary'?this.secretaryVariants[spec.floor%3].id:null;
@@ -688,6 +696,14 @@
       this.scoreText.setText(`SKÓRE ${String(this.score).padStart(5, '0')}`);
     }
 
+    dropUnionCoffee(enemy) {
+      const floor=enemy.floorIndex,ground=FLOORS[floor];
+      const blocked=x=>[...this.obstacles.getChildren(),...this.platforms.getChildren()].some(o=>o.body?.enable&&o.body.top<ground-8&&o.body.bottom>ground-28&&o.body.left<x+14&&o.body.right>x-14);
+      const x=[enemy.x-50,enemy.x+50,192,790,130,835].find(x=>x>50&&x<910&&!blocked(x));if(x===undefined)return;
+      const coffee=this.coffees.create(x,ground-17,'coffee').setDepth(24).setScale(1.2).refreshBody();coffee.setData('floor',floor).setData('expires',this.playTime+12000);
+      this.popText(enemy.x,enemy.body.top-25,'Zítra budeme pískat všichni.','#e9f6c5',5000);this.posters.showMessage('ODBORÁŘ\nZítra budeme pískat všichni.',7000);
+    }
+
     collectCoffee(coffee) {
       if (this.gameState !== 'playing' || !coffee.active) return;
       const steam = coffee.getData('steam');
@@ -737,6 +753,7 @@
     }
 
     enemyContact(enemy) {
+      if(enemy.kind==='manager'){this.enemyDialogue(enemy,'contact');ITHeroFinalManager.start(this,enemy,'jump');return;}
       if (enemy.profile) { this.enemyTrio.contact(enemy); return; }
       if (this.gameState !== 'playing' || !enemy.active || enemy.floorIndex !== this.floor) return;
       this.pacing.cancel(enemy);
@@ -764,6 +781,7 @@
     }
 
     enemyAttack(enemy) {
+      if(enemy.kind==='manager'){ITHeroFinalManager.start(this,enemy);return;}
       if (enemy.profile) { this.enemyTrio.attack(enemy); return; }
       if (enemy.kind === 'specialist') {
         this.enemyDialogue(enemy, 'combat');
@@ -811,6 +829,8 @@
       shot.destroy();
       this.pacing.cancel(enemy);
       enemy.hp -= damage;
+      if(enemy.kind==='manager')ITHeroFinalManager.cancel(enemy,this.playTime);
+      if(enemy.kind==='union'&&this.playTime>(enemy.nextCoffeeDrop||0)&&Math.random()<.3){enemy.nextCoffeeDrop=this.playTime+12000;this.dropUnionCoffee(enemy);}
       if(!enemy.profile){enemy.hitUntil=this.time.now+160;enemy.setTexture(enemy.visualFrames.hit);}
       if (enemy.profile) this.enemyTrio.hit(enemy);
       enemy.setTintFill(0xffffff);
@@ -840,6 +860,7 @@
     }
 
     takeDamage(sourceX, damage = 1) {
+      if(ITHeroAppearance.state.god)return;
       if (this.gameState !== 'playing' || this.time.now - this.lastHit < 1250) return;
       this.lastHit = this.time.now;
       this.playerHitUntil=this.time.now+180;
@@ -1000,7 +1021,9 @@
       if (pressed('interact')) this.interact();
       this.pacing.objective(delta, {held: crouching || down('interact'), moving, grounded});
       if (this.gameState !== 'playing') return;
-      this.coffees.getChildren().forEach(coffee => {
+      this.trainingHud.setText(ITHeroAppearance.state.training?'TRÉNINK • SKÓRE SE NEZAPÍŠE':'');
+      this.coffees.getChildren().slice().forEach(coffee => {
+        if(coffee.getData('expires')&&this.playTime>coffee.getData('expires')){coffee.destroy();return;}
         const steam = coffee.getData('steam');
         if (!steam) return;
         steam.clear();
@@ -1015,6 +1038,7 @@
       this.enemies.getChildren().forEach(e => {
         if (!e.active) return;
         if (e.profile) { this.enemyTrio.update(e, time); return; }
+        if(e.kind==='manager'&&ITHeroFinalManager.update(this,e))return;
         const sameFloor = e.floorIndex === this.floor;
         if (!sameFloor) { e.setVelocityX(0); return; }
         if (this.pacing.isWinding(e)) { e.setVelocityX(0); return; }

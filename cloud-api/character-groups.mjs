@@ -95,6 +95,10 @@ export const catalog=[
       {
         "id": "combat",
         "label": "Při útoku a kontaktu"
+      },
+      {
+        "id": "contact",
+        "label": "Při kontaktu"
       }
     ]
   },

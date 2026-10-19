@@ -5,7 +5,7 @@
   const demoNames=['kydla','zulupapa','dezecejvan','Laco','Vosahlo','Růžena','v8sklephavlk','Lukynovo','moniqnoar','homanVw'];
   const demoRows=score=>score>0?demoNames.map((name,i)=>({name,score:Math.max(0,Math.min(score-1,Math.floor(score*(.90-i*.075))))})):[];
   let active=null,memory=[],storageWarning=false;
-  const nameOf=value=>String(value??'').normalize('NFC').replace(/[\u0000-\u001f\u007f]/g,'').replace(/\s+/g,' ').trim().slice(0,12).toLocaleUpperCase('cs')||'AJŤÁK';
+  const nameOf=value=>String(value??'').normalize('NFC').replace(/[\u0000-\u001f\u007f]/g,'').replace(/\s+/g,' ').trim().toLocaleUpperCase('cs').slice(0,12)||'AJŤÁK';
   function read(){
     try{
       const raw=localStorage.getItem(storageKey);
@@ -17,6 +17,8 @@
     return memory;
   }
   function open(scene,{score,elapsed,bonus}){
+    const training=!!window.ITHeroAppearance?.state.training||!!scene.registry?.get('trainingRun');
+    const requestId=crypto.randomUUID();
     if(active)return;
     const dialog=document.createElement('dialog');dialog.className='score-dialog';dialog.setAttribute('aria-labelledby','score-title');
     dialog.innerHTML=`<section class="score-panel"><p class="score-eyebrow">MISSION COMPLETE</p><h2 id="score-title">HIGH SCORES</h2><p class="score-result"></p><p class="score-details"></p><form class="score-form"><label for="score-name">TVOJE JMÉNO</label><input id="score-name" name="name" maxlength="12" autocomplete="nickname" placeholder="AJŤÁK" enterkeyhint="done"><button type="submit">ZAPSAT SKÓRE</button></form><p class="score-status" role="status"></p><div class="score-scroll"><table><caption>TOP 10 · V TOMTO PROHLÍŽEČI</caption><thead><tr><th scope="col">#</th><th scope="col">JMÉNO</th><th scope="col">SCORE</th></tr></thead><tbody data-score-list></tbody><tbody data-demo-list></tbody></table></div><button class="score-again" type="button">HRÁT ZNOVU</button></section>`;
@@ -37,12 +39,18 @@
     scene.input.keyboard.enabled=false;scene.touchControls?.clear();scene.browserHeld?.clear();scene.browserPressed?.clear();
     const dispose=()=>{if(active!==dialog)return;active=null;if(dialog.open)dialog.close();dialog.remove();scene.input.keyboard.enabled=keyboardEnabled;scene.events.off('shutdown',dispose);};
     scene.events.once('shutdown',dispose);
-    form.addEventListener('submit',event=>{
-      event.preventDefault();if(form.dataset.saved)return;form.dataset.saved='true';
+    if(training){form.hidden=true;status.textContent='TRÉNINK S NESMRTELNOSTÍ • SKÓRE SE NEZAPÍŠE';}
+    form.addEventListener('submit',async event=>{
+      event.preventDefault();if(training||form.dataset.saved)return;form.dataset.saved='true';
       const entry={name:nameOf(form.elements.name.value),score};const rows=[...read(),entry].sort((a,b)=>b.score-a.score);const rank=rows.indexOf(entry)+1;memory=rows.slice(0,limit);
       try{localStorage.setItem(storageKey,JSON.stringify(memory));storageWarning=false;}catch(_){storageWarning=true;}
       render(memory);form.elements.name.value=entry.name;form.elements.name.disabled=true;form.querySelector('button').disabled=true;
+      window.dispatchEvent(new Event('it-hero-score'));
       status.textContent=(rank<=limit?`ZAPSÁNO · ${rank}. MÍSTO`:'DOKONČENO · TENTOKRÁT MIMO TOP 10')+(storageWarning?' · Jen pro tuto návštěvu; prohlížeč nepovolil uložení.':'');
+      if(window.ITHeroCommunity?.apiBase()){
+        const publish=async()=>{try{await ITHeroCommunity.request('/v1/scores',{method:'POST',body:{requestId,name:entry.name,score,elapsedMs:Math.floor(scene.pacing?.state.elapsed||0),training:false,completed:true}});status.textContent='SKÓRE ULOŽENO DO SPOLEČNÉHO ŽEBŘÍČKU';window.dispatchEvent(new Event('it-hero-score'));retry.remove();}catch(error){status.textContent='Lokálně uloženo. Společný zápis neprošel: '+error.message;retry.hidden=false;}};
+        const retry=document.createElement('button');retry.type='button';retry.textContent='Zopakovat společný zápis';retry.hidden=true;retry.onclick=()=>{retry.hidden=true;publish();};status.after(retry);await publish();
+      }
     });
     dialog.addEventListener('cancel',event=>event.preventDefault());
     dialog.addEventListener('keydown',event=>event.stopPropagation());
@@ -51,5 +59,5 @@
     // Avoid opening the phone keyboard before the player chooses to enter their name.
     dialog.querySelector('.score-again').focus({preventScroll:true});
   }
-  window.ITHeroScores={open,isOpen:()=>!!active,storageKey,demoNames,demoRows};
+  window.ITHeroScores={open,read,isOpen:()=>!!active,storageKey,demoNames,demoRows};
 })();

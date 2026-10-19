@@ -34,7 +34,7 @@
         {name:'AJŤÁK',itemKeys:['floppy','cd'],body:{width:28,height:72,x:18,y:8},poses:{idle:[40,16,245,342],walk:[380,16,265,342]}},
         {name:'SEKRETÁŘKA',itemKeys:['folder','mug'],body:{width:24,height:72,x:20,y:8},contactPose:'contact',poses:{idle:[65,365,210,358],contact:[385,362,267,361]}},
         {name:'ODBORÁŘ',itemKeys:['hammer','gear'],contactPose:'contact',poses:{idle:[730,365,285,358],contact:[1090,365,302,358]}},
-        {name:'MANAŽER',itemKeys:['gold-card'],contactPose:'contact',poses:{idle:[35,725,279,337],contact:[375,728,298,336],walk:[733,728,292,336]}},
+        {name:'MANAŽER',itemKeys:['sap-helmet','sap-pen','pingpong-ball'],contactPose:'contact',poses:{idle:[35,725,279,337],contact:[375,728,298,336],walk:[733,728,292,336]}},
         {name:'STARÝ AJŤÁK',itemKeys:['beer','hotdog'],support:true,attackPose:'offer',contactPose:'offer',poses:{idle:[85,12,370,482],walk:[580,120,430,374],offer:[1120,12,380,482]}},
         {name:'SPECIALISTKA',itemKeys:['unicorn','rainbow-spray','rainbow-flag'],support:true,body:{width:38,height:72,x:49,y:8},attackPose:'spray',contactPose:'flag',poses:{idle:[45,502,420,495],flag:[490,533,585,464],spray:[1070,533,465,464]}}
       ];
@@ -54,6 +54,7 @@
           body:entry.body || (entry.support ? null : {width:38,height:72,x:13,y:8})};
       });
       this.entries.forEach((entry,i)=>{window.ITHeroMotion.complete(this,entry.frames,{prefix:`preview-legacy-${i}`});entry.attackPose ||= 'attack';});
+      const managerEntry=this.entries.find(e=>e.name==='MANAŽER');ITHeroFinalManager.textures(this,managerEntry.frames.idle);managerEntry.frames.paddle='manager-paddle';managerEntry.frames.pump='manager-pump';managerEntry.attackPose='paddle';
       const secretary=this.entries[1];this.entries.splice(1,1,...window.ITHeroMotion.secretaries(this,secretary.frames).map(v=>({...secretary,name:`SEKRETÁŘKA – ${v.name}`,frames:v.frames,attackPose:'attack',contactPose:'contact'})));
       for (const profile of Object.values(ITHeroEnemyCatalog.profiles)) {
         this.entries.push({ ...profile, height: profile.previewHeight || profile.renderHeight,
@@ -74,7 +75,7 @@
 
         }
         const keys=entry.itemKeys||entry.offerKeys||entry.projectiles?.map(w=>w.key)||[];
-        const labels={'gold-card':'Zlatá karta',floppy:'Disketa',cd:'CD',folder:'Šanon',mug:'Hrnek',hammer:'Kladivo',gear:'Kolečko',beer:'Pivo',hotdog:'Párek',coffee:'Káva',unicorn:'Jednorožec','rainbow-spray':'Sprej','rainbow-flag':'Vlajka','red-heel':'Střevíc','red-tennis-ball':'Tenisák','handcuffs':'Želízka',fireball:'Fireball','golf-ball':'Golfový míček','golf-club':'Golfová hůl',calculator:'Kalkulačka','colleague-coffee':'Káva','colleague-candy':'Sisinka','sap-helmet':'Helma','sap-pen':'Propiska','dbpm-laptop':'Notebook','dbpm-baguette':'Bageta','gen-z-phone':'Mobil'};
+        const labels={'pingpong-ball':'Pingpongový míček','gold-card':'Zlatá karta',floppy:'Disketa',cd:'CD',folder:'Šanon',mug:'Hrnek',hammer:'Kladivo',gear:'Kolečko',beer:'Pivo',hotdog:'Párek',coffee:'Káva',unicorn:'Jednorožec','rainbow-spray':'Sprej','rainbow-flag':'Vlajka','red-heel':'Střevíc','red-tennis-ball':'Tenisák','handcuffs':'Želízka',fireball:'Fireball','golf-ball':'Golfový míček','golf-club':'Golfová hůl',calculator:'Kalkulačka','colleague-coffee':'Káva','colleague-candy':'Sisinka','sap-helmet':'Helma','sap-pen':'Propiska','dbpm-laptop':'Notebook','dbpm-baguette':'Bageta','gen-z-phone':'Mobil'};
         const role=entry.name.startsWith('GEN Z')?'SCROLLUJE':entry.name==='SENIOR MASTER'?'JÍ A PIJE':entry.offerKeys||entry.name==='STARÝ AJŤÁK'?'NABÍZÍ':entry.name==='AJŤÁK'?'STŘELBA':'ÚTOKY';
         this.add.text(x,entry.baseline+96,role,{font:'9px monospace',color:'#dfd4a0'}).setOrigin(.5,1);
         entry.itemIcons=keys.map((key,index)=>{
@@ -95,6 +96,7 @@
         this.controls.pause.textContent = this.paused ? 'Pokračovat v animaci' : 'Pozastavit animaci';
         this.controls.pause.setAttribute('aria-pressed', String(this.paused));
       };
+      ITHeroAppearance.prepare(this);
       this.refresh();
     }
     refresh() {

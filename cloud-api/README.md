@@ -4,8 +4,8 @@
 `https://it-hero-community.l-baborak.workers.dev`. GitHub Actions ověřil CORS
 veřejného formuláře i autorizované načtení správy a připojil adresu do
 `community-config.js`. Záznam nasazení je v `deployment.json`.
-Databáze D1 může být stejná jako pro plánovaný společný žebříček; tato migrace
-pouze přidá vlastní tabulky a nevytváří ani nemaže tabulky skóre.
+Databáze D1 ukládá také společné výsledky hry. Migrace `0002_scores.sql`
+přidává tabulku skóre a ponechává návrhy hlášek beze změny.
 
 ## Připomínky ke hře
 
@@ -110,3 +110,14 @@ V Chromium testuje stažení JSON bez služby, reálný zápis z mobilního form
 ztracenou odpověď a opakování bez duplikátu, správu v jiném prohlížeči, export,
 bezpečné zobrazení textu, zrušení i potvrzení smazání a neměnnost veřejné hry.
 Nejde o ověření běžícího účtu Cloudflare, to vyžaduje kroky nasazení výše.
+
+## Společný žebříček (0.20.0)
+
+`GET /v1/scores` veřejně vrací deset nejlepších jmen a skóre. `POST /v1/scores`
+ukládá dokončený netréninkový výsledek po zadání přezdívky. ID zápisu brání
+opakovanému uložení při ztracené odpovědi; jiné údaje se stejným ID vrací 409.
+API ověřuje délky a rozsahy a omezuje zápisy na pět za deset minut z jedné IP;
+samotnou IP neukládá. Předané skóre není ověřeno serverovým přehráním celé hry.
+Žebříček je na úvodu; při výpadku zůstávají dostupné lokální výsledky.
+Nasazovací skript provádí všechny přidávající SQL migrace v pořadí a ověřuje
+čtení žebříčku i autorizovanou správu návrhů.

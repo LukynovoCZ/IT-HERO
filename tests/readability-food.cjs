@@ -2,9 +2,9 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
 (async()=>{const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});try{
  const p=await b.newPage({viewport:{width:1280,height:900}}),errors=[];p.setDefaultTimeout(12000);p.on('pageerror',e=>errors.push(e.message));
  for(const file of ['game','character-preview'])await p.route(`**/${file}.js*`,async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__game=new Phaser.Game({')});});
- await p.goto('http://127.0.0.1:8000/character-preview.html');await p.waitForFunction(()=>window.__game?.scene.scenes[0].entries?.length===15);
+ await p.goto('http://127.0.0.1:8000/character-preview.html');await p.waitForFunction(()=>window.__game?.scene.scenes[0].entries?.length===17);
  assert(await p.evaluate(()=>__game.scene.scenes[0].entries.every(e=>e.itemIcons?.length>0)));
- assert.deepEqual(await p.evaluate(()=>__game.scene.scenes[0].entries.find(e=>e.name==='MANAŽER').itemIcons.map(i=>i.texture.key)),['gold-card']);
+ assert.deepEqual(await p.evaluate(()=>__game.scene.scenes[0].entries.find(e=>e.name==='MANAŽER').itemIcons.map(i=>i.texture.key)),['sap-helmet','sap-pen','pingpong-ball']);
  await p.selectOption('#pose','contact');
  const scream=await p.evaluate(()=>{const e=__game.scene.scenes[0].entries.find(e=>e.id==='design_manager');return [e.frames.scream,e.frames.scream_alt];});assert(scream.every(Boolean));assert.notEqual(...scream);
  await p.locator('#game').screenshot({path:'/tmp/it-hero-tests/catalogue-items-scream.png'});
@@ -21,5 +21,5 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  assert.equal(await p.evaluate(()=>s.children.list.filter(o=>o.type==='Text'&&o.text==='PROJEKTY • ZASEDACÍ CHODBA').length),0);
  await p.evaluate(()=>{s.oldBadger.clear();s.floor=3;s.updateHUD();s.player.body.reset(200,2825);s.cameras.main.setScroll(0,2445);});await p.waitForTimeout(150);
  await p.screenshot({path:'/tmp/it-hero-tests/readability-floor4.png'});
- assert.deepEqual(errors,[]);console.log('PASS all 15 item displays, gold card, anchored scream frames, coffee/steam and hotdog/label consumption, pause and duplicate-banner removal');
+ assert.deepEqual(errors,[]);console.log('PASS all 17 item displays, final manager weapons, anchored scream frames, coffee/steam and hotdog/label consumption, pause and duplicate-banner removal');
 }finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});

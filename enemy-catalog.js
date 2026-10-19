@@ -181,7 +181,7 @@
         if(e.profile.behavior==='sap'){window.ITHeroSAP.attack(scene,e,pose,'melee');return;}
         scene.pacing?.cancel(e);
         scene.takeDamage(e.x,e.profile.damage);
-        scene.enemyDialogue?.(e,'combat');
+        scene.enemyDialogue?.(e,e.kind==='design_manager'?'contact':'combat');
         if(scene.time.now<e.contactUntil)return;
         e.facingDirection=scene.player.x>=e.x?1:-1;
         e.contactUntil=scene.time.now+650;e.setVelocityX(0);pose(e,e.profile.contactPose);

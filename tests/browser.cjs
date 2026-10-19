@@ -6,7 +6,7 @@ const assert=require('node:assert/strict');
  const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
  try {
   for(const method of ['Enter','button','canvas']) {
-   const page=await browser.newPage(); const errors=[];const external=[];
+   const page=await browser.newPage(); const errors=[];const external=[];await page.route('**/community-config.js*',r=>r.fulfill({contentType:'text/javascript',body:'window.ITHeroCommunityConfig={apiBaseUrl:""};'}));
    page.on('pageerror',e=>errors.push(e.message));
    page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:8000'))external.push(r.url());});
    // Expose the real game instance for assertions; all game logic runs unchanged.
@@ -21,7 +21,7 @@ const assert=require('node:assert/strict');
    }),[true,true,true],'All local graphics must load');
    if(method==='Enter')await page.keyboard.press('Enter');
    if(method==='button')await page.locator('#game-action').click();
-   if(method==='canvas')await page.locator('canvas').click({position:{x:100,y:100}});
+   if(method==='canvas')await page.locator('#game canvas').click({position:{x:100,y:100}});
    await page.waitForTimeout(300);
    assert.equal(await state(),'playing');
    // Isolate input assertions from timed enemy knockback. Combat is verified below
@@ -106,8 +106,7 @@ const assert=require('node:assert/strict');
   await combat.evaluate(()=>window.__testGame.scene.getScene('ITGame').enemies.getChildren().filter(e=>e.profile).forEach(e=>e.destroy()));
   for(const [kind,shots,pose] of [
     ['secretary',['folder','mug'],'secretary-blonde-contact'],
-    ['union',['hammer','gear'],'union-whistle'],
-    ['manager',['gold-card','gold-card'],'manager-stomp-']
+    ['union',['hammer','gear'],'union-whistle']
   ]) {
     const actual=await combat.evaluate(kind=>{
       const s=window.__testGame.scene.getScene('ITGame');s.physics.world.pause();
@@ -130,13 +129,13 @@ const assert=require('node:assert/strict');
       return {energy:s.energy,texture:window.__contactEnemy.texture.key};
     });
     assert.equal(contact.energy,4,'Repeated contact during protection must not subtract another point');
-    assert.ok(contact.texture.startsWith(pose));
+    assert.ok(contact.texture.replace(/^free-/,'').startsWith(pose));
     await combat.screenshot({path:`/tmp/it-hero-tests/${kind}-contact.png`});
     await combat.evaluate(()=>{
       const s=window.__testGame.scene.getScene('ITGame');s.player.body.reset(82,4280);
       s.physics.world.resume();
     });
-    await combat.waitForFunction(()=>{const e=window.__contactEnemy;return e.body.velocity.x!==0&&[e.visualFrames.walk,e.visualFrames.walk_alt].includes(e.texture.key);});
+    await combat.waitForFunction(()=>{const e=window.__contactEnemy;return e.body.velocity.x!==0&&[e.visualFrames.walk,e.visualFrames.walk_alt].includes(e.texture.key.replace(/^free-/,''));});
     console.log(`PASS ${kind}: projectiles, real contact overlap, one damage, reaction and recovery`);
   }
   assert.deepEqual(combatErrors,[]);await combat.close();

@@ -11,7 +11,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  await p.waitForFunction(()=>e.clock>8600);assert(await p.evaluate(()=>e.driver.alpha>0&&e.hero.alpha<1));await p.screenshot({path:'/tmp/it-hero-tests/ending-boarding.png'});
  await p.waitForFunction(()=>e.clock>10300);assert(await p.evaluate(()=>e.hover.alpha>0&&e.park.alpha<1));await p.screenshot({path:'/tmp/it-hero-tests/ending-lift.png'});
  await p.waitForFunction(()=>e.clock>12900);assert(await p.evaluate(()=>e.campus.alpha===1&&e.car.y<240));await p.screenshot({path:'/tmp/it-hero-tests/ending-campus.png'});
- await p.locator('dialog[open]').waitFor();assert.equal(await p.locator('dialog').count(),1);assert(await p.evaluate(()=>s.score===2000&&!ITHeroEnding.isRunning()&&!__g.scene.isPaused('ITGame')));assert.equal(await p.locator('#ending-skip').count(),0);
+ await p.locator('dialog[open]').waitFor();assert.equal(await p.locator('.score-dialog').count(),1);assert(await p.evaluate(()=>s.score===2000&&!ITHeroEnding.isRunning()&&!__g.scene.isPaused('ITGame')));assert.equal(await p.locator('#ending-skip').count(),0);
  await p.locator('#score-name').fill('PILOT');await p.locator('.score-form button').click();assert((await p.locator('[data-score-list]').innerText()).includes('PILOT'));await p.locator('.score-again').click();await p.waitForFunction(()=>__g.scene.getScene('ITGame').gameState==='menu');
  console.log('PASS natural ending: full six phases, boarding/driver, wheel conversion, campus flight, hidden-page pause, original score once, one score modal and clean restart.');
  // Keyboard skip must open scores, not immediately restart the underlying win scene.

@@ -31,7 +31,9 @@ export async function deploy({env=process.env,fetchImpl=fetch,log=console.log}={
  if(!/^[a-z0-9-]+$/.test(subdomain||''))throw Error('Cloudflare nevrátil platnou workers.dev subdoménu.');
  if(!database)database=(await api('/d1/database',{method:'POST',body:{name:databaseName}})).result;
  if(typeof database.uuid!=='string'||!database.uuid)throw Error('Cloudflare nevrátil ID databáze.');
- const sql=await fs.readFile(path.join(root,'cloud-api/migrations/0001_dialogue.sql'),'utf8');
+ const migrations=path.join(root,'cloud-api/migrations');
+ const names=(await fs.readdir(migrations)).filter(name=>/^\d+_[a-z_]+\.sql$/.test(name)).sort();
+ const sql=(await Promise.all(names.map(name=>fs.readFile(path.join(migrations,name),'utf8')))).join('\n');
  const migration=await api(`/d1/database/${database.uuid}/query`,{method:'POST',body:{sql}});
  if(!Array.isArray(migration.result)||migration.result.some(r=>r.success===false))throw Error('Migrace databáze nebyla potvrzena. Worker nebyl změněn.');
  const form=new FormData();
@@ -44,7 +46,7 @@ export async function deploy({env=process.env,fetchImpl=fetch,log=console.log}={
  const url=`https://${workerName}.${subdomain}.workers.dev`;
  // Service startup may propagate slowly. Never report a failed health check as ready.
  let healthy=false;for(let attempt=0;attempt<6;attempt++){
-  try{const [preflight,protectedList]=await Promise.all([fetchImpl(url+'/v1/dialogue-suggestions',{method:'OPTIONS',headers:{Origin:'https://lukynovocz.github.io'},signal:AbortSignal.timeout(15000)}),fetchImpl(url+'/v1/admin/dialogue-suggestions',{headers:{Authorization:`Bearer ${admin}`},signal:AbortSignal.timeout(15000)})]);const data=await protectedList.json().catch(()=>null);healthy=preflight.status===204&&preflight.headers.get('Access-Control-Allow-Origin')==='https://lukynovocz.github.io'&&protectedList.status===200&&Array.isArray(data?.items);if(healthy)break;}catch{/* Retry only the read-only readiness checks. */}
+  try{const [preflight,protectedList,scoreList]=await Promise.all([fetchImpl(url+'/v1/dialogue-suggestions',{method:'OPTIONS',headers:{Origin:'https://lukynovocz.github.io'},signal:AbortSignal.timeout(15000)}),fetchImpl(url+'/v1/admin/dialogue-suggestions',{headers:{Authorization:`Bearer ${admin}`},signal:AbortSignal.timeout(15000)}),fetchImpl(url+'/v1/scores',{signal:AbortSignal.timeout(15000)})]);const scores=await scoreList.json().catch(()=>null);const data=await protectedList.json().catch(()=>null);healthy=preflight.status===204&&preflight.headers.get('Access-Control-Allow-Origin')==='https://lukynovocz.github.io'&&protectedList.status===200&&Array.isArray(data?.items)&&scoreList.status===200&&Array.isArray(scores?.items);if(healthy)break;}catch{/* Retry only the read-only readiness checks. */}
   if(attempt<5)await new Promise(resolve=>setTimeout(resolve,3000));
  }
  if(!healthy)throw Error(`Worker byl nahrán, ale ověření provozu neprošlo. Veřejná adresa: ${url}. Zkontroluj nasazení v Cloudflare; web hry zatím nepřepojuj.`);
