@@ -44,3 +44,36 @@ Odkazy na storyboard a vývojové návody je třeba odstranit nebo upravit, aby
 nový web nepublikoval dokumentaci s osobními adresami. Původní Pages a veřejný
 repozitář řešit až po ověření nového webu. Vyhledávače a dřívější kopie mohou
 spojení zachovat i po jejich vypnutí.
+
+## Připravené nasazení čisté kopie
+
+Workflow `.github/workflows/publish-neutral-copy.yml` vytváří samostatný projekt
+Cloudflare Pages s neutrálním názvem odvozeným pomocí HMAC ze správcovského
+hesla. Původní GitHub Pages, Worker a databázi nemění. Název nové adresy se
+nezapisuje do veřejného kódu ani do veřejného protokolu nasazení.
+
+Distribuci připraví `node scripts/build_public_copy.mjs /tmp/clean-release`
+(cílový adresář musí být prázdný). Obsahuje potřebné herní soubory, galerii,
+formuláře a licenci Phaseru. Neobsahuje historii Git, zadání, vývojové návody,
+reference ani storyboard. Textová a EXIF metadata PNG jsou odstraněna bez změny
+pixelů. Konfigurace API používá pouze aktuální původ webu; pokročilý Pages Worker
+obsluhuje `/v1/` přímo se stávající databází D1. Osobní workers.dev adresu
+prohlížeč vůbec nepotřebuje. Web žádá vyhledávače o neindexování; nejde o ochranu
+před přímým přístupem nebo porovnáním s dřívější veřejnou hrou.
+
+Potřebná oprávnění existujícího API tokenu: **Account / Cloudflare Pages / Edit**
+a přístup ke stávající databázi **Account / D1 / Read**. Oprávnění Workers Scripts
+dříve používané pro komunitní API nenahrazuje oprávnění Cloudflare Pages.
+Heslo správy je nadále uloženo pouze v GitHub secretu a v šifrované konfiguraci
+Cloudflare. Pro novou kopii se používá stejná správa návrhů a stejná data.
+
+Ověřená URL se ukládá do `cloud-api/public-copy-receipt.json` šifrovaně pomocí
+veřejného RSA klíče `cloud-api/public-copy-receipt.pem`. Soukromý klíč nepatří do
+repozitáře ani do distribuční kopie. Při ztrátě soukromého klíče lze adresu
+najít ve vlastním Cloudflare dashboardu; případně vyměnit veřejný klíč a spustit
+nasazení znovu. Změna správcovského hesla odvodí jiný název projektu a vytvoří
+novou kopii, původní neutrální projekt sama nesmaže.
+
+Regresní test `node tests/public-copy.mjs` ověřuje skutečné spuštění hry,
+galerii, formulář, SQLite API, soukromou správu, odmítnutí cizího původu,
+nepřítomnost vývojových souborů a nulové požadavky prohlížeče na jiné adresy.
