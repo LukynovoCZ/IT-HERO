@@ -184,3 +184,14 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
 .player-avatar{image-rendering:pixelated;display:inline-block;flex-shrink:0;aspect-ratio:1;border:2px solid #9abf87;vertical-align:middle}.score-player{display:inline-flex;align-items:center;gap:9px}.score-player .player-avatar{width:40px;height:40px}.avatar-picker{width:100%;min-width:0;border:1px solid #527c68;padding:8px}.avatar-picker legend{font-size:12px;color:#f7ca70}.avatar-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;max-height:180px;overflow:auto;padding:4px}.score-form .avatar-option{position:relative;width:auto;cursor:pointer;display:flex;justify-content:center}.score-form .avatar-option input{position:absolute;opacity:0;width:1px;min-width:0;min-height:0;padding:0}.avatar-option canvas{width:58px;height:58px}.avatar-option input:checked+canvas{outline:3px solid #c1f36e;outline-offset:1px}.avatar-option input:focus-visible+canvas{outline:3px solid #ffcc68;outline-offset:2px}.avatar-selected{font-size:11px;color:#c2d7b7;margin:8px 0 0}
 
 .employee-portraits figcaption strong,.employee-portraits figcaption small,.hall-score{display:block}.hall-score{color:#bce888;margin-top:5px}.employee-portraits figcaption small{font-size:8px;color:#9db6a8;margin-top:4px}
+
+/* Larger fire target; landscape reserves enough rail width outside the canvas. */
+.touch-layout .touch-actions button[data-touch-action="shoot"]{width:90px;height:90px;min-height:90px;font-size:32px}
+@media(max-height:540px) and (orientation:landscape){
+ .touch-layout .play-area{--touch-rail:92px}
+ .touch-layout .touch-actions button[data-touch-action="shoot"]{width:80px;height:80px;min-height:80px}
+}
+@media(max-width:650px) and (max-height:540px) and (orientation:landscape){
+ .touch-layout .play-area{--touch-rail:84px}
+ .touch-layout .touch-actions button[data-touch-action="shoot"]{width:72px;height:72px;min-height:72px}
+}

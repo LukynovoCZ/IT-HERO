@@ -38,3 +38,15 @@ nastaveném omezení animací v prohlížeči se kotrmelce nepoužívají.
 Parametry jsou v `ITHeroOutdoor.config`: `rollChance`, `rollDuration`,
 `rollLift`, `rollEarliest`, `rollLatest`. Test `tests/jarda-somersault.cjs`
 ověřuje průběh, pauzu, kolizi, narovnání, pokračování a náhodný výběr.
+
+## Králíci a střelba — 0.23.4
+
+Kontakt hráče s králíkem spustí jednorázový komický odlet s rotací směrem od
+hráče. Králík zmizí za okrajem obrazovky, do další návštěvy nádvoří se nevrací.
+Bez krvavých efektů, změny zdraví nebo skóre; pauza zastaví i odlet. Parametry
+jsou `rabbitKickSpeed`, `rabbitKickUp`, `rabbitGravity`.
+Mobilní tlačítko střelby má 90 × 90 CSS px na výšku, 80 × 80 na šířku a
+72 × 72 na malých displejích naležato. Pravý pruh pro ovládání se přizpůsobí
+velikosti tlačítka, aby nezasahovalo do herního obrazu.
+Testy: `tests/rabbit-kick.cjs` (oba směry, kontakt, odlet, pauza, zdraví/skóre),
+`tests/thumb-controls.cjs` (skutečný dotyk, větší cíl, čtyři velikosti displeje).

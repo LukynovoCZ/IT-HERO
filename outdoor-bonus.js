@@ -1,6 +1,6 @@
 /* Optional, nonviolent courtyard. Main scene clocks and collisions are frozen. */
 (()=>{'use strict';if(typeof Phaser==='undefined')return;
- const config={doorX:130,ground:450,cdX:[290,585,880],coffeeX:735,treeX:790,birdY:269,bikeSpeed:72,bikeHitWidth:96,bikeHitHeight:60,rollChance:.45,rollDuration:1100,rollLift:150,rollEarliest:5000,rollLatest:9500};
+ const config={doorX:130,ground:450,cdX:[290,585,880],coffeeX:735,treeX:790,birdY:269,bikeSpeed:72,bikeHitWidth:96,bikeHitHeight:60,rollChance:.45,rollDuration:1100,rollLift:150,rollEarliest:5000,rollLatest:9500,rabbitKickSpeed:650,rabbitKickUp:560,rabbitGravity:340};
  const birdLines=window.ITHeroDialogue.lines('jay','ambient');
  function preload(scene,charactersOnly=false){if(!charactersOnly)scene.load.image('outdoor-background','assets/outdoor/courtyard.png?v=0.21.0');scene.load.image('outdoor-jarda-source','assets/outdoor/jarda-poses.png?v=0.23.2');scene.load.image('outdoor-npc-source','assets/outdoor/characters.png?v=0.21.0');}
  function atlasTextures(scene){
@@ -80,7 +80,11 @@
    this.jardaLabel.setPosition(this.jarda.x,this.jardaRolling?this.jarda.y-105:config.ground-102).setVisible(this.jarda.visible&&!this.jardaRolling);
    // A narrow bicycle/rider silhouette can be cleared by a normal jump.
    const bike=new Phaser.Geom.Rectangle(this.jarda.x-config.bikeHitWidth/2,(this.jardaRolling?this.jarda.y-config.bikeHitHeight/2:config.ground-config.bikeHitHeight),config.bikeHitWidth,config.bikeHitHeight);if(this.jarda.visible&&Phaser.Geom.Intersects.RectangleToRectangle(this.player.body,bike)){this.finish('Tam je provoz zase.');return;}
-   this.rabbits.forEach((r,i)=>{const t=this.clock/1000+i*1.8,hopping=Math.max(0,Math.sin(t*3));r.setPosition(560+i*90+Math.sin(t*.65)*85,config.ground-hopping*24).setTexture(`outdoor-rabbit-${hopping>.4?1:0}`).setFlipX(Math.cos(t*.65)<0);});
+   this.rabbits.forEach((r,i)=>{
+    const flight=r.rabbitFlight;if(flight){const t=(this.clock-flight.at)/1000;r.setPosition(flight.x+flight.vx*t,flight.y-config.rabbitKickUp*t+config.rabbitGravity*t*t/2).setAngle(flight.direction*t*720);if(r.x<-60||r.x>1020||r.y<-60||t>2)r.setVisible(false);return;}
+    const t=this.clock/1000+i*1.8,hopping=Math.max(0,Math.sin(t*3));r.setPosition(560+i*90+Math.sin(t*.65)*85,config.ground-hopping*24).setTexture(`outdoor-rabbit-${hopping>.4?1:0}`).setFlipX(Math.cos(t*.65)<0);
+    if(Phaser.Geom.Intersects.RectangleToRectangle(this.player.body,r.getBounds())){const direction=Math.sign(r.x-this.player.x)||this.facing;r.rabbitFlight={at:this.clock,x:r.x,y:r.y-r.height/2,vx:direction*config.rabbitKickSpeed,direction};r.setOrigin(.5).setY(r.rabbitFlight.y).setDepth(29);this.source.tone(660,.06,'triangle');}
+   });
    this.smoke.clear();this.smokers.forEach((actor,i)=>{const t=((this.clock+i*610)%2400)/2400;this.smoke.fillStyle(0xe1e8d9,(1-t)*.5);this.smoke.fillRect(actor.x+21+Math.sin(t*8)*4,actor.y-55-t*24,3,5);this.smoke.fillRect(actor.x+24+Math.sin(t*7)*3,actor.y-65-t*22,2,4);});
    if(this.clock>=this.nextBird){const i=this.birdIndex++%birdLines.length;this.bubble.setText(birdLines[i]).setVisible(true);this.placeBubble();this.birdUntil=this.clock+4400;this.nextBird=this.clock+8500;if(i===2)this.flightAt=this.clock+1800;}
    this.bubble.setVisible(this.clock<this.birdUntil);const flight=this.clock-this.flightAt;if(flight>=0&&flight<4400){const t=flight/4400;this.bird.setPosition(config.treeX+Math.sin(t*Math.PI)*235,config.birdY-Math.sin(t*Math.PI)*95).setFlipX(t<.5).setAngle(Math.sin(flight/80)*7);}else this.bird.setPosition(config.treeX,config.birdY).setAngle(0).setFlipX(Math.floor(this.clock/2500)%2===0);
