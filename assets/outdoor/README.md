@@ -13,4 +13,4 @@ obou snímků, aby při šlapání neměnil velikost. Pixely ze sousedních bun�
 neovlivňují ukotvení kol. Králíci, kouř, koš a dveře se
 kreslí přímo ve hře. Nouzové procedurální sprity se použijí při chybě atlasu.
 
-`jarda-poses.png`: úprava Jardy podle dodané reference, rozcuchané šedé vlasy a nízko posazené křivé brýle. Používají se pouze první dvě buňky; ostatní postavy zůstávají z původního atlasu. Stejná normalizace a kolizní oblast kola.
+0.23.2: `jarda-poses.png` je samostatný atlas 2 sloupce × 1 řádek podle nové předlohy: veselejší výraz bez knírku, rozcuchané vlasy, křivé brýle, batoh, sandály a bílá skládačka. Runtime vloží každou buňku do původního atlasu se zachováním poměru stran; kuřáci a sojka zůstávají z původní grafiky.
