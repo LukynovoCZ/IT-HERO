@@ -44,3 +44,16 @@ Ověření:
   návrat a emulované dotykové ovládání.
 - `tests/manager-hall-bowler.cjs`: Poldajede ve společném seznamu, správné
   označení ukázkových soupeřů, pálka, zásah zblízka a veřejná buřinka.
+
+## Hall of Fame — 0.23.1
+
+Horní galerie již není pevný seznam názvů postav. Čte stejné seřazené
+výsledky jako tabulka a ukazuje prvních šest jmen, skóre a vybraných avatarů.
+Při zápisu nového výsledku se obě místa přepočítají společně.
+Pokud je skutečných výsledků méně než šest, zbytek doplní označení ukázkoví
+soupeři ze stejné tabulky. Jejich body jsou pod posledním skutečným výsledkem;
+bez výsledků se použije dosavadní ukázkové pořadí kydla, zulupapa, dezecejvan…
+Ukázkové portréty se vybírají náhodně ze všech avatarů, první přiřazení je
+uložené v prohlížeči (ne ve skóre), takže při obnovení nepřeskakují.
+`tests/hall-ranking.cjs` ověřuje propojení, pořadí, body, výchozí jména,
+platné náhodné avatary, jejich stabilitu po obnovení a přepočet po změně skóre.

@@ -3,7 +3,15 @@
   'use strict';
   const storageKey='it-hero-high-scores-v1',limit=10;
   const demoNames=['kydla','zulupapa','dezecejvan','Laco','Vosahlo','Růžena','v8sklephavlk','Poldajede','moniqnoar','homanVw'];
-  const demoRows=score=>score>0?demoNames.map((name,i)=>({name,score:Math.max(0,Math.min(score-1,Math.floor(score*(.90-i*.075))))})):[];
+  let demoAvatars;
+  function demoAvatar(name){
+    if(!demoAvatars){try{demoAvatars=JSON.parse(localStorage.getItem('it-hero-demo-avatars')||'{}');}catch{demoAvatars={};}if(!demoAvatars||typeof demoAvatars!=='object'||Array.isArray(demoAvatars))demoAvatars={};
+      const pool=ITHeroAvatars.choices.map(a=>a.id);for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+      for(const [i,n] of demoNames.entries())if(!ITHeroAvatars.choices.some(a=>a.id===demoAvatars[n]))demoAvatars[n]=pool[i%pool.length];
+      try{localStorage.setItem('it-hero-demo-avatars',JSON.stringify(demoAvatars));}catch{}
+    }return demoAvatars[name];
+  }
+  const demoRows=score=>score>0?demoNames.map((name,i)=>({name,avatar:demoAvatar(name),score:Math.max(0,Math.min(score-1,Math.floor(score*(.90-i*.075))))})):[];
   let active=null,memory=[],storageWarning=false;
   const nameOf=value=>String(value??'').normalize('NFC').replace(/[\u0000-\u001f\u007f]/g,'').replace(/\s+/g,' ').trim().toLocaleUpperCase('cs').slice(0,12)||'AJŤÁK';
   function read(){
@@ -36,7 +44,7 @@
     // Decorative opponents never enter storage, rankings or the future shared API.
     const demos=dialog.querySelector('[data-demo-list]'),header=document.createElement('tr'),heading=document.createElement('th');
     heading.colSpan=3;heading.scope='colgroup';heading.textContent='UKÁZKOVÍ SOUPEŘI · NEJSOU SKUTEČNÉ REKORDY';header.append(heading);demos.append(header);
-    demoRows(score).forEach(row=>{const tr=document.createElement('tr');tr.className='score-demo';for(const text of ['★',row.name,String(row.score).padStart(6,'0')]){const cell=document.createElement('td');cell.textContent=text;tr.append(cell);}demos.append(tr);});
+    demoRows(score).forEach(row=>{const tr=document.createElement('tr');tr.className='score-demo';for(const text of ['★',row.name,String(row.score).padStart(6,'0')]){const cell=document.createElement('td');if(text===row.name)cell.append(ITHeroAvatars.cell(scene,row));else cell.textContent=text;tr.append(cell);}demos.append(tr);});
     render(read());status.textContent=storageWarning?'Ukládání není dostupné. Výsledek zůstane jen pro tuto návštěvu.':(window.ITHeroCommunity?.apiBase()?'Vyber avatara a zadej až 12 znaků. Výsledek se uloží i do společného žebříčku.':'Vyber avatara a zadej až 12 znaků. Výsledek zůstane v tomto prohlížeči.');
     const keyboardEnabled=scene.input.keyboard.enabled;
     scene.input.keyboard.enabled=false;scene.touchControls?.clear();scene.browserHeld?.clear();scene.browserPressed?.clear();
