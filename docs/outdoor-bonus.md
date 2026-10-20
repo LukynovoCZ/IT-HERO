@@ -26,3 +26,15 @@ nového hráče do statistiky a nemění označení tréninkového pokusu.
 
 Konfigurace pozic, rychlosti kola a odměn je v `outdoor-bonus.js / config`.
 Pozadí a sprity jsou v `assets/outdoor/`, rozdělené od herní logiky.
+
+## Jardův kotrmelec — 0.23.3
+
+Každý průjezd má 45% šanci na jeden kotrmelec mezi 5. a 9,5. sekundou
+jízdy. Cyklista i skládačka se otočí o 360° během 1,1 s a pokračují stejným
+směrem a rychlostí. Rotace končí přesně na 0°, se stejnou výškou kol i
+původním ukotvením. Během letu se zásahová oblast posouvá s postavou;
+na chodníku nezůstává neviditelný blok. Pauza zastaví celý pohyb. Při
+nastaveném omezení animací v prohlížeči se kotrmelce nepoužívají.
+Parametry jsou v `ITHeroOutdoor.config`: `rollChance`, `rollDuration`,
+`rollLift`, `rollEarliest`, `rollLatest`. Test `tests/jarda-somersault.cjs`
+ověřuje průběh, pauzu, kolizi, narovnání, pokračování a náhodný výběr.
