@@ -11,7 +11,8 @@ zůstává stejné na PC i telefonu, střelba nikomu venku neubližuje.
 - Tři CD vylepší střelbu stejně jako hlavní CD upgrade; každé navíc přidá 50 bodů.
   Hra nadále používá původní systém zbraní, nezavádí omezenou zásobu munice.
 - Jedna káva doplní zdraví na maximum. IT kolega stojí pod stromem u kávy.
-- U koše kouří tři kolegové, Jarda pravidelně projíždí na skládačce, dva hnědí
+- U koše kouří tři kolegové, Jarda pravidelně projíždí na skládačce a musí se přeskočit. Srážka vrátí
+  hráče bez ztráty zdraví do recepce s hláškou „Tam je provoz zase.“ Dva hnědí
   králíci poskakují po parkovišti. Jarda je brýlatý, pupkatý a má řídké šedé vlasy.
 - Sojka sedí na větvi nad IT kolegou, střídá tři hlášky a u třetí krátce odletí.
   Texty jsou v `character-dialogue.js` pod `jay / ambient`, také v přehledu
