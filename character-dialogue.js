@@ -319,7 +319,10 @@
           "ZASE NĚJAKÁ NOVINKA?",
           "KLID, JÁ TO VYŘEŠÍM!",
           "JÁ NIKAM NESPĚCHÁM!",
-          "TEN VÝTAH VŽDYCKY FUNGOVAL!"
+          "TEN VÝTAH VŽDYCKY FUNGOVAL!",
+          "Koukej se mi na ruce, nebudu tady věčně.",
+          "Pojď a uč se od mistra.",
+          "Učíš Vorla lítat."
         ]
       },
       {
@@ -343,6 +346,13 @@
         "label": "Při zastavení",
         "lines": [
           "přijde mi zbytečné dělat teď nějaké rychlé pohyby"
+        ]
+      },
+      {
+        "id": "snack",
+        "label": "Při pití kávy nebo snědení Sisinky",
+        "lines": [
+          "To bych vodnes na vocase"
         ]
       }
     ]

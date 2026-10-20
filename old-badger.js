@@ -134,13 +134,14 @@
         e.snack.destroy();e.snack=null;
       }
       const food=[...scene.coffees.getChildren(),...scene.aidItems.getChildren(),...scene.colleague.items.getChildren()]
-        .find(item=>item.active&&['coffee','colleague-coffee','hotdog'].includes(item.texture.key)&&Math.abs(item.x-e.x)<25&&Math.abs(item.y-e.body.bottom)<40);
+        .find(item=>item.active&&['coffee','colleague-coffee','colleague-candy','hotdog'].includes(item.texture.key)&&Math.abs(item.x-e.x)<25&&Math.abs(item.y-e.body.bottom)<40);
       if(food){
         const key=food.texture.key;
         food.getData('steam')?.destroy();food.getData('label')?.destroy();food.destroy();
         e.snack=scene.add.image(e.x,e.body.top+25,key).setScale(.7).setDepth(24);
         e.eatingUntil=state.clock+config.eatDuration;e.setVelocityX(0);e.phase='eat';
-        scene.popText(e.x,e.body.top-18,key==='hotdog'?'PÁREK SNĚDEN':'KÁVA VYPITA', '#ffe4a2',1800);
+        if(key==='hotdog')scene.popText(e.x,e.body.top-18,'PÁREK SNĚDEN','#ffe4a2',1800);
+        else e.speech=scene.dialogue.say(e,'old_badger','snack',{replace:true,priority:true})||e.speech;
         return;
       }
       if(state.clock<e.blockUntil){e.setVelocityX(0);e.setTexture(frames.block);return;}

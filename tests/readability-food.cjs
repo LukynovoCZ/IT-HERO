@@ -12,11 +12,13 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  await p.evaluate(()=>{window.s=__game.scene.getScene('ITGame');s.enemies.getChildren().forEach(e=>{e.body.enable=false;e.lastAttack=Infinity;e.sapNextAttack=Infinity;});s.lastHit=Infinity;s.nextHelperAt=Infinity;s.colleague.state.nextAt=Infinity;s.oldBadger.state.nextAt=Infinity;s.player.body.reset(82,4280);s.oldBadger.spawn();ITHeroOldBadger.config.walkSpeed=0;});
  await p.waitForFunction(()=>s.oldBadger.state.entity.phase!=='exit');
  await p.evaluate(()=>{window.e=s.oldBadger.state.entity;window.coffee=s.coffees.getChildren()[0];window.steam=coffee.getData('steam');e.body.reset(coffee.x,4280);e.setVelocity(0);});
- await p.waitForFunction(()=>!!e.snack);assert.equal(await p.evaluate(()=>coffee.active),false);assert.equal(await p.evaluate(()=>steam.active),false);
+ await p.waitForFunction(()=>!!e.snack);assert.equal(await p.evaluate(()=>coffee.active),false);assert.equal(await p.evaluate(()=>steam.active),false);assert.equal(await p.evaluate(()=>e.speech.text),'To bych vodnes na vocase');
  await p.keyboard.press('Escape');const clock=await p.evaluate(()=>s.oldBadger.state.clock);await p.waitForTimeout(200);assert.equal(await p.evaluate(()=>s.oldBadger.state.clock),clock);await p.keyboard.press('Escape');
  await p.waitForFunction(()=>!e.snack);
  await p.evaluate(()=>{window.hotdog=s.aidItems.create(e.x,4298,'hotdog').setData('expires',s.playTime+10000);window.label=s.add.text(e.x,4200,'PÁREK');hotdog.setData('label',label);});
  await p.waitForFunction(()=>e.snack?.texture.key==='hotdog');assert.equal(await p.evaluate(()=>hotdog.active||label.active),false);await p.waitForFunction(()=>!e.snack);
+ await p.evaluate(()=>{window.beforeSnack=[s.energy,s.score];window.candy=s.colleague.items.create(e.x,4298,'colleague-candy').setData('floor',s.floor).setData('kind','candy').setData('expires',s.colleague.state.clock+10000);window.candyLabel=s.add.text(e.x,4200,'SISINKA');candy.setData('label',candyLabel);});
+ await p.waitForFunction(()=>e.snack?.texture.key==='colleague-candy');assert.equal(await p.evaluate(()=>candy.active||candyLabel.active),false);assert.equal(await p.evaluate(()=>e.speech.text),'To bych vodnes na vocase');assert.deepEqual(await p.evaluate(()=>[s.energy,s.score]),await p.evaluate(()=>beforeSnack));await p.waitForFunction(()=>!e.snack);
  // Scene contains only the upper floor name, with no repeated room banner.
  assert.equal(await p.evaluate(()=>s.children.list.filter(o=>o.type==='Text'&&o.text==='PROJEKTY • ZASEDACÍ CHODBA').length),0);
  await p.evaluate(()=>{s.oldBadger.clear();s.floor=3;s.updateHUD();s.player.body.reset(200,2825);s.cameras.main.setScroll(0,2445);});await p.waitForTimeout(150);

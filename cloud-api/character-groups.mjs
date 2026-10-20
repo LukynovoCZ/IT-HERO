@@ -185,6 +185,10 @@ export const catalog=[
       {
         "id": "pause",
         "label": "Při zastavení"
+      },
+      {
+        "id": "snack",
+        "label": "Při pití kávy nebo snědení Sisinky"
       }
     ]
   },
