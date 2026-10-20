@@ -142,6 +142,8 @@
   new Phaser.Game({
     type: Phaser.AUTO, parent: 'game', width: 960, height: 3260,
     pixelArt: true, roundPixels: true, antialias: false,
+    input: { activePointers: 0, mouse: false, touch: false },
+    disableContextMenu: false,
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [CharacterPreview]
   });

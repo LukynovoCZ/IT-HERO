@@ -195,3 +195,6 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
  .touch-layout .play-area{--touch-rail:84px}
  .touch-layout .touch-actions button[data-touch-action="shoot"]{width:72px;height:72px;min-height:72px}
 }
+
+/* The character gallery is a scrollable document, including over the canvas. */
+.character-preview #game, .character-preview #game canvas{touch-action:pan-y!important}

@@ -322,7 +322,8 @@
           "TEN VÝTAH VŽDYCKY FUNGOVAL!",
           "Koukej se mi na ruce, nebudu tady věčně.",
           "Pojď a uč se od mistra.",
-          "Učíš Vorla lítat."
+          "Učíš Vorla lítat.",
+          "Já si du pro buchtu a oni maj jen vylizanej pekáč."
         ]
       },
       {
@@ -455,7 +456,10 @@
           "To je mega cringe.",
           "Main character energy.",
           "To je vibe.",
-          "Fr fr."
+          "Fr fr.",
+          "BRUH",
+          "67",
+          "nejsem labubu"
         ]
       }
     ]
@@ -470,7 +474,21 @@
         "lines": [
           "tjantumbejk!",
           "no,ale hlásit se to musí,",
-          "pijé, tak já letím"
+          "pijé, tak já letím",
+          "beeee"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "jarda",
+    "name": "JARDA",
+    "groups": [
+      {
+        "id": "roll",
+        "label": "Po kotrmelci s kolem",
+        "lines": [
+          "to bylo v podstatě o fous."
         ]
       }
     ]

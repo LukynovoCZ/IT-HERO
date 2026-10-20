@@ -249,5 +249,15 @@ export const catalog=[
         "label": "Nad stromem na nádvoří"
       }
     ]
+  },
+  {
+    "id": "jarda",
+    "name": "JARDA",
+    "groups": [
+      {
+        "id": "roll",
+        "label": "Po kotrmelci s kolem"
+      }
+    ]
   }
 ];
