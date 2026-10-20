@@ -6,7 +6,7 @@ U existující skupiny uprav nebo přidej řetězce do `lines`. Texty se automat
 projeví v jejím dosavadním herním použití i na `character-preview.html`.
 Nový typ situace vyžaduje také napojení na herní událost; pouhé přidání dat
 nový útok ani nové spouštění hlášek nezavádí. Sekretářka, odborář a původní manažer náhodně vybírají z `contact`.
-Specialistka, bezpečák, HR a manažer designu používají `combat` při útoku i kontaktu.
+Specialistka, Security master, HR a manažer designu používají `combat` při útoku i kontaktu.
 Tyto hlášky jsou nad postavou 3,5 sekundy a ve spodním panelu 7 sekund;
 stejná postava mluví nejvýše jednou za 7 sekund, pouze v aktuálním patře.
 DBPM má vlastní skupiny `chase`, `attack`, `hit`, `demand`, bublinu se zalamováním
@@ -23,3 +23,14 @@ návrhy na texty z aktuálního vydání. Přístup k úložišti není podmínk
 Zobrazení i export fungují bez externích služeb.
 
 Ověření: `node tests/dialogue-catalogue.cjs`, `node tests/helper-dialogue.cjs`.
+
+## Aktuální názvy postav
+
+- `jarda`: DžejTý
+- `security_guard`: Security master
+- `old_badger`: SENIOR MASTER
+
+Stejné názvy používají hra, galerie avatarů, přehled postav a katalog návrhů
+hlášek. Interní ID a názvy grafických souborů zůstávají stabilní kvůli uloženým
+avatarům a existujícím návrhům. Starší zadání a historické záznamy mohou
+obsahovat původní jména; nejsou zdrojem názvů v aktuální hře.

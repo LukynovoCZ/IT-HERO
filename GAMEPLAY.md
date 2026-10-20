@@ -6,7 +6,7 @@ zásahy, přechody a vítězství. Žádná nová externí grafika ani knihovna 
 
 ## Souboje
 
-Automatickému hodu běžných nepřátel předchází 400 ms nápřahu, u bezpečáka,
+Automatickému hodu běžných nepřátel předchází 400 ms nápřahu, u Security mastera,
 HR manažerky a manažera designu 500 ms. Zastaví se, natočí se a objeví se žluté
 vykřičníky. Zásah nebo kontakt nápřah přeruší, odchod do jiného patra jej zruší.
 Pauza zastaví zbývající dobu. SAP zachovává vlastní 450ms přípravu, navíc má
@@ -72,7 +72,7 @@ Mobilní ověření používá emulované dotykové zařízení v Chromium, niko
 - Neaktivní dveře jsou označeny PŘÍCHOD, pokračuje se protějšími SCHODY ↓.
 - Lávky ve 2., 4. a 7. patře mají výšku 128 px a mezi díly 65 px volného prostoru. Pod lávkou je místo pro stojícího hráče i nad deskou stolu. Nahoru se skáče ze stolu.
 - S / ↓ / dotykové ▼ na lávce umožní seskočit k nepřátelům. Podlaha a stoly zůstávají pevné; po seskoku je lávka znovu použitelná.
-- Starý Jezevec se nově zobrazuje jako SENIOR MASTER. Interní ID `old_badger` zůstává kvůli kompatibilitě hlášek.
+- Postava se zobrazuje jako SENIOR MASTER. Interní ID `old_badger` zůstává kvůli kompatibilitě hlášek.
 - Regrese: `node tests/stairs-platforms.cjs` ověřuje schody s drženým skrčením, skutečný skok ze stolu na lávku, seskočení a skok pod lávkou.
 
 ## Oprava zamrznutí po zásahu vozíku (0.13.1)

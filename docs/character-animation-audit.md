@@ -10,7 +10,7 @@ se stejnou výškou a ukotvením chodidel. Kolizní těla a parametry pohybu se 
 | Odborář | doplněné dva kroky | píšťalka | natažená ruka |
 | Manažer | doplněné kroky | dupání | natažená ruka, zlatá karta |
 | Specialistka | doplněné kroky | vlajka | sprej nebo hod |
-| Bezpečák | původní póza + druhý krok | STOP, firewall | vysílačka / projektil |
+| Security master | původní póza + druhý krok | STOP, firewall | vysílačka / projektil |
 | HR | původní chůze + druhý krok | STOP, bičík | dokumenty / projektil |
 | Design manažer | původní chůze + druhý krok | střídání dvou snímků řevu | nápřah a došvih golfovou holí, golfový míček |
 | Šéf SAP | nově odlišná chůze | pumpička | původní dva druhy střelby |

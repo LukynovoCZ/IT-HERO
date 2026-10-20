@@ -57,9 +57,9 @@ Modul se načítá před `game.js`. Přidává instance do stávající fyzikál
 
 Spusť lokální server na portu 8000 a `node tests/enemy-catalog.cjs`. Test používá **dosavadní grafiku jako výslovnou testovací náhradu pouze v paměti prohlížeče**; ověřuje konfiguraci, útoky v rámci patra, zásahy CD/disketami, jednorázové skóre a odstranění. Neověřuje skutečný vzhled nových postav ani konečné animační snímky.
 
-Všechny tři dodané sady jsou zapojené. Chybějící kreslené snímky zásahu a poražení nahrazuje záblesk a fade-out. Bezpečák používá pózy idle, STOP a chůzi s vysílačkou; chůze střídá existující pózy. Zásah využívá krátké zábleskové zvýraznění a poražení fade-out. Samostatné kreslené snímky zásahu a poražení v dodaném podkladu nejsou.
+Všechny tři dodané sady jsou zapojené. Chybějící kreslené snímky zásahu a poražení nahrazuje záblesk a fade-out. Security master používá pózy idle, STOP a chůzi s vysílačkou; chůze střídá existující pózy. Zásah využívá krátké zábleskové zvýraznění a poražení fade-out. Samostatné kreslené snímky zásahu a poražení v dodaném podkladu nejsou.
 
-## Ověřený bezpečák
+## Ověřený Security master
 
 Transparentní atlas je `assets/characters/security_guard.png` (2033 × 774). Profil má snímek 80 × 96, vykreslenou výšku 92 pixelů a pevný hitbox 32 × 88. Obdélníky póz jsou v `profiles.security_guard.art.poses`; všechny se přepočítávají stejným měřítkem a ukotvují chodidly. `art.facing` zachovává správný směr původních póz při obracení postavy.
 
@@ -108,7 +108,7 @@ animace bez externích obrázků. Profily v `enemy-catalog.js` nyní používaj�
 `attackType: 'office-weapons'` a pole `projectiles` s položkami `key`, `weight`,
 volitelnými `speed` a `spin`. Původní typ `default` zůstává dostupný.
 
-- Bezpečák: želízka / fireball, váhy 4:1; `contactEffect: 'firewall'`.
+- Security master: želízka / fireball, váhy 4:1; `contactEffect: 'firewall'`.
 - HR: červený střevíc / červený tenisák s tmavým řemínkem (`red-tennis-ball`), 1:1; `contactEffect: 'whip'`.
 - Design: malá golfová hůl / kalkulačka, 1:1; `contactEffect: 'scream'`.
 

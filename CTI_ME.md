@@ -125,7 +125,7 @@ Herní stoly mají šedé podstavce a krémově bílé desky. Modul `posters.js`
 
 ## Noví nepřátelé verze 0.7.0
 
-Konfigurace v `enemy-catalog.js`: bezpečák v 1.–3. patře, HR manažerka v 6. a 8., manažer designu ve 4., 8. a 9. Nové transparentní atlasy jsou v `assets/characters/`. Od verze 0.7.1 mají vlastní střely a kontaktní efekty v `trio-attacks.js`, se zachováním původní fyziky zásahů; původní nepřátelé se zachovávají. Vzhled designéra má přísnější výraz podle zadání. Podrobný popis parametrů a testů je v `ENEMY_CATALOG.md`. Porovnání postav otevřete odkazem pod hrou nebo přes `character-preview.html`.
+Konfigurace v `enemy-catalog.js`: Security master v 1.–3. patře, HR manažerka v 6. a 8., manažer designu ve 4., 8. a 9. Nové transparentní atlasy jsou v `assets/characters/`. Od verze 0.7.1 mají vlastní střely a kontaktní efekty v `trio-attacks.js`, se zachováním původní fyziky zásahů; původní nepřátelé se zachovávají. Vzhled designéra má přísnější výraz podle zadání. Podrobný popis parametrů a testů je v `ENEMY_CATALOG.md`. Porovnání postav otevřete odkazem pod hrou nebo přes `character-preview.html`.
 
 ## Hlášky starého ajťáka (0.9.1)
 
@@ -143,7 +143,7 @@ hráče. Pauza čas hlášky zastaví a změna patra ji vyčistí.
 ## Společné vydání 0.10.1 a kontrola mechanismů
 
 Toto vydání spojuje dříve připravené postavy a opravy do hlavní veřejné verze:
-IT kolega, Starý Jezevec, čitelnější HR/design manažer, Šéf SAP v 5. patře a delší
+IT kolega, Senior master, čitelnější HR/design manažer, Šéf SAP v 5. patře a delší
 hlášky se spodním panelem. Porovnání ukazuje 12 postav. Zrušen je přepis termínu
 návštěvy starého ajťáka na 5 sekund při každém přechodu patra. Výsledky úplné
 kontroly a test přirozených příchodů jsou v `GAME_AUDIT.md`.

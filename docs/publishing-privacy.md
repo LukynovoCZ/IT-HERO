@@ -22,3 +22,25 @@ nadále spojovat s hrou. Tento postup omezuje běžnou dohledatelnost nové adre
 neposkytuje záruku anonymity ani skrytí před provozovatelem hostingu.
 
 V této změně se doména nekupuje, hosting se nepřesouvá a nic veřejného se nemaže.
+
+## Kontrola současné verze (0.23.8)
+
+- Veřejná adresa hry obsahuje účet `lukynovocz.github.io`.
+- `community-config.js` obsahuje API `it-hero-community.l-baborak.workers.dev`;
+  tuto adresu lze vidět v síťových požadavcích prohlížeče.
+- Veřejný repozitář, jeho historie a vývojová dokumentace umožňují propojení s autorem.
+- Nestačí přesměrovat neutrální doménu na současnou URL ani vložit hru do iframe.
+
+Doporučené uspořádání: `hra.neutralni-domena.cz` pro statické soubory a
+`api.neutralni-domena.cz` pro stávající Worker a databázi D1. Neutrální názvy
+jsou pouze příklad, doména nebyla vybrána ani registrována. Cloudflare Pages
+lze naplnit přímo distribučními soubory bez zveřejnění zdrojového repozitáře.
+Worker může dál používat stejnou databázi; skóre a návrhy není nutné přenášet.
+Je nutné změnit veřejnou konfiguraci API, CORS i ověřování a konfiguraci
+nasazovacího skriptu, který nyní používá pevně nastavený původ GitHub Pages.
+
+Nová distribuční kopie má obsahovat jen potřebné herní soubory a licence.
+Odkazy na storyboard a vývojové návody je třeba odstranit nebo upravit, aby
+nový web nepublikoval dokumentaci s osobními adresami. Původní Pages a veřejný
+repozitář řešit až po ověření nového webu. Vyhledávače a dřívější kopie mohou
+spojení zachovat i po jejich vypnutí.
