@@ -38,8 +38,14 @@
     if(!key.includes('stomp')&&y>29&&y<62&&!(d[i]>d[i+1]*1.2&&d[i+1]>d[i+2]*1.1)){const l=(d[i]+d[i+1]+d[i+2])/3;d[i]=Math.round(l*.25);d[i+1]=Math.round(l*.52);d[i+2]=Math.min(255,Math.round(l*.86+20));}
     if((y<18||key.includes('stomp')&&y>50&&y<65)&&x>23&&x<57){const l=(d[i]+d[i+1]+d[i+2])/3;d[i]=Math.min(255,170+l*.3);d[i+1]=Math.min(255,115+l*.3);d[i+2]=Math.min(255,83+l*.25);}
    }c.putImageData(im,0,0);
-   // Rounded bald crown replaces the pointed grey hair, preserving the beard.
-   if(!key.includes('stomp')){c.clearRect(23,0,35,15);for(let y=7;y<17;y++){const half=Math.round(13*Math.sqrt(Math.max(0,1-((y-17)/11)**2)));r(y<10?'#dca07c':'#eeb58a',40-Math.min(half,11),y,Math.min(half,11)*2,1);}r('#f8c99a',34,10,8,2);}
+   // Public disguise: a charcoal bowler with a curved crown, band and brim.
+   const brim=key.includes('stomp')?59:14;
+   if(!key.includes('stomp'))c.clearRect(23,0,35,15);
+   r('#121b23',35,brim-12,10,1);r('#121b23',32,brim-11,16,2);r('#121b23',30,brim-9,20,2);r('#121b23',28,brim-7,24,7);
+   r('#34434f',35,brim-10,10,1);r('#34434f',32,brim-9,15,2);r('#26353f',30,brim-7,20,6);
+   r('#101820',28,brim-2,24,3);r('#637178',30,brim-2,20,1);
+   r('#111b23',24,brim+1,32,3);r('#46535c',26,brim+1,28,1);
+
   }else if(kind==='specialist'){
    if(key.includes('spray'))return;
    // Replace only saturated cloth pixels. Pole, body, hair and poses stay intact.

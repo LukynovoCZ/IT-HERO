@@ -114,3 +114,19 @@ Velikost, poloha kol a kolizní oblast pro přeskočení zůstávají stejné.
 Testy běží v Chromium (Playwright), mobilní rozměry a dotykové vstupy jsou
 emulované; neproběhl ruční test na fyzickém telefonu. Produkční API není
 z tohoto prostředí přímo dostupné; jeho nasazení má proběhnout až po sloučení.
+
+## Navazující opravy 0.22.1 — stejná větev
+
+Úvodní Hall of Fame zobrazuje také deset jmen ze závěrečné tabulky: používá
+stejný `ITHeroScores.demoRows`, ukázkoví soupeři jsou oddělení od skutečných
+rekordů a nevstupují do databáze. Skutečné výsledky a statistiky se nemění.
+Manažer má tři snímky pálky (nápřah, úder, dotažení), rukojeť prochází dlaní;
+původní zlatá karta i stará ruka jsou při útoku nahrazené. Snímky se střídají
+při trojodpalu i kontaktním výskoku a jsou vidět také v porovnání postav.
+Směr, zásahy, prodlevy a počet projektilů zůstávají původní.
+Senior master má ve veřejném vzhledu zaoblenou tmavou buřinku včetně
+snímku porážky. Původní vzhled přes konzoli zůstává zachován.
+
+`node tests/manager-hall-bowler.cjs` ověřuje všech deset jmen, označení
+ukázek, tři fáze pálky, tři míčky v obou směrech, skutečné spuštění útoku
+při kontaktu, výskok, zásah a rozdíl veřejné/původní textury Seniora.

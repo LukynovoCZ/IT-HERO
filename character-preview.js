@@ -55,7 +55,7 @@
           body:entry.body || (entry.support ? null : {width:38,height:72,x:13,y:8})};
       });
       this.entries.forEach((entry,i)=>{window.ITHeroMotion.complete(this,entry.frames,{prefix:`preview-legacy-${i}`});entry.attackPose ||= 'attack';});
-      const managerEntry=this.entries.find(e=>e.name==='MANAŽER');ITHeroFinalManager.textures(this,managerEntry.frames.idle);managerEntry.frames.paddle='manager-paddle';managerEntry.frames.pump='manager-pump';managerEntry.attackPose='paddle';
+      const managerEntry=this.entries.find(e=>e.name==='MANAŽER');ITHeroFinalManager.textures(this,managerEntry.frames.idle);managerEntry.frames.paddle='manager-paddle';managerEntry.frames['paddle-strike']='manager-paddle-strike';managerEntry.frames['paddle-follow']='manager-paddle-follow';managerEntry.frames.pump='manager-pump';managerEntry.attackPose='paddle';managerEntry.contactPose='paddle-strike';
       const secretary=this.entries[1];this.entries.splice(1,1,...window.ITHeroMotion.secretaries(this,secretary.frames).map(v=>({...secretary,name:`SEKRETÁŘKA – ${v.name}`,frames:v.frames,attackPose:'attack',contactPose:'contact'})));
       for (const profile of Object.values(ITHeroEnemyCatalog.profiles)) {
         this.entries.push({ ...profile, height: profile.previewHeight || profile.renderHeight,
@@ -114,6 +114,7 @@
       for (const entry of this.entries) {
         let frame = pose === 'contact' ? entry.contactPose : pose === 'attack' ? entry.attackPose : pose;
         if (pose === 'walk' && Math.floor(this.animationTime / 180) % 2 === 0) frame = entry.frames.walk_alt ? 'walk_alt' : 'idle';
+        if(['attack','contact'].includes(pose)&&entry.name==='MANAŽER')frame=['paddle','paddle-strike','paddle-follow'][Math.floor(this.animationTime/150)%3];
         if(pose==='attack'&&entry.id==='design_manager')frame=Math.floor(this.animationTime/180)%2?'golf':'golf_follow';
         entry.sprite.setTexture(entry.frames[frame] || entry.frames.idle).setScale(zoom);
         if(entry.id==='dbpm'){entry.sprite.clearTint();if(pose==='hit'&&Math.floor(this.animationTime/90)%2)entry.sprite.setTintFill(0xffffff);}

@@ -2,7 +2,7 @@
 
 Výchozí grafiku vybírá `appearance-mode.js`. Hnědý culík odboráře, bradka
 manažera, vlajka specialistky se smajlíkem, zatočený knír design manažera,
-tmavá patka SAP šéfa a pleš s modrým svetrem Senior mastera jsou samostatné
+tmavá patka SAP šéfa a buřinka s modrým svetrem Senior mastera jsou samostatné
 textury. Původní textury, rozměry, ukotvení, snímky a kolize zůstávají zachovány.
 Ostatní postavy se nemění. Stejná volba se promítá do portrétů na úvodu.
 
