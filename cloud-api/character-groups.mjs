@@ -211,6 +211,10 @@ export const catalog=[
       {
         "id": "defeat",
         "label": "Při porážce"
+      },
+      {
+        "id": "arrival",
+        "label": "Druhý projekťák vystupuje z výtahu v 6. patře"
       }
     ]
   },

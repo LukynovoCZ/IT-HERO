@@ -3,12 +3,12 @@
   'use strict';
   const config={health:6,score:250,speed:98,minX:55,maxX:905,maxActive:1,
     jumpVelocity:-530,jumpCooldown:650,lookAhead:44,retreatDistance:102,
-    initialDelay:1200,meleeRange:82,meleeWindup:350,meleeActive:110,meleeCooldown:1500,
+    initialDelay:1200,arrivalDelay:900,arrivalDuration:1400,meleeRange:82,meleeWindup:350,meleeActive:110,meleeCooldown:1500,
     throwRange:430,throwWindup:450,throwCooldown:2300,recovery:250,hitStun:180,
     laptop:{speed:245,launchY:-130,gravity:360,spin:330,lifetime:1900},
     baguette:{speed:315,launchY:-165,gravity:500,spin:520,lifetime:1500},
     demandMin:12000,demandMax:18000,demandWindup:500,demandLifetime:5000,demandHealth:2,
-    placements:[{floor:4,x:140,enabled:true},{floor:8,x:820,health:8,speed:105,enabled:false}]};
+    placements:[{floor:4,x:140,enabled:true},{floor:6,x:225,encounter:'sixth_first',enabled:true},{floor:6,x:500,encounter:'sixth_second',after:'sixth_first',enabled:true},{floor:8,x:820,health:8,speed:105,enabled:false}]};
   const frame=index=>[index*160,0,160,96];
   const profile={id:'dbpm',name:'PROJEKŤÁK DBPM',enabled:true,behavior:'dbpm',health:config.health,
     speed:config.speed,patrol:425,attackRange:config.throwRange,attackInterval:config.throwCooldown,
@@ -18,7 +18,7 @@
     art:{path:'assets/characters/dbpm.png',poses:{idle:frame(0),walk:frame(1),walk_alt:frame(2),jump:frame(3),
       melee:frame(4),throw_laptop:frame(5),throw_baguette:frame(6),demand:frame(7),hit:frame(0),defeat:frame(8)}}};
   ITHeroEnemyCatalog.profiles.dbpm=profile;
-  config.placements.filter(p=>p.enabled).forEach(p=>ITHeroEnemyCatalog.placements.push({id:'dbpm',floor:p.floor,x:p.x}));
+  config.placements.filter(p=>p.enabled).forEach(p=>ITHeroEnemyCatalog.placements.push({...p,id:'dbpm'}));
 
   function textures(scene){
     const make=(key,w,h,draw)=>{if(scene.textures.exists(key))return;const g=scene.make.graphics({add:false});draw(g);g.generateTexture(key,w,h);g.destroy();};
@@ -50,12 +50,12 @@
     const bar=scene.add.graphics(),label=scene.add.text(8,3,'',{font:'12px monospace',color:'#f1eedb'});hud.add([bar,label]);
     const randomInterval=()=>Phaser.Math.Between(config.demandMin,config.demandMax);
     for(const e of actors){
-      const place=config.placements.find(p=>p.floor===e.floorIndex+1);
+      const place=config.placements.find(p=>p.floor===e.floorIndex+1&&p.x===e.baseX);
       e.hp=place?.health??config.health;e.maxHp=e.hp;e.dbpmSpeed=place?.speed??config.speed;
       e.dbpm={attack:null,throwCount:0,nextAttack:state.clock+config.initialDelay,nextDemand:state.clock+randomInterval(),
-        hitUntil:0,nextJump:0,nextSpeech:state.clock+1500,speech:null,speechUntil:0};
+        encounter:place?.encounter,waitingFor:place?.after,arrival:null,announced:false,hitUntil:0,nextJump:0,nextSpeech:state.clock+1500,speech:null,speechUntil:0};
     }
-    const sameFloor=e=>e.active&&!e.defeated&&e.floorIndex===scene.floor;
+    const sameFloor=e=>e.active&&!e.defeated&&!e.dbpm.waitingFor&&!e.dbpm.arrival&&e.floorIndex===scene.floor;
     function destroyShot(shot){if(shot.active)shot.destroy();state.shots.delete(shot);}
     function shatter(x,y){
       for(let i=0;i<6;i++){
@@ -69,10 +69,31 @@
       d.image.destroy();d.label.destroy();state.demand=null;
     }
     function clear(e){
+      e.dbpm.liftDoor?.destroy();e.dbpm.liftDoor=null;
+      if(e.dbpm.arrival?.phase==='walk')e.dbpm.arrival={phase:'wait',at:state.clock+200};
       e.dbpm.attack?.warning?.destroy();e.dbpm.attack=null;e.dbpm.onFloor=false;e.dbpm.speech?.destroy();e.dbpm.speech=null;
       for(const shot of [...state.shots])if(shot.getData('dbpmOwner')===e)destroyShot(shot);
       if(state.demand?.owner===e)removeDemand();
       if(e.active){e.setVelocity(0,0);e.setAngle(0);}
+    }
+    function arrive(e){
+      const d=e.dbpm,a=d.arrival,ground=floors[e.floorIndex];e.body.enable=false;e.setVelocity(0,0);
+      if(a.phase==='wait'){
+        e.setActive(false).setVisible(false);if(state.clock<a.at)return;
+        a.phase='walk';a.started=state.clock;a.exitX=scene.player.x<500?560:440;
+        d.liftDoor=scene.add.graphics().setDepth(21);
+      }
+      const p=Phaser.Math.Clamp((state.clock-a.started)/config.arrivalDuration,0,1),opening=Math.min(1,p*2);
+      d.liftDoor.clear().fillStyle(0x14252c).fillRect(458,ground-142,84,142).fillStyle(0x80989b)
+        .fillRect(458,ground-142,42*(1-opening),142).fillRect(542-42*(1-opening),ground-142,42*(1-opening),142);
+      e.setActive(true).setVisible(true).setAlpha(Math.min(1,p*3)).setPosition(500+(a.exitX-500)*p,ground-48+(1-p)*8);
+      e.setTexture(e.poses[Math.floor(state.clock/160)%2?'walk':'walk_alt']).setFlipX(a.exitX<500);
+      if(!d.announced&&p>.2){d.announced=!!scene.dialogue.say(e,'dbpm','arrival',{priority:true,replace:true});}
+      if(p>=1){
+        d.liftDoor.destroy();d.liftDoor=null;d.arrival=null;d.onFloor=true;e.setAlpha(1);
+        const x=Math.abs(scene.player.x-e.x)<55?(scene.player.x<500?560:440):e.x;
+        e.body.reset(x,ground-48);e.body.enable=true;d.nextAttack=state.clock+config.initialDelay;d.nextDemand=state.clock+randomInterval();
+      }
     }
     function say(e,group){
       if(!sameFloor(e))return;
@@ -188,7 +209,8 @@
         if(state.destroyed)return;
         const active=scene.gameState==='playing'&&!scene.transitioning;
         if(active)state.clock+=delta;
-        const selected=actors.filter(e=>e.scene&&!e.defeated&&e.floorIndex===scene.floor).slice(0,config.maxActive);
+        for(const e of actors){if(!e.scene||!e.dbpm.waitingFor)continue;const previous=actors.find(p=>p.dbpm.encounter===e.dbpm.waitingFor);if(previous&&(previous.defeated||!previous.scene)){e.dbpm.waitingFor=null;e.dbpm.arrival={phase:'wait',at:state.clock+config.arrivalDelay};}}
+        const selected=actors.filter(e=>e.scene&&!e.defeated&&!e.dbpm.waitingFor&&e.floorIndex===scene.floor).slice(0,config.maxActive);
         for(const e of actors){
           if(!e.scene){clear(e);continue;}
           if(e.defeated&&state.deaths.has(e)&&e.floorIndex===scene.floor&&['playing','paused'].includes(scene.gameState)){
@@ -198,6 +220,7 @@
             clear(e);if(e.body)e.body.enable=false;e.setActive(false).setVisible(false);
             if(e.defeated){state.deaths.delete(e);e.destroy();}continue;
           }
+          if(e.dbpm.arrival){if(active)arrive(e);continue;}
           if(!e.dbpm.onFloor&&active){e.dbpm.onFloor=true;e.dbpm.nextAttack=state.clock+config.initialDelay;e.dbpm.nextDemand=state.clock+randomInterval();e.dbpm.nextSpeech=state.clock+1500;}
           e.setActive(true).setVisible(true);e.body.enable=true;
 

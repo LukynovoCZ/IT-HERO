@@ -10,7 +10,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
   const inactive=!e.body.enable&&!e.active;s.floor=3;s.updateHUD();s.cameras.main.setScroll(0,ground-420);s.player.body.reset(900,ground-40);s.player.setVelocity(0);s.dbpm.tick(0);
   const interval=e.dbpm.nextDemand-s.dbpm.state.clock;e.dbpm.nextAttack=Infinity;e.dbpm.nextDemand=Infinity;
   return {inactive,count:s.dbpm.actors.length,hp:e.hp,score:e.profile.score,interval,poses:Object.keys(e.poses)};
- });assert(initial.inactive);assert.equal(initial.count,1);assert.equal(initial.hp,6);assert.equal(initial.score,250);assert(initial.interval>=12000&&initial.interval<=18000);assert(initial.poses.includes('jump')&&initial.poses.includes('demand')&&initial.poses.includes('hit')&&initial.poses.includes('defeat'));
+ });assert(initial.inactive);assert.equal(initial.count,3);assert.equal(initial.hp,6);assert.equal(initial.score,250);assert(initial.interval>=12000&&initial.interval<=18000);assert(initial.poses.includes('jump')&&initial.poses.includes('demand')&&initial.poses.includes('hit')&&initial.poses.includes('defeat'));
  await p.waitForFunction(()=>e.body.velocity.y<0&&e.texture.key.endsWith('-jump'));
  await p.waitForFunction(()=>e.x>760);assert(await p.evaluate(()=>e.body.bottom<=ground+5));
  await p.evaluate(()=>{s.player.body.reset(60,ground-40);s.player.setVelocity(0);});await p.waitForFunction(()=>e.x<200);assert(await p.evaluate(()=>e.body.bottom<=ground+5));
@@ -57,7 +57,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  console.log('PASS DBPM DEMAND: scheduled special/dialogue, safe single ground obstacle, real two-floppy destruction, fragments, paused 5s expiry and complete collision removal.');
  // Every exact phrase is reachable; HUD reacts, CD counts twice, +250 once.
  await place(540,140);
- const dialogue=await p.evaluate(()=>{const wanted=['teraz som plně vytížený','som šel oba po povrche','teď už jen doleštime ten diamant','u zákazníka máte připraven cervenej koberec','navrhuji další meeting na tohle téma','Dycky DEMAND!','Tak uděláme novou tabulku,ne?'];const lines=ITHeroDialogue.characters.find(c=>c.id==='dbpm').groups.flatMap(g=>g.lines);return {exact:wanted.every(x=>lines.includes(x))&&lines.length===16};});assert(dialogue.exact);
+ const dialogue=await p.evaluate(()=>{const wanted=['teraz som plně vytížený','som šel oba po povrche','teď už jen doleštime ten diamant','u zákazníka máte připraven cervenej koberec','navrhuji další meeting na tohle téma','Dycky DEMAND!','Tak uděláme novou tabulku,ne?'];const lines=ITHeroDialogue.characters.find(c=>c.id==='dbpm').groups.flatMap(g=>g.lines);return {exact:wanted.every(x=>lines.includes(x))&&lines.length===17};});assert(dialogue.exact);
  for(const group of ['chase','attack','hit','demand']){assert(await p.evaluate(group=>{s.dialogue.clear();s.dialogue.state.next.clear();s.dialogue.state.gapUntil=0;e.dbpm.nextSpeech=0;s.dbpm.say(e,group);const first=e.dbpm.speech;s.dbpm.say(e,group);return first===e.dbpm.speech&&e.dbpm.speech.active;},group));}
  const before=await p.evaluate(()=>{s.dbpm.spawnDemand(e);e.hp=6;return s.score;});
  for(const [weapon,hp] of [['floppy',5],['cd',3],['cd',1],['floppy',0]]){
@@ -66,7 +66,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
  assert.equal(await p.evaluate(()=>s.score),before+250);assert(await p.evaluate(()=>e.defeated&&!e.body.enable&&!s.dbpm.state.demand&&s.dbpm.state.shots.size===0));
  await p.evaluate(()=>{const shot=s.playerShots.create(e.x,e.y,'cd').setData('damage',2);s.hitEnemy(shot,e);shot.destroy();});assert.equal(await p.evaluate(()=>s.score),before+250);
  await p.waitForFunction(()=>!e.active);
- assert.deepEqual(errors,[]);console.log('PASS DBPM health/dialogue/defeat: all original seven texts and nine additions, no duplicate bubbles, floppy/CD damage, one 250-point award, defeat and owned-object cleanup.');
+ assert.deepEqual(errors,[]);console.log('PASS DBPM health/dialogue/defeat: all original and corporate texts plus arrival line, no duplicate bubbles, floppy/CD damage, one 250-point award, defeat and owned-object cleanup.');
  // New run: floor/end cleanup and actual checkpoint restore retain original systems.
  await p.evaluate(()=>{s.scene.restart();});await p.waitForFunction(()=>__game.scene.getScene('ITGame').gameState==='menu');await p.keyboard.press('Enter');
  await p.evaluate(()=>{window.s=__game.scene.getScene('ITGame');window.e=s.dbpm.actors[0];s.floor=3;s.dbpm.tick(0);s.player.body.reset(540,ground-40);e.body.reset(140,ground-48);s.dbpm.spawnDemand(e);e.dbpm.nextAttack=0;s.enemyTrio.attack(e);s.floor=4;s.dbpm.tick(0);});

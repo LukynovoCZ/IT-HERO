@@ -396,6 +396,13 @@
         "lines": [
           "išiel som viac iba po povrche"
         ]
+      },
+      {
+        "id": "arrival",
+        "label": "Druhý projekťák vystupuje z výtahu v 6. patře",
+        "lines": [
+          "projektaku není nikdy dost"
+        ]
       }
     ]
   },
