@@ -69,7 +69,7 @@
       for(const variant of ITHeroGenZ.variants)this.entries.push({name:variant==='girl'?'GEN Z – HOLKA':'GEN Z – KLUČINA',height:76,frames:genZ[variant],frameWidth:64,frameHeight:80,body:{width:26,height:64,x:19,y:16},itemKeys:['gen-z-phone'],contactPose:'phone-scroll',attackPose:'shrug'});
       ITHeroOutdoor.textures(this);
       const ambient=(name,height,frameWidth,frameHeight,frames,activity)=>({name,height,frameWidth,frameHeight,frames,activity,outdoor:true,body:null,itemKeys:[]});
-      this.entries.push(ambient('JARDA – SKLÁDAČKA',94,160,100,{idle:'outdoor-jarda-0',walk:'outdoor-jarda-1',walk_alt:'outdoor-jarda-0'},'PROJÍŽDÍ'));
+      this.entries.push(ambient('DžejTý – SKLÁDAČKA',94,160,100,{idle:'outdoor-jarda-0',walk:'outdoor-jarda-1',walk_alt:'outdoor-jarda-0'},'PROJÍŽDÍ'));
       for(let i=0;i<3;i++)this.entries.push(ambient(i===2?'KOLEGYNĚ U KOŠE':`KOLEGA U KOŠE ${i+1}`,76,80,80,{idle:`outdoor-smoker-${i}`},'PAUZA U KOŠE'));
       this.entries.push(ambient('SOJKA',30,48,36,{idle:'outdoor-jay'},'POZORUJE A HLÁSÍ'));
       for(let i=0;i<2;i++)this.entries.push(ambient(`HNĚDÝ KRÁLÍK ${i+1}`,26,36,30,{idle:'outdoor-rabbit-0',walk:'outdoor-rabbit-1',walk_alt:'outdoor-rabbit-0'},'POSKAKUJE'));

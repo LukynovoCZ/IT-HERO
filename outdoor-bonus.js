@@ -55,7 +55,7 @@
    this.shots=this.physics.add.group({allowGravity:false});
    const exit=this.add.graphics().setDepth(8);exit.fillStyle(0x4b8791,.8).fillRect(55,config.ground-122,66,122);exit.lineStyle(3,0xd5e9e3).strokeRect(55,config.ground-122,66,122).lineBetween(88,config.ground-122,88,config.ground);exit.fillStyle(0xffda78).fillRect(80,config.ground-61,3,15);this.add.text(88,config.ground-137,'RECEPCE',{font:'bold 13px monospace',color:'#fff0bf',backgroundColor:'#173e35',padding:{x:5,y:3}}).setOrigin(.5).setDepth(15);
    const bin=this.add.graphics().setDepth(14);bin.fillStyle(0x213831).fillRect(428,398,28,45);bin.fillStyle(0x637a68).fillRect(430,401,24,38);bin.fillStyle(0x172c28).fillRect(426,396,32,7);bin.fillStyle(0x98ae8a).fillRect(436,407,4,23).fillRect(446,407,3,23);this.smokers=[375,420,490].map((x,i)=>this.add.image(x,config.ground-6,`outdoor-smoker-${i}`).setOrigin(.5,1).setDepth(15));this.smoke=this.add.graphics().setDepth(17);
-   this.jarda=this.add.image(1040,config.ground,'outdoor-jarda-0').setOrigin(.5,1).setFlipX(true).setDepth(24);this.jardaSpeech=this.add.text(0,0,'',{font:'bold 15px monospace',color:'#172e29',backgroundColor:'#fff5d9',padding:{x:7,y:5},wordWrap:{width:230},align:'center'}).setOrigin(.5,1).setDepth(50).setVisible(false);this.jardaSpeechUntil=0;this.jardaStart=2200;this.jardaLap=-1;this.jardaRollAt=Infinity;this.jardaRolling=false;this.reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;this.jardaLabel=this.add.text(1040,config.ground-102,'JARDA • SKLÁDAČKA',{font:'bold 10px monospace',color:'#f4f5d5',backgroundColor:'#1b3c32'}).setOrigin(.5).setDepth(26);
+   this.jarda=this.add.image(1040,config.ground,'outdoor-jarda-0').setOrigin(.5,1).setFlipX(true).setDepth(24);this.jardaSpeech=this.add.text(0,0,'',{font:'bold 15px monospace',color:'#172e29',backgroundColor:'#fff5d9',padding:{x:7,y:5},wordWrap:{width:230},align:'center'}).setOrigin(.5,1).setDepth(50).setVisible(false);this.jardaSpeechUntil=0;this.jardaTrick='roll';this.jardaJumped=false;this.jardaStuntArt=this.add.graphics().setDepth(25);this.jardaStart=2200;this.jardaLap=-1;this.jardaRollAt=Infinity;this.jardaRolling=false;this.reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;this.jardaLabel=this.add.text(1040,config.ground-102,'DžejTý • SKLÁDAČKA',{font:'bold 10px monospace',color:'#f4f5d5',backgroundColor:'#1b3c32'}).setOrigin(.5).setDepth(26);
    this.rabbits=[this.add.image(535,config.ground,'outdoor-rabbit-0'),this.add.image(640,config.ground,'outdoor-rabbit-0')];this.rabbits.forEach(r=>r.setOrigin(.5,1).setDepth(22));
    const branch=this.add.graphics().setDepth(10);branch.lineStyle(8,0x62472d).lineBetween(837,294,780,270).lineBetween(800,281,762,276);branch.lineStyle(2,0x9d7950).lineBetween(837,290,780,267);
    this.it=this.add.image(config.treeX,config.ground,'colleague-idle').setOrigin(.5,1).setDepth(20);this.add.text(config.treeX,config.ground+8,'IT KOLEGA',{font:'bold 9px monospace',color:'#f6f4d7',backgroundColor:'#1a3b32'}).setOrigin(.5,0).setDepth(23);
@@ -74,18 +74,37 @@
    const shootPressed=pressed('shoot');if((down('shoot')||shootPressed)&&this.clock-this.lastShot>240){this.lastShot=this.clock;const shot=this.shots.create(this.player.x+this.facing*22,this.player.y-5,s.weapon).setDepth(28).setScale(1.6).setVelocityX(this.facing*560).setAngularVelocity(500);shot.setData('expires',this.clock+1500);s.tone(500,.04);}for(const shot of this.shots.getChildren().slice())if(this.clock>shot.getData('expires')||shot.x<0||shot.x>960)shot.destroy();
    const near=Math.abs(this.player.x-88)<40&&Math.abs(this.player.body.bottom-config.ground)<20;if(!crouch)this.returnHeld=false;const interactPressed=pressed('interact');if((crouch&&!this.returnHeld||interactPressed)&&near){this.returnHeld=true;this.finish();return;}this.tip.setText(near?'↓ / S / E • ZPĚT DO RECEPCE':'↔ POHYB • ↑ SKOK • ↓ SKRČENÍ • PŘESKOČ JARDU • STŘELBA PRO RADOST');
    const cycle=(this.clock-this.jardaStart)%17000;this.jarda.setVisible(this.clock>=this.jardaStart&&cycle<15300);this.jarda.setX(1040-cycle*config.bikeSpeed/1000).setTexture(`outdoor-jarda-${Math.floor(this.clock/150)%2}`);const lap=Math.floor(Math.max(0,this.clock-this.jardaStart)/17000);
-   if(this.jarda.visible&&lap!==this.jardaLap){this.jardaLap=lap;this.jardaRollAt=!this.reduceMotion&&Math.random()<config.rollChance?this.jardaStart+lap*17000+Phaser.Math.Between(config.rollEarliest,config.rollLatest):Infinity;}
+   if(this.jarda.visible&&lap!==this.jardaLap){this.jardaLap=lap;this.jardaJumped=false;this.jardaTrick=Math.random()<.5?'roll':'backflip';this.jardaRollAt=!this.reduceMotion&&Math.random()<config.rollChance?this.jardaStart+lap*17000+Phaser.Math.Between(config.rollEarliest,config.rollLatest):Infinity;}
    const wasRolling=this.jardaRolling;const rollAge=this.clock-this.jardaRollAt;this.jardaRolling=this.jarda.visible&&rollAge>=0&&rollAge<config.rollDuration;
-   if(wasRolling&&!this.jardaRolling&&this.jarda.visible){this.jardaSpeech.setText(window.ITHeroDialogue.lines('jarda','roll')[0]);this.jardaSpeechUntil=this.clock+6000;}
+   if(wasRolling&&!this.jardaRolling&&this.jarda.visible){this.jardaSpeech.setText(window.ITHeroDialogue.lines('jarda',this.jardaTrick)[0]);this.jardaSpeechUntil=this.clock+6000;}
    this.jardaSpeech.setPosition(Phaser.Math.Clamp(this.jarda.x,135,825),config.ground-115).setVisible(this.jarda.visible&&!this.jardaRolling&&this.clock<this.jardaSpeechUntil);
-   const t=this.jardaRolling?rollAge/config.rollDuration:0;this.jarda.setOrigin(.5,this.jardaRolling?.5:1).setY(this.jardaRolling?config.ground-this.jarda.height/2-Math.sin(t*Math.PI)*config.rollLift:config.ground).setAngle(this.jardaRolling?-360*t*t*(3-2*t):0);
+   const t=this.jardaRolling?rollAge/config.rollDuration:0;this.jarda.setOrigin(.5,this.jardaRolling?.5:1).setY(this.jardaRolling?config.ground-this.jarda.height/2-Math.sin(t*Math.PI)*config.rollLift:config.ground).setAngle(this.jardaRolling?(this.jardaTrick==='backflip'?360:this.jardaTrick==='superman'?0:-360)*t*t*(3-2*t):0);
+   this.jardaStuntArt.clear();this.jarda.setCrop();
+   if(this.jardaRolling&&this.jardaTrick==='superman'){
+    // Retain the moving bicycle, extend the rider horizontally behind the bars.
+    this.jarda.setCrop(0,this.jarda.height*.62,this.jarda.width,this.jarda.height*.38);
+    const g=this.jardaStuntArt,x=this.jarda.x,y=this.jarda.y+18,stretch=Math.sin(t*Math.PI);
+    g.lineStyle(8,0x17252d).lineBetween(x-18,y+5,x+26+stretch*22,y-12);
+    g.lineStyle(7,0x405e77).lineBetween(x+18,y-8,x+48+stretch*27,y-6).lineBetween(x+18,y-5,x+49+stretch*27,y+6);
+    g.lineStyle(10,0x7c8061).lineBetween(x-10,y-13,x+22,y-10);
+    g.lineStyle(5,0x7c8061).lineBetween(x-10,y-10,x-23,y+8);
+    g.fillStyle(0xe4ab7d).fillCircle(x-19,y-19,9);g.fillStyle(0xa5a69c).fillRect(x-28,y-29,16,5);
+    g.lineStyle(2,0x171e23).strokeRect(x-28,y-21,10,5).lineBetween(x-31,y-19,x-18,y-17);
+   }
    this.jardaLabel.setPosition(this.jarda.x,this.jardaRolling?this.jarda.y-105:config.ground-102).setVisible(this.jarda.visible&&!this.jardaRolling);
    // A narrow bicycle/rider silhouette can be cleared by a normal jump.
    const bike=new Phaser.Geom.Rectangle(this.jarda.x-config.bikeHitWidth/2,(this.jardaRolling?this.jarda.y-config.bikeHitHeight/2:config.ground-config.bikeHitHeight),config.bikeHitWidth,config.bikeHitHeight);if(this.jarda.visible&&Phaser.Geom.Intersects.RectangleToRectangle(this.player.body,bike)){this.finish('Tam je provoz zase.');return;}
+   if(this.jarda.visible&&Math.abs(this.player.x-this.jarda.x)<75&&this.player.body.bottom<bike.top)this.jardaJumped=true;
+   for(const shot of this.shots.getChildren().slice()){
+    if(this.jarda.visible&&this.jardaJumped&&!this.jardaRolling&&shot.body.velocity.x<0&&shot.x>=this.jarda.x&&Phaser.Geom.Intersects.RectangleToRectangle(shot.getBounds(),this.jarda.getBounds())){
+     shot.destroy();this.jardaTrick='superman';this.jardaRollAt=this.clock;this.jardaJumped=false;
+    }
+   }
    this.rabbits.forEach((r,i)=>{
     const flight=r.rabbitFlight;if(flight){const t=(this.clock-flight.at)/1000;r.setPosition(flight.x+flight.vx*t,flight.y-config.rabbitKickUp*t+config.rabbitGravity*t*t/2).setAngle(flight.direction*t*720);if(r.x<-60||r.x>1020||r.y<-60||t>2)r.setVisible(false);return;}
     const t=this.clock/1000+i*1.8,hopping=Math.max(0,Math.sin(t*3));r.setPosition(560+i*90+Math.sin(t*.65)*85,config.ground-hopping*24).setTexture(`outdoor-rabbit-${hopping>.4?1:0}`).setFlipX(Math.cos(t*.65)<0);
-    if(Phaser.Geom.Intersects.RectangleToRectangle(this.player.body,r.getBounds())){const direction=Math.sign(r.x-this.player.x)||this.facing;r.rabbitFlight={at:this.clock,x:r.x,y:r.y-r.height/2,vx:direction*config.rabbitKickSpeed,direction};r.setOrigin(.5).setY(r.rabbitFlight.y).setDepth(29);this.source.tone(660,.06,'triangle');}
+    const bikeHit=this.jarda.visible&&Phaser.Geom.Intersects.RectangleToRectangle(bike,r.getBounds());
+    if(bikeHit||Phaser.Geom.Intersects.RectangleToRectangle(this.player.body,r.getBounds())){const direction=bikeHit?-1:Math.sign(r.x-this.player.x)||this.facing;r.rabbitFlight={at:this.clock,x:r.x,y:r.y-r.height/2,vx:direction*config.rabbitKickSpeed,direction};r.setOrigin(.5).setY(r.rabbitFlight.y).setDepth(29);this.source.tone(660,.06,'triangle');}
    });
    this.smoke.clear();this.smokers.forEach((actor,i)=>{const t=((this.clock+i*610)%2400)/2400;this.smoke.fillStyle(0xe1e8d9,(1-t)*.5);this.smoke.fillRect(actor.x+21+Math.sin(t*8)*4,actor.y-55-t*24,3,5);this.smoke.fillRect(actor.x+24+Math.sin(t*7)*3,actor.y-65-t*22,2,4);});
    if(this.clock>=this.nextBird){const i=this.birdIndex++%birdLines.length;this.bubble.setText(birdLines[i]).setVisible(true);this.placeBubble();this.birdUntil=this.clock+4400;this.nextBird=this.clock+8500;if(i===2)this.flightAt=this.clock+1800;}

@@ -171,7 +171,7 @@
   },
   {
     "id": "security_guard",
-    "name": "BEZPEČÁK",
+    "name": "Security master",
     "groups": [
       {
         "id": "combat",
@@ -482,13 +482,27 @@
   },
   {
     "id": "jarda",
-    "name": "JARDA",
+    "name": "DžejTý",
     "groups": [
       {
         "id": "roll",
         "label": "Po kotrmelci s kolem",
         "lines": [
           "to bylo v podstatě o fous."
+        ]
+      },
+      {
+        "id": "backflip",
+        "label": "Po backflipu",
+        "lines": [
+          "příště jedu vlakem."
+        ]
+      },
+      {
+        "id": "superman",
+        "label": "Po přeskočení a zásahu zezadu",
+        "lines": [
+          "Korpič blaznivej."
         ]
       }
     ]

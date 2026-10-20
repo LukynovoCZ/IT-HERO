@@ -5,7 +5,7 @@
   'use strict';
   const profiles = {
     security_guard: {
-      id:'security_guard',name:'BEZPEČÁK',enabled:true,idleDuration:650,movementCycle:3400,
+      id:'security_guard',name:'Security master',enabled:true,idleDuration:650,movementCycle:3400,
       health:4,speed:45,patrol:24,attackInterval:1900,attackRange:380,
       attackType:'office-weapons',projectile:'default',damage:1,score:100,
       contactPose:'stop',attackPose:'radio',contactEffect:'firewall',

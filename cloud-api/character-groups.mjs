@@ -94,7 +94,7 @@ export const catalog=[
   },
   {
     "id": "security_guard",
-    "name": "BEZPEČÁK",
+    "name": "Security master",
     "groups": [
       {
         "id": "combat",
@@ -252,11 +252,19 @@ export const catalog=[
   },
   {
     "id": "jarda",
-    "name": "JARDA",
+    "name": "DžejTý",
     "groups": [
       {
         "id": "roll",
         "label": "Po kotrmelci s kolem"
+      },
+      {
+        "id": "backflip",
+        "label": "Po backflipu"
+      },
+      {
+        "id": "superman",
+        "label": "Po přeskočení a zásahu zezadu"
       }
     ]
   }
