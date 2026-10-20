@@ -1,4 +1,4 @@
 {
-  "request": "corporate-dialogue-groups-0.22.0",
-  "purpose": "Publish added dialogue event groups after PR merge; no data changes"
+  "request": "player-avatars-0.23.0",
+  "purpose": "Add shared score avatar IDs with a non-destructive auxiliary table"
 }

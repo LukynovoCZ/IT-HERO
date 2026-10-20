@@ -2,7 +2,7 @@
 (()=>{'use strict';if(typeof Phaser==='undefined')return;
  const config={doorX:130,ground:450,cdX:[290,585,880],coffeeX:735,treeX:790,birdY:269,bikeSpeed:72,bikeHitWidth:96,bikeHitHeight:60};
  const birdLines=window.ITHeroDialogue.lines('jay','ambient');
- function preload(scene,charactersOnly=false){if(!charactersOnly)scene.load.image('outdoor-background','assets/outdoor/courtyard.png?v=0.21.0');scene.load.image('outdoor-jarda-source','assets/outdoor/jarda-poses.png?v=0.22.0');scene.load.image('outdoor-npc-source','assets/outdoor/characters.png?v=0.21.0');}
+ function preload(scene,charactersOnly=false){if(!charactersOnly)scene.load.image('outdoor-background','assets/outdoor/courtyard.png?v=0.21.0');scene.load.image('outdoor-jarda-source','assets/outdoor/jarda-poses.png?v=0.23.0');scene.load.image('outdoor-npc-source','assets/outdoor/characters.png?v=0.21.0');}
  function atlasTextures(scene){
   if(['outdoor-jarda-0','outdoor-jarda-1','outdoor-smoker-0','outdoor-smoker-1','outdoor-smoker-2','outdoor-jay'].every(key=>scene.textures.exists(key)))return;
   if(!scene.textures.exists('outdoor-npc-source'))return;

@@ -1,0 +1,2 @@
+// Generated from avatars.js; stable IDs, never arbitrary URLs.
+export const avatarIds=["hero","secretary_blonde","secretary_black","secretary_brown","union","manager","old_it","specialist","security_guard","hr_manager","design_manager","sap_integrator","it_colleague","old_badger","dbpm","gen_z_girl","gen_z_boy","jarda","smoker_grey","smoker_brown","smoker_woman","jay","rabbit_one","rabbit_two"];

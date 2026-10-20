@@ -39,7 +39,7 @@ export async function deploy({env=process.env,fetchImpl=fetch,log=console.log}={
  const form=new FormData();
  const metadata={main_module:'worker.mjs',compatibility_date:'2026-10-01',keep_bindings:['secret_text'],bindings:[{type:'d1',name:'DB',id:database.uuid},{type:'plain_text',name:'ALLOWED_ORIGIN',text:'https://lukynovocz.github.io'}]};
  form.set('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
- for(const name of ['worker.mjs','character-groups.mjs'])form.set(name,new Blob([await fs.readFile(path.join(root,'cloud-api',name))],{type:'application/javascript+module'}),name);
+ for(const name of ['worker.mjs','character-groups.mjs','avatar-ids.mjs'])form.set(name,new Blob([await fs.readFile(path.join(root,'cloud-api',name))],{type:'application/javascript+module'}),name);
  await api(`/workers/scripts/${workerName}`,{method:'PUT',form});
  await api(`/workers/scripts/${workerName}/secrets`,{method:'PUT',body:{name:'ADMIN_TOKEN',type:'secret_text',text:admin}});
  await api(`/workers/scripts/${workerName}/subdomain`,{method:'POST',body:{enabled:true}});
