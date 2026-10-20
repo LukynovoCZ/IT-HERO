@@ -62,4 +62,4 @@ export async function deployPublicCopy(){
   console.log('Neutral copy deployed; same-origin API, shared data and moderation verified. Address stored in encrypted receipt only.');
  }finally{await fs.rm(directory,{recursive:true,force:true});}
 }
-if(process.argv[1]===fileURLToPath(import.meta.url))deployPublicCopy().catch(e=>{console.error(e.message);process.exitCode=1;});
+if(process.argv[1]===fileURLToPath(import.meta.url))deployPublicCopy().catch(e=>{console.error(`::error title=Neutral copy deployment::${e.message.replace(/%/g,'%25').replace(/\r/g,'%0D').replace(/\n/g,'%0A')}`);process.exitCode=1;});
