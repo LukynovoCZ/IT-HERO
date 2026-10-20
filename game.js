@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.21.2 – mini plošinovka v Phaser 3.
+ * IT HERO 0.22.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -43,7 +43,6 @@
   ];
 
   const OLD_HELPER_TIMING = {offerAt:1800,visitDuration:6500,panelDuration:7000};
-  const OLD_HELPER_LINES = Object.fromEntries(['beer','hotdog','peek'].map(key=>[key,window.ITHeroDialogue.lines('old_it',key)]));
 
   const DEATH_LINES = window.ITHeroDialogue.lines('hero','death');
 
@@ -111,6 +110,7 @@
       this.createHUD();
       this.createOverlay();
       this.posters = window.ITHeroPosters.mount(this, FLOORS);
+      this.dialogue = ITHeroDialogue.create(this);
       this.pacing = window.ITHeroGameplay.create(this, FLOORS, !!data.resumeCheckpoint);
       this.genZ = window.ITHeroGenZ.create(this, FLOORS);
       ITHeroFinalManager.textures(this);
@@ -374,17 +374,12 @@
       const sprite = this.add.sprite(x, FLOORS[floor], source === 'desk' ? 'old-it-crouch' : 'old-it').setOrigin(0.5,1).setDepth(source === 'desk' ? 9 : 20);
       const doorway = source === 'lift' ? this.add.rectangle(x,FLOORS[floor]-73,82,146,0x152a25).setDepth(7) : null;
       this.helperVisit = {floor,source,kind,x,dropX,sprite,doorway,started:this.playTime,dropped:false};
-      this.sayOldHelper(this.helperVisit, 'peek');
+      this.helperVisit.usePeek=Math.random()<.35;
       this.nextHelperAt = this.playTime + Phaser.Math.Between(24000,32000);
     }
 
     sayOldHelper(visit, category) {
-      visit.speech?.destroy();
-      const line = Phaser.Utils.Array.GetRandom(OLD_HELPER_LINES[category]);
-      visit.speech = this.add.text(Phaser.Math.Clamp(visit.sprite.x,150,810),visit.sprite.y-Math.max(visit.sprite.displayHeight+14,145),line,
-        {font:'bold 12px monospace',color:'#e9f6cd',backgroundColor:'#173c2e',
-          wordWrap:{width:260},align:'center',padding:{x:8,y:6}}).setOrigin(0.5,1).setDepth(106);
-      this.posters.showMessage(`STARÝ AJŤÁK\n${line}`, OLD_HELPER_TIMING.panelDuration);
+      visit.speech=this.dialogue.say(visit.sprite,'old_it',category,{replace:true,priority:true,persist:true,duration:5500});
     }
 
     updateHelper(delta) {
@@ -394,7 +389,6 @@
         const age = this.playTime - visit.started;
         visit.sprite.setAlpha(Math.min(1,age/300,Math.max(0,(OLD_HELPER_TIMING.visitDuration-age)/500)));
         if (visit.floor !== this.floor || age > OLD_HELPER_TIMING.visitDuration) {
-          visit.speech?.destroy();
           visit.sprite.destroy();
           if (visit.doorway) visit.doorway.destroy();
           this.helperVisit = null;
@@ -405,7 +399,7 @@
           item.setData('expires',this.playTime + 11000);
           const label = this.add.text(visit.dropX,FLOORS[this.floor]-98,visit.kind === 'beer' ? 'PLZEŇ • PLNÉ ZDRAVÍ' : 'PÁREK • PLNÉ ZDRAVÍ', {font:'bold 10px monospace',color:'#f4e3a2',backgroundColor:'#173c2e',padding:{x:4,y:3}}).setOrigin(0.5).setDepth(105);
           item.setData('label',label);
-          this.sayOldHelper(visit, visit.kind);
+          this.sayOldHelper(visit, visit.usePeek?'peek':visit.kind);
           this.tone(680,0.12,'triangle');
         }
       } else if (this.playTime >= this.nextHelperAt) this.spawnHelper();
@@ -748,15 +742,7 @@
     }
 
     enemyDialogue(enemy, group) {
-      if (this.gameState !== 'playing' || !enemy.active || enemy.floorIndex !== this.floor) return;
-      if (this.playTime < (enemy.nextDialogueAt || 0)) return;
-      const lines = window.ITHeroDialogue.lines(enemy.kind, group);
-      if (!lines.length) return;
-      const line = Phaser.Utils.Array.GetRandom(lines);
-      enemy.nextDialogueAt = this.playTime + 7000;
-      this.popText(Phaser.Math.Clamp(enemy.x, 160, 800), enemy.y - 65, line, '#eaf4ff', 3500);
-      const name = window.ITHeroDialogue.characters.find(c => c.id === enemy.kind).name;
-      this.posters.showMessage(`${name}\n${line}`, 7000);
+      return this.dialogue.say(enemy,enemy.kind,group);
     }
 
     enemyContact(enemy) {
@@ -795,6 +781,7 @@
         this.specialistAttack(enemy, Math.abs(this.player.x-enemy.x)<135 ? 'rainbow-spray' : 'unicorn');
         return;
       }
+      if(enemy.kind==='union')this.enemyDialogue(enemy,'attack');
       enemy.setTexture(enemy.visualFrames.attack);enemy.poseUntil=this.time.now+350;
       const direction = this.player.x >= enemy.x ? 1 : -1;
       const near = Math.abs(this.player.x - enemy.x) < 180;
@@ -836,6 +823,7 @@
       shot.destroy();
       this.pacing.cancel(enemy);
       enemy.hp -= damage;
+      if(enemy.kind==='union'){enemy.dialogueHits=(enemy.dialogueHits||0)+1;this.enemyDialogue(enemy,enemy.dialogueHits>1?'repeated_hit':'hit');}
       if(enemy.kind==='manager')ITHeroFinalManager.cancel(enemy,this.playTime);
       if(enemy.kind==='union'&&this.playTime>(enemy.nextCoffeeDrop||0)&&Math.random()<.3){enemy.nextCoffeeDrop=this.playTime+12000;this.dropUnionCoffee(enemy);}
       if(!enemy.profile){enemy.hitUntil=this.time.now+160;enemy.setTexture(enemy.visualFrames.hit);}
@@ -949,6 +937,7 @@
         this.isMuted = !this.isMuted;
         this.tipText.setText(this.isMuted ? 'ZVUK VYPNUT (M)' : 'ZVUK ZAPNUT (M)');
       }
+      this.dialogue.tick(delta);
       this.posters.update(this.player, this.floor, this.gameState === 'playing' && !this.transitioning, delta);
       this.pacing.tick(delta);
       this.dbpm.tick(delta);

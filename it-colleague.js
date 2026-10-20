@@ -48,7 +48,7 @@
       return !old||old.floor!==floor||Math.abs(old.dropX-x)>95;
     }
     function remove(item){item.getData('label')?.destroy();item.destroy();}
-    function clearVisit(){const v=state.visit;if(!v)return;v.sprite.destroy();v.door?.destroy();v.bubble?.destroy();state.visit=null;}
+    function clearVisit(){const v=state.visit;if(!v)return;v.sprite.destroy();v.door?.destroy();state.visit=null;}
     function changeFloor(){clearVisit();items.getChildren().slice().forEach(remove);}
     function spawn(options={}){
       if(state.visit||scene.gameState!=='playing'||scene.transitioning)return false;
@@ -65,13 +65,7 @@
       state.visit={floor,source,kind,x,dropX,sprite,door,started:state.clock,duration:Phaser.Math.Between(config.visitMin,config.visitMax),dropped:false,bubble:null};schedule();return true;
     }
     function bubble(v){
-      const x=Phaser.Math.Clamp(v.dropX,135,825),y=floors[v.floor]-115;
-      const container=scene.add.container(x,y).setDepth(106);
-      const line=Phaser.Utils.Array.GetRandom(quotes[v.kind]);
-      scene.posters.showMessage(`IT KOLEGA\n${line}`,7000);
-      const text=scene.add.text(0,0,line,{font:'bold 11px monospace',color:'#18313a',backgroundColor:'#fff4db',wordWrap:{width:200},align:'center',padding:{x:8,y:6}}).setOrigin(0.5,1);
-      const tail=scene.add.graphics().fillStyle(0xfff4db).fillTriangle(-5,0,5,0,0,8);
-      container.add([text,tail]);return container;
+      return scene.dialogue.say(v.sprite,'it_colleague',v.kind,{priority:true,persist:true});
     }
     function collect(item){
       if(scene.gameState!=='playing'||scene.transitioning||!item.active||item.getData('floor')!==scene.floor)return;

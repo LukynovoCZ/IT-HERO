@@ -61,6 +61,7 @@
     if(distance>c.range||Math.abs(scene.player.body.bottom-e.body.bottom)>100)return;
     const type=forced||(distance<=c.meleeRange?'melee':distance<=c.helmetRange?'helmet':'pens');
     const direction=scene.player.x>=e.x?1:-1;e.facingDirection=direction;e.sapBusy=true;
+    scene.dialogue?.say(e,'sap_integrator',type==='melee'?'melee':type==='pens'?'strong':'combat');
     e.sapNextAttack=scene.time.now+(type==='melee'?c.meleeCooldown:type==='helmet'?c.helmetCooldown:c.penCooldown);
     e.setVelocityX(0);e.setAngle(0);pose(e,type==='melee'?'melee':'ranged');
     e.sapWarning=scene.add.text(e.x,e.body.top-20,'!',{font:'bold 22px monospace',color:'#ffda69',stroke:'#172b28',strokeThickness:4}).setOrigin(.5).setDepth(110);
@@ -102,7 +103,7 @@
       e.sapNextQuote=time+config.quoteInterval;
     }
     if(time<e.hitUntil){e.setVelocityX(0);pose(e,'hit');return;}
-    if(time>e.sapNextQuote&&Math.abs(scene.player.x-e.x)<450){scene.popText(e.x,e.y-55,Phaser.Utils.Array.GetRandom(quotes),'#b6efca');e.sapNextQuote=time+config.quoteInterval+Math.random()*2500;}
+    if(time>e.sapNextQuote&&Math.abs(scene.player.x-e.x)<450){scene.dialogue?.say(e,'sap_integrator','combat');e.sapNextQuote=time+config.quoteInterval+Math.random()*2500;}
     if(e.sapBusy){e.setVelocityX(0);return;}
     const distance=Math.abs(scene.player.x-e.x);
     if(distance<110&&time<e.sapNextAttack-650){e.direction=scene.player.x>e.x?-1:1;}
@@ -118,6 +119,6 @@
   ITHeroEnemyCatalog.placements.push({id:'sap_integrator',floor:5,x:650});
   window.ITHeroSAP={profile,config,quotes,textures,update,attack,cancel,
     defeat(scene,e){cancel(e);e.sapHud?.destroy();e.sapIntro?.destroy();},
-    hit(scene,e){cancel(e);e.sapNextAttack=Math.max(e.sapNextAttack||0,scene.time.now+650);}
+    hit(scene,e){scene.dialogue?.say(e,'sap_integrator','hit');cancel(e);e.sapNextAttack=Math.max(e.sapNextAttack||0,scene.time.now+650);}
   };
 })();

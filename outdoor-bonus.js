@@ -2,11 +2,11 @@
 (()=>{'use strict';if(typeof Phaser==='undefined')return;
  const config={doorX:130,ground:450,cdX:[290,585,880],coffeeX:735,treeX:790,birdY:269,bikeSpeed:72,bikeHitWidth:96,bikeHitHeight:60};
  const birdLines=window.ITHeroDialogue.lines('jay','ambient');
- function preload(scene,charactersOnly=false){if(!charactersOnly)scene.load.image('outdoor-background','assets/outdoor/courtyard.png?v=0.21.0');scene.load.image('outdoor-npc-source','assets/outdoor/characters.png?v=0.21.0');}
+ function preload(scene,charactersOnly=false){if(!charactersOnly)scene.load.image('outdoor-background','assets/outdoor/courtyard.png?v=0.21.0');scene.load.image('outdoor-jarda-source','assets/outdoor/jarda-poses.png?v=0.22.0');scene.load.image('outdoor-npc-source','assets/outdoor/characters.png?v=0.21.0');}
  function atlasTextures(scene){
   if(['outdoor-jarda-0','outdoor-jarda-1','outdoor-smoker-0','outdoor-smoker-1','outdoor-smoker-2','outdoor-jay'].every(key=>scene.textures.exists(key)))return;
   if(!scene.textures.exists('outdoor-npc-source'))return;
-  const image=scene.textures.get('outdoor-npc-source').getSourceImage(),scratch=document.createElement('canvas');scratch.width=image.width;scratch.height=image.height;const sc=scratch.getContext('2d',{willReadFrequently:true});sc.drawImage(image,0,0);const imageData=sc.getImageData(0,0,image.width,image.height),pixels=imageData.data;for(let i=3;i<pixels.length;i+=4)pixels[i]=pixels[i]>160?255:0;sc.putImageData(imageData,0,0);const cw=Math.floor(image.width/3),ch=Math.floor(image.height/2);
+  const image=scene.textures.get('outdoor-npc-source').getSourceImage(),scratch=document.createElement('canvas');scratch.width=image.width;scratch.height=image.height;const sc=scratch.getContext('2d',{willReadFrequently:true});sc.drawImage(image,0,0);if(scene.textures.exists('outdoor-jarda-source')){const jarda=scene.textures.get('outdoor-jarda-source').getSourceImage(),w=Math.floor(image.width/3)*2,h=Math.floor(image.height/2);sc.clearRect(0,0,w,h);sc.drawImage(jarda,0,0,jarda.width*2/3,jarda.height/2,0,0,w,h);}const imageData=sc.getImageData(0,0,image.width,image.height),pixels=imageData.data;for(let i=3;i<pixels.length;i+=4)pixels[i]=pixels[i]>160?255:0;sc.putImageData(imageData,0,0);const cw=Math.floor(image.width/3),ch=Math.floor(image.height/2);
   // Find each sprite's main connected silhouette, ignoring neighbouring-cell
   // flecks and generator shadows that otherwise shift the wheel/foot baseline.
   const bounds=[];for(let i=0;i<6;i++){

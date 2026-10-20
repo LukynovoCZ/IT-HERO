@@ -8,7 +8,6 @@
     laptop:{speed:245,launchY:-130,gravity:360,spin:330,lifetime:1900},
     baguette:{speed:315,launchY:-165,gravity:500,spin:520,lifetime:1500},
     demandMin:12000,demandMax:18000,demandWindup:500,demandLifetime:5000,demandHealth:2,
-    speechDuration:4200,speechCooldown:6500,
     placements:[{floor:4,x:140,enabled:true},{floor:8,x:820,health:8,speed:105,enabled:false}]};
   const frame=index=>[index*160,0,160,96];
   const profile={id:'dbpm',name:'PROJEKŤÁK DBPM',enabled:true,behavior:'dbpm',health:config.health,
@@ -75,14 +74,9 @@
       if(state.demand?.owner===e)removeDemand();
       if(e.active){e.setVelocity(0,0);e.setAngle(0);}
     }
-    function say(e,group,force=false){
-      if(!sameFloor(e)||(!force&&state.clock<e.dbpm.nextSpeech))return;
-      const lines=ITHeroDialogue.lines('dbpm',group);if(!lines.length)return;
-      const line=Phaser.Utils.Array.GetRandom(lines);
-      e.dbpm.speech?.destroy();e.dbpm.speech=scene.add.text(Phaser.Math.Clamp(e.x,135,825),e.body.top-16,line,
-        {font:'bold 12px monospace',color:'#f5e7b6',backgroundColor:'#183830',wordWrap:{width:235},align:'center',padding:{x:7,y:5}}).setOrigin(.5,1).setDepth(112);
-      e.dbpm.speechUntil=state.clock+config.speechDuration;e.dbpm.nextSpeech=state.clock+config.speechCooldown;
-      scene.posters.showMessage(`PROJEKŤÁK DBPM\n${line}`,7000);
+    function say(e,group){
+      if(!sameFloor(e))return;
+      e.dbpm.speech=scene.dialogue.say(e,'dbpm',group)||e.dbpm.speech;
     }
     function track(shot,e,lifetime){
       shot.setData('dbpmOwner',e).setData('floor',e.floorIndex).setData('damage',1)
@@ -146,7 +140,7 @@
       if(type==='demand')e.dbpm.nextDemand=state.clock+randomInterval();
       else if(type!=='melee')e.dbpm.throwCount++;
       pose(e,type==='demand'?'demand':type==='melee'?'melee':`throw_${type}`);e.setVelocityX(0);
-      say(e,type==='demand'?'demand':'attack',type==='demand');return true;
+      say(e,type==='demand'?'demand':'attack');return true;
     }
     const manager={state,actors,demands,config,hud,healthLabel:label,say,spawnDemand,demandPosition,
       isReserved(x,floor){const d=state.demand;return !!d&&d.floor===floor&&Math.abs(d.image.x-x)<60;},
@@ -188,7 +182,7 @@
       },
       defeat(e,pose){
         clear(e);e.defeated=true;e.body.enable=false;pose(e,'defeat');shatter(e.x,e.y-25);
-        scene.popText(e.x,e.y-75,'SCOPE CHANGE!','#ffe3a0',1800);state.deaths.set(e,state.clock+650);
+        scene.dialogue.say(e,'dbpm','defeat',{replace:true,priority:true,persist:true});state.deaths.set(e,state.clock+650);
       },
       tick(delta){
         if(state.destroyed)return;
@@ -206,10 +200,7 @@
           }
           if(!e.dbpm.onFloor&&active){e.dbpm.onFloor=true;e.dbpm.nextAttack=state.clock+config.initialDelay;e.dbpm.nextDemand=state.clock+randomInterval();e.dbpm.nextSpeech=state.clock+1500;}
           e.setActive(true).setVisible(true);e.body.enable=true;
-          if(e.dbpm.speech){
-            e.dbpm.speech.setVisible(active).setPosition(Phaser.Math.Clamp(e.x,135,825),e.body.top-16);
-            if(state.clock>=e.dbpm.speechUntil){e.dbpm.speech.destroy();e.dbpm.speech=null;}
-          }
+
           e.dbpm.attack?.warning.setVisible(active&&!e.dbpm.attack.fired);
         }
         for(const shot of [...state.shots]){

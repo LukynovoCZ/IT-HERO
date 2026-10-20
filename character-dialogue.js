@@ -33,7 +33,10 @@
         "label": "Zvuk při kontaktu",
         "lines": [
           "ÁÁÁÁ!",
-          "Šéfeee"
+          "Šéfeee",
+          "kdo je tam za IT? ",
+          "ještě jednou, pro blondýnu",
+          "a máš to schválený?"
         ]
       }
     ]
@@ -54,6 +57,27 @@
           "Ještě jednou a máme pohotovost!",
           "Tady nejste v Německu pane kolego."
         ]
+      },
+      {
+        "id": "hit",
+        "label": "Po zásahu",
+        "lines": [
+          "to je jeden faul za druhým"
+        ]
+      },
+      {
+        "id": "attack",
+        "label": "Před útokem",
+        "lines": [
+          "ani očko nenasadíš"
+        ]
+      },
+      {
+        "id": "repeated_hit",
+        "label": "Opakované poškození",
+        "lines": [
+          "kolegové byli velmi rozezleni a zloba možná bude mnohem větší"
+        ]
       }
     ]
   },
@@ -68,6 +92,28 @@
           "DUP! DUP!",
           "Pomazeš do wobu lotře.",
           "Saša jede!"
+        ]
+      },
+      {
+        "id": "intro",
+        "label": "Zahájení finálního souboje",
+        "lines": [
+          "teď přijde disklejmr z mojí strany"
+        ]
+      },
+      {
+        "id": "special",
+        "label": "Příprava speciálního útoku",
+        "lines": [
+          "potřebuji pevný stejtment",
+          "tohle musí mít jasné kontury"
+        ]
+      },
+      {
+        "id": "phase",
+        "label": "Změna fáze souboje",
+        "lines": [
+          "je třeba zakotvit definitivum"
         ]
       }
     ]
@@ -101,7 +147,9 @@
           "Hele…ryba",
           "stál a čuměl",
           "Ať mi skočej na cara",
-          "Jdu se kouknout, jestli venku prší "
+          "Jdu se kouknout, jestli venku prší ",
+          "mám v <> nějaký péří",
+          "koukám, zase jedeme na mrtvém koni?"
         ]
       }
     ]
@@ -131,7 +179,9 @@
         "lines": [
           "Kačka12 na V8",
           "No jen aby to nebyla Remíza.",
-          "No user, no problém."
+          "No user, no problém.",
+          "Naše stanovisko je jasné \"NE\"!",
+          "zjisti mi"
         ]
       }
     ]
@@ -146,7 +196,10 @@
         "lines": [
           "Kde seš, ty lumpiku?",
           "Na slovíčko panáčku.",
-          "Máte někdo kompas?"
+          "Máte někdo kompas?",
+          "Je k dispozici nějaký specialista na danou problematiku?",
+          "máme pro vás značnou verbální podporu",
+          "mám vás snad vodit za ručičku?"
         ]
       }
     ]
@@ -159,7 +212,9 @@
         "id": "combat",
         "label": "Při útoku a kontaktu",
         "lines": [
-          "Tohle ti změní paradigma."
+          "Tohle ti změní paradigma.",
+          "koukejte vyleštit ty prezentace",
+          "pěkně připravená schůzka"
         ]
       },
       {
@@ -167,7 +222,15 @@
         "label": "Při kontaktu",
         "lines": [
           "Uhni citróne!",
-          "Už máš diplom surfaře?"
+          "Už máš diplom surfaře?",
+          "teď se buď ztrácím, nebo s vámi úplně nesouhlasím"
+        ]
+      },
+      {
+        "id": "ambient",
+        "label": "Běžné komentáře",
+        "lines": [
+          "exteriér je obecný urban"
         ]
       }
     ]
@@ -186,7 +249,30 @@
           "SAP TO VYŘEŠÍ!",
           "JEZDĚTE NA KOLE!",
           "KDE MÁTE ROADMAPU?",
-          "NEJDŘÍV TO ALAJNUJEME!"
+          "NEJDŘÍV TO ALAJNUJEME!",
+          "elajnovat se kolego, elajnovat",
+          "byla vytyčena cesta"
+        ]
+      },
+      {
+        "id": "hit",
+        "label": "Po zásahu",
+        "lines": [
+          "toto není férové srovnání"
+        ]
+      },
+      {
+        "id": "strong",
+        "label": "Silný útok",
+        "lines": [
+          "Jelikož tomu nerozumíte, tak to nemůžete chápat"
+        ]
+      },
+      {
+        "id": "melee",
+        "label": "Nápřah pumpičkou",
+        "lines": [
+          "dívám se na to holisticky"
         ]
       }
     ]
@@ -202,7 +288,8 @@
           "restart v kelímku?",
           "Nejdřív kafe. Pak zázraky.",
           "Nazdar chlapíci!",
-          "Klídek, všechno dobře dopadne."
+          "Klídek, všechno dobře dopadne.",
+          "maká za mě mikina a bágl"
         ]
       },
       {
@@ -212,7 +299,8 @@
           "Sisinka. Hotfix trudomyslnosti",
           "Cukr a kafe, víc není třeba ",
           "Nazdar chlapíci!",
-          "Klídek, všechno dobře dopadne."
+          "Klídek, všechno dobře dopadne.",
+          "Motáme se v kruzích, pane Frodo"
         ]
       }
     ]
@@ -239,7 +327,22 @@
         "label": "Po zablokování střely",
         "lines": [
           "NA MĚ SI NEPŘIJDEŠ!",
-          "TO MĚ NEROZHODÍ!"
+          "TO MĚ NEROZHODÍ!",
+          "tak to je naprostá blbost"
+        ]
+      },
+      {
+        "id": "rage",
+        "label": "Po pěti zablokovaných střelách",
+        "lines": [
+          "pár ran schytal, ale odešel po čtyřech"
+        ]
+      },
+      {
+        "id": "pause",
+        "label": "Při zastavení",
+        "lines": [
+          "přijde mi zbytečné dělat teď nějaké rychlé pohyby"
         ]
       }
     ]
@@ -253,7 +356,11 @@
         "label": "Pronásledování",
         "lines": [
           "teraz som plně vytížený",
-          "som šel oba po povrche"
+          "som šel oba po povrche",
+          "sedá si to",
+          "jsem epyk ounr",
+          "a teď budeme čelendžovat zákazníka",
+          "domluvili jsme se na Follow up"
         ]
       },
       {
@@ -261,14 +368,18 @@
         "label": "Útok",
         "lines": [
           "u zákazníka máte připraven cervenej koberec",
-          "navrhuji další meeting na tohle téma"
+          "navrhuji další meeting na tohle téma",
+          "nový scénář který budeme brousit do finalního diamantu",
+          "valídní podpora projektu je zajištěna na verbální úrovni ",
+          "ok, pošlu asi email"
         ]
       },
       {
         "id": "hit",
         "label": "Zásah",
         "lines": [
-          "teď už jen doleštime ten diamant"
+          "teď už jen doleštime ten diamant",
+          "to je dobrej odrazovej můstek..."
         ]
       },
       {
@@ -277,6 +388,13 @@
         "lines": [
           "Dycky DEMAND!",
           "Tak uděláme novou tabulku,ne?"
+        ]
+      },
+      {
+        "id": "defeat",
+        "label": "Při porážce",
+        "lines": [
+          "išiel som viac iba po povrche"
         ]
       }
     ]

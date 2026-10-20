@@ -47,7 +47,7 @@ require('node:fs').mkdirSync('/tmp/it-hero-tests',{recursive:true});
  await p.waitForFunction(()=>window.__badger.stomped);
  const stomp=await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');return {score:s.score,bounce:s.player.body.velocity.y,body:window.__badger.body.enable,phase:window.__badger.phase};});
  assert.equal(stomp.score,score+150);assert(stomp.bounce<0);assert.equal(stomp.body,false);assert.equal(stomp.phase,'sink');
- await p.waitForFunction(()=>window.__badger.texture.key==='badger-stomp');await p.screenshot({path:'/tmp/it-hero-tests/badger-sink.png'});
+ await p.waitForFunction(()=>window.__badger.texture.key===ITHeroAppearance.texture(window.__testGame.scene.getScene('ITGame'),'badger-stomp'));await p.screenshot({path:'/tmp/it-hero-tests/badger-sink.png'});
  await p.waitForFunction(()=>!window.__testGame.scene.getScene('ITGame').oldBadger.state.entity);
  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').score),score+150);
  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').oldBadger.group.countActive()),0);

@@ -154,6 +154,7 @@
         if(time<e.contactUntil||time<e.poseUntil){e.setVelocityX(0);if(e.kind==='design_manager')pose(e,time<e.contactUntil?(Math.floor(time/100)%2?'scream':'scream_alt'):time<e.poseUntil-170?'golf':'golf_follow');return;}
         if(e.x<e.baseX-e.patrol)e.direction=1;
         if(e.x>e.baseX+e.patrol)e.direction=-1;
+        if(e.kind==='design_manager'&&time>(e.nextAmbientAt||0)&&Math.abs(e.x-scene.player.x)<450){e.nextAmbientAt=time+14000;scene.enemyDialogue?.(e,'ambient');}
         const resting=time%(e.profile.movementCycle||3400)<(e.profile.idleDuration||0);
         e.facingDirection=e.direction;
         e.setVelocityX(resting?0:e.direction*e.profile.speed);

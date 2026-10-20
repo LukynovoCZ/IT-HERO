@@ -1,0 +1,202 @@
+[
+  {
+    "character": "dbpm",
+    "group": "chase",
+    "line": "sedá si to"
+  },
+  {
+    "character": "dbpm",
+    "group": "chase",
+    "line": "jsem epyk ounr"
+  },
+  {
+    "character": "dbpm",
+    "group": "chase",
+    "line": "a teď budeme čelendžovat zákazníka"
+  },
+  {
+    "character": "dbpm",
+    "group": "chase",
+    "line": "domluvili jsme se na Follow up"
+  },
+  {
+    "character": "dbpm",
+    "group": "attack",
+    "line": "nový scénář který budeme brousit do finalního diamantu"
+  },
+  {
+    "character": "dbpm",
+    "group": "attack",
+    "line": "valídní podpora projektu je zajištěna na verbální úrovni "
+  },
+  {
+    "character": "dbpm",
+    "group": "attack",
+    "line": "ok, pošlu asi email"
+  },
+  {
+    "character": "dbpm",
+    "group": "hit",
+    "line": "to je dobrej odrazovej můstek..."
+  },
+  {
+    "character": "dbpm",
+    "group": "defeat",
+    "line": "išiel som viac iba po povrche"
+  },
+  {
+    "character": "sap_integrator",
+    "group": "combat",
+    "line": "elajnovat se kolego, elajnovat"
+  },
+  {
+    "character": "sap_integrator",
+    "group": "melee",
+    "line": "dívám se na to holisticky"
+  },
+  {
+    "character": "sap_integrator",
+    "group": "combat",
+    "line": "byla vytyčena cesta"
+  },
+  {
+    "character": "sap_integrator",
+    "group": "hit",
+    "line": "toto není férové srovnání"
+  },
+  {
+    "character": "sap_integrator",
+    "group": "strong",
+    "line": "Jelikož tomu nerozumíte, tak to nemůžete chápat"
+  },
+  {
+    "character": "design_manager",
+    "group": "combat",
+    "line": "koukejte vyleštit ty prezentace"
+  },
+  {
+    "character": "design_manager",
+    "group": "combat",
+    "line": "pěkně připravená schůzka"
+  },
+  {
+    "character": "design_manager",
+    "group": "contact",
+    "line": "teď se buď ztrácím, nebo s vámi úplně nesouhlasím"
+  },
+  {
+    "character": "design_manager",
+    "group": "ambient",
+    "line": "exteriér je obecný urban"
+  },
+  {
+    "character": "manager",
+    "group": "intro",
+    "line": "teď přijde disklejmr z mojí strany"
+  },
+  {
+    "character": "manager",
+    "group": "special",
+    "line": "potřebuji pevný stejtment"
+  },
+  {
+    "character": "manager",
+    "group": "phase",
+    "line": "je třeba zakotvit definitivum"
+  },
+  {
+    "character": "manager",
+    "group": "special",
+    "line": "tohle musí mít jasné kontury"
+  },
+  {
+    "character": "union",
+    "group": "hit",
+    "line": "to je jeden faul za druhým"
+  },
+  {
+    "character": "union",
+    "group": "attack",
+    "line": "ani očko nenasadíš"
+  },
+  {
+    "character": "union",
+    "group": "repeated_hit",
+    "line": "kolegové byli velmi rozezleni a zloba možná bude mnohem větší"
+  },
+  {
+    "character": "old_badger",
+    "group": "rage",
+    "line": "pár ran schytal, ale odešel po čtyřech"
+  },
+  {
+    "character": "old_badger",
+    "group": "pause",
+    "line": "přijde mi zbytečné dělat teď nějaké rychlé pohyby"
+  },
+  {
+    "character": "old_badger",
+    "group": "block",
+    "line": "tak to je naprostá blbost"
+  },
+  {
+    "character": "old_it",
+    "group": "peek",
+    "line": "mám v <> nějaký péří"
+  },
+  {
+    "character": "old_it",
+    "group": "peek",
+    "line": "koukám, zase jedeme na mrtvém koni?"
+  },
+  {
+    "character": "it_colleague",
+    "group": "coffee",
+    "line": "maká za mě mikina a bágl"
+  },
+  {
+    "character": "it_colleague",
+    "group": "candy",
+    "line": "Motáme se v kruzích, pane Frodo"
+  },
+  {
+    "character": "hr_manager",
+    "group": "combat",
+    "line": "Je k dispozici nějaký specialista na danou problematiku?"
+  },
+  {
+    "character": "hr_manager",
+    "group": "combat",
+    "line": "máme pro vás značnou verbální podporu"
+  },
+  {
+    "character": "hr_manager",
+    "group": "combat",
+    "line": "mám vás snad vodit za ručičku?"
+  },
+  {
+    "character": "secretary",
+    "group": "contact",
+    "line": "kdo je tam za IT? "
+  },
+  {
+    "character": "secretary",
+    "group": "contact",
+    "line": "ještě jednou, pro blondýnu"
+  },
+  {
+    "character": "secretary",
+    "group": "contact",
+    "line": "a máš to schválený?"
+  },
+  {
+    "character": "security_guard",
+    "group": "combat",
+    "line": "Naše stanovisko je jasné \"NE\"!"
+  },
+  {
+    "character": "security_guard",
+    "group": "combat",
+    "line": "zjisti mi"
+  }
+]

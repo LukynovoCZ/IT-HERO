@@ -12,3 +12,5 @@ poloprůhledné pozadí a normalizuje spodní hranu. Cyklista má společné mě
 obou snímků, aby při šlapání neměnil velikost. Pixely ze sousedních buněk
 neovlivňují ukotvení kol. Králíci, kouř, koš a dveře se
 kreslí přímo ve hře. Nouzové procedurální sprity se použijí při chybě atlasu.
+
+`jarda-poses.png`: úprava Jardy podle dodané reference, rozcuchané šedé vlasy a nízko posazené křivé brýle. Používají se pouze první dvě buňky; ostatní postavy zůstávají z původního atlasu. Stejná normalizace a kolizní oblast kola.

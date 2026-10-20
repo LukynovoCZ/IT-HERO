@@ -6,9 +6,9 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
  await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.enemies.clear(true,true);s.colleague.state.nextAt=Infinity;s.player.body.reset(s.posters.posters[0].placement.x,4280);s.player.setVelocity(0);});
  await p.waitForFunction(()=>!window.__testGame.scene.getScene('ITGame').posters.tooltip.visible);
  const poster=await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').posters.tooltip.text);
- const result=await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.spawnHelper('lift','beer');s.updateHelper(1200);return {dropped:s.helperVisit.dropped,speech:s.helperVisit.speech.text};});
- assert.equal(result.dropped,false);
- await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').posters.tooltip.text.startsWith('STARÝ AJŤÁK'));
+ const result=await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.spawnHelper('lift','beer');s.updateHelper(1200);return {dropped:s.helperVisit.dropped,speech:s.helperVisit.speech?.text};});
+ assert.equal(result.dropped,false);assert.equal(result.speech,undefined,'One helper line is reserved for the offer');
+
  await p.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.updateHelper(650);});
  assert(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').helperVisit.dropped));
  // Freeze world physics to test UI clocks with deterministic active delta.
@@ -26,5 +26,5 @@ const {chromium}=require('playwright');const assert=require('node:assert/strict'
  await p.keyboard.down('s');await p.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').floor===1);await p.keyboard.up('s');
  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').nextHelperAt),deadline,'Stairs must not shorten the old helper interval');
  assert.deepEqual(errors,[]);
- console.log('PASS helper dialogue: longer peek and offer, matching lower panel, paused duration, panel hidden after expiry, shared colleague messages, floor cleanup and unchanged helper interval across stairs.');
+ console.log('PASS helper dialogue: one prolonged offer, matching lower panel, paused duration, panel hidden after expiry, shared colleague messages, floor cleanup and unchanged helper interval across stairs.');
 }finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});

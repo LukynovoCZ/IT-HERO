@@ -1,4 +1,4 @@
 {
-  "request": "outdoor-jay-dialogue-ec87abcb-00c4-4ff8-927e-1023e0884fed",
-  "purpose": "Deploy the authorized community inbox with repository secrets"
+  "request": "corporate-dialogue-groups-0.22.0",
+  "purpose": "Publish added dialogue event groups after PR merge; no data changes"
 }

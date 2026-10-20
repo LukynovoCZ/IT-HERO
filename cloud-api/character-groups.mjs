@@ -27,6 +27,18 @@ export const catalog=[
       {
         "id": "contact",
         "label": "Hlášky při kontaktu"
+      },
+      {
+        "id": "hit",
+        "label": "Po zásahu"
+      },
+      {
+        "id": "attack",
+        "label": "Před útokem"
+      },
+      {
+        "id": "repeated_hit",
+        "label": "Opakované poškození"
       }
     ]
   },
@@ -37,6 +49,18 @@ export const catalog=[
       {
         "id": "contact",
         "label": "Dupání při kontaktu"
+      },
+      {
+        "id": "intro",
+        "label": "Zahájení finálního souboje"
+      },
+      {
+        "id": "special",
+        "label": "Příprava speciálního útoku"
+      },
+      {
+        "id": "phase",
+        "label": "Změna fáze souboje"
       }
     ]
   },
@@ -99,6 +123,10 @@ export const catalog=[
       {
         "id": "contact",
         "label": "Při kontaktu"
+      },
+      {
+        "id": "ambient",
+        "label": "Běžné komentáře"
       }
     ]
   },
@@ -109,6 +137,18 @@ export const catalog=[
       {
         "id": "combat",
         "label": "Během souboje"
+      },
+      {
+        "id": "hit",
+        "label": "Po zásahu"
+      },
+      {
+        "id": "strong",
+        "label": "Silný útok"
+      },
+      {
+        "id": "melee",
+        "label": "Nápřah pumpičkou"
       }
     ]
   },
@@ -137,6 +177,14 @@ export const catalog=[
       {
         "id": "block",
         "label": "Po zablokování střely"
+      },
+      {
+        "id": "rage",
+        "label": "Po pěti zablokovaných střelách"
+      },
+      {
+        "id": "pause",
+        "label": "Při zastavení"
       }
     ]
   },
@@ -159,6 +207,10 @@ export const catalog=[
       {
         "id": "demand",
         "label": "Nová tabulka"
+      },
+      {
+        "id": "defeat",
+        "label": "Při porážce"
       }
     ]
   },

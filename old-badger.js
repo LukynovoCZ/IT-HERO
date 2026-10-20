@@ -47,10 +47,8 @@
       e.door=scene.add.graphics().setDepth(17);state.entity=e;schedule();scene.tone(520,0.08,'triangle');return true;
     }
     function speak(e,pool){
-      if(state.clock<e.nextQuote)return;
-      const text=Phaser.Utils.Array.GetRandom(pool);e.nextQuote=state.clock+config.quoteInterval;
-      e.speech?.destroy();e.speech=scene.add.text(e.x,e.body.top-16,text,{font:'bold 11px monospace',color:'#fff0c7',backgroundColor:'#27332e',wordWrap:{width:240},align:'center',padding:{x:6,y:5}}).setOrigin(0.5,1).setDepth(107);e.speechUntil=state.clock+2800;
-      scene.posters.showMessage(`SENIOR MASTER\n${text}`,5000);
+      const group=typeof pool==='string'?pool:pool===blockLines?'block':'ambient';
+      e.speech=scene.dialogue.say(e,'old_badger',group)||e.speech;
     }
     function impact(x,y,dust=false){
       const graphics=scene.add.graphics().setDepth(28);state.effects.push({graphics,x,y,started:state.clock,dust});
@@ -58,7 +56,7 @@
     }
     function block(shot){
       const e=state.entity;if(!shot.active||!e||e.stomped||!e.body.enable)return;
-      const x=shot.x,y=shot.y;shot.destroy();e.blockUntil=state.clock+220;impact(x,y);scene.tone(380,0.025,'triangle');speak(e,blockLines);
+      const x=shot.x,y=shot.y;shot.destroy();e.blockUntil=state.clock+220;impact(x,y);scene.tone(380,0.025,'triangle');e.dialogueBlocks=(e.dialogueBlocks||0)+1;speak(e,e.dialogueBlocks%5===0?'rage':blockLines);
     }
     function intercept(shot){
       const e=state.entity;
@@ -126,8 +124,7 @@
         e.setAlpha(Phaser.Math.Clamp((t-0.25)*2,0,1)).setY(ground-40-(1-t)*8);
         if(t>=1){if(Math.abs(scene.player.x-e.x)<60&&Math.abs(scene.player.body.bottom-ground)<110)e.setX(scene.player.x<500?560:440);e.door.destroy();e.door=null;e.setAlpha(1).setY(ground-40).setTexture(frames.idle);e.body.reset(e.x,ground-40);e.body.enable=true;e.body.setAllowGravity(true);e.phase='idle';}return;
       }
-      if(e.speech){e.speech.setPosition(Phaser.Math.Clamp(e.x,135,825),e.body.top-16);if(state.clock>=e.speechUntil){e.speech.destroy();e.speech=null;}}
-      speak(e,lines);
+      speak(e,state.clock<e.actionAt?'pause':lines);
       if(e.snack){
         if(state.clock<e.eatingUntil){
           e.setVelocityX(0);e.setTexture(frames.block);e.phase='eat';

@@ -105,6 +105,7 @@
       };
       ITHeroAppearance.prepare(this);
       this.refresh();
+      ITHeroDialogue.mountGallery?.(this);
     }
     refresh() {
       const zoom = Number(this.controls.zoom.value);

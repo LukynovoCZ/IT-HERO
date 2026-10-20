@@ -80,15 +80,7 @@
       return true;
     }
     function say(e,category){
-      if(state.clock<e.nextDialogue)return;
-      const pool=ITHeroDialogue.lines('gen_z',category),text=Phaser.Utils.Array.GetRandom(pool);if(!text)return;
-      e.bubble?.destroy();
-      const textObject=scene.add.text(0,0,text,{font:'bold 11px monospace',color:'#192531',wordWrap:{width:258},align:'center',padding:{x:10,y:7}}).setOrigin(.5,1);
-      const w=Math.ceil(textObject.width),h=Math.ceil(textObject.height),bg=scene.add.graphics();
-      bg.fillStyle(0x17212c).fillRect(-w/2-2,-h-2,w+4,h+4).fillTriangle(-7,0,7,0,3,11);
-      bg.fillStyle(0xfff6e8).fillRect(-w/2,-h,w,h).fillTriangle(-4,0,4,0,2,7);
-      e.bubble=scene.add.container(Phaser.Math.Clamp(e.x,150,810),e.y-45,[bg,textObject]).setDepth(108);
-      e.bubbleUntil=state.clock+config.bubbleDuration;e.nextDialogue=state.clock+config.dialogueCooldown;
+      e.bubble=scene.dialogue.say(e,'gen_z',category)||e.bubble;
     }
     function spawn(options={}){
       if(state.entity||config.maxActive<1||scene.gameState!=='playing'||scene.transitioning)return false;
@@ -111,7 +103,7 @@
       state.clock+=delta;const e=state.entity;
       if(!e){if(state.clock>=state.nextAt&&!spawn()){state.nextAt=state.clock+2000;}return;}
       if(bossFloor(scene.floor)){clear();return;}
-      if(e.bubble){e.bubble.setPosition(Phaser.Math.Clamp(e.x,150,810),e.body.top-12);if(state.clock>=e.bubbleUntil){e.bubble.destroy();e.bubble=null;}}
+
       if(e.phase==='arrive'){
         // Abort if the player, another actor or furniture enters the arrival corridor.
         const others=[...scene.enemies.getChildren(),scene.oldBadger?.state.entity];
