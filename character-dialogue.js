@@ -129,7 +129,7 @@
           "Ááá, plznička ",
           "Chcaní bez prdu, to je jak láska bez mrd.. polibku teda…",
           "Neviděli jste tu Laca?",
-          "Hesla měnil naposled Vosahlo šetrným štítkem."
+          "Hesla měnil naposled Vosálo děrným štítkem."
         ]
       },
       {
@@ -160,11 +160,11 @@
     "groups": [
       {
         "id": "combat",
+        "originalLines": ["Kňůůůů"],
         "label": "Během souboje a při kontaktu",
         "lines": [
           "Byl si na prajtu?",
-          "Tohle není fér!",
-          "Kňůůůů"
+          "Tohle není fér!"
         ]
       }
     ]
@@ -508,5 +508,5 @@
     ]
   }
 ];
- window.ITHeroDialogue={characters,lines(id,group){return characters.find(c=>c.id===id)?.groups.find(g=>g.id===group)?.lines || [];}};
+ window.ITHeroDialogue={characters,lines(id,group){const g=characters.find(c=>c.id===id)?.groups.find(g=>g.id===group);return [...(g?.lines||[]),...(window.ITHeroAppearance?.state.original?g?.originalLines||[]:[])];}};
 })();

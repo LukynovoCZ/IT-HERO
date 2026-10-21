@@ -18,7 +18,7 @@
   if(kind==='flag'){
    r('#f7cf48',4,3,48,30);r('#26332f',15,11,3,5);r('#26332f',36,11,3,5);r('#26332f',16,25,22,3);r('#26332f',12,20,4,5);r('#26332f',38,20,4,5);
   }else if(kind==='union'){
-   const im=c.getImageData(0,0,w,h),d=im.data;for(let y=0;y<35;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,R=d[i],G=d[i+1],B=d[i+2];if(d[i+3]&&R>65&&G>45&&R>G*1.02&&R<G*1.42&&G>B*1.3){const light=(R+G)/500;d[i]=Math.round(98*light);d[i+1]=Math.round(61*light);d[i+2]=Math.round(37*light);}}c.putImageData(im,0,0);
+   const im=c.getImageData(0,0,w,h),d=im.data;for(let y=0;y<35;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,R=d[i],G=d[i+1],B=d[i+2];if(d[i+3]&&y<17&&R>65&&G>45&&R>G*1.02&&R<G*1.32&&G>B*1.3){const light=(R+G)/500;d[i]=Math.round(98*light);d[i+1]=Math.round(61*light);d[i+2]=Math.round(37*light);}}c.putImageData(im,0,0);
    r('#493326',23,18,3,5);r('#674b35',22,21,4,9);r('#937454',23,21,2,7);r('#493326',22,29,3,3);r('#b59b62',23,21,3,1);
    // The original white beard belongs to the same brown hair palette.
    const beard=c.getImageData(0,0,w,h);for(let y=19;y<32;y++)for(let x=28;x<47;x++){const i=(y*w+x)*4,d=beard.data;if(d[i+3]&&Math.max(d[i],d[i+1],d[i+2])-Math.min(d[i],d[i+1],d[i+2])<35&&d[i]>95){const l=d[i]/255;d[i]=Math.round(62+97*l);d[i+1]=Math.round(43+80*l);d[i+2]=Math.round(29+61*l);}}c.putImageData(beard,0,0);
@@ -26,8 +26,13 @@
    // Stepped jaw edges and the silver hair palette keep the goatee in the face.
    r('#626569',29,25,7,2);r('#96999b',30,26,5,3);r('#bfc0bd',31,27,3,3);r('#73777a',31,30,3,1);
   }else if(kind==='design'){
-   // A one-pixel curl follows the cheeks; highlights match his grey hair.
-   r('#666b70',32,23,5,2);r('#666b70',39,23,5,2);r('#92989b',33,23,3,1);r('#92989b',40,23,3,1);r('#666b70',30,21,2,3);r('#bfc1bb',30,21,1,2);r('#666b70',44,20,2,4);r('#bfc1bb',44,20,1,2);
+   // Mouth anchors differ between the turned walking head and open-mouth contact pose.
+   const scream=key.includes('scream'),walk=key.includes('walk');
+   const x=scream?38:walk?42:34,y=scream?21:18;
+   r('#65686a',x-4,y,4,1);r('#65686a',x+1,y,4,1);
+   r('#a4a7a5',x-3,y,2,1);r('#a4a7a5',x+2,y,2,1);
+   r('#65686a',x-5,y-2,1,3);r('#bfc1bb',x-5,y-2,1,1);
+   r('#65686a',x+5,y-2,1,3);r('#bfc1bb',x+5,y-2,1,1);
   }else if(kind==='sap'){
    const im=c.getImageData(0,0,w,h),d=im.data;let top=40;
    for(let y=8;y<38;y++){let count=0;for(let x=45;x<65;x++){const i=(y*w+x)*4;if(d[i+3]&&d[i]>d[i+1]*1.1&&d[i+1]>d[i+2]*1.1)count++;}if(count>=6){top=y;break;}}

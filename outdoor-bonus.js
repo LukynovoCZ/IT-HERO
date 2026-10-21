@@ -2,7 +2,7 @@
 (()=>{'use strict';if(typeof Phaser==='undefined')return;
  const config={doorX:130,ground:450,cdX:[290,585,880],coffeeX:735,treeX:790,birdY:269,bikeSpeed:72,bikeHitWidth:96,bikeHitHeight:60,rollChance:.45,rollDuration:1100,rollLift:150,rollEarliest:5000,rollLatest:9500,rabbitKickSpeed:650,rabbitKickUp:560,rabbitGravity:340};
  const birdLines=window.ITHeroDialogue.lines('jay','ambient');
- function preload(scene,charactersOnly=false){if(!charactersOnly)scene.load.image('outdoor-background','assets/outdoor/courtyard.png?v=0.21.0');scene.load.image('outdoor-jarda-source','assets/outdoor/jarda-poses.png?v=0.23.2');scene.load.image('outdoor-npc-source','assets/outdoor/characters.png?v=0.21.0');}
+ function preload(scene,charactersOnly=false){if(!charactersOnly)scene.load.image('outdoor-background','assets/outdoor/courtyard.png?v=0.21.0');scene.load.image('outdoor-jarda-source','assets/outdoor/jarda-poses.png?v=0.23.2');scene.load.image('outdoor-jarda-stunt-source','assets/outdoor/jarda-superman.png?v=0.23.9');scene.load.image('outdoor-npc-source','assets/outdoor/characters.png?v=0.21.0');}
  function atlasTextures(scene){
   if(['outdoor-jarda-0','outdoor-jarda-1','outdoor-smoker-0','outdoor-smoker-1','outdoor-smoker-2','outdoor-jay'].every(key=>scene.textures.exists(key)))return;
   if(!scene.textures.exists('outdoor-npc-source'))return;
@@ -25,6 +25,11 @@
  }
  function textures(scene){
   atlasTextures(scene);
+  if(scene.textures.exists('outdoor-jarda-stunt-source')&&!scene.textures.exists('outdoor-jarda-superman')){
+   const im=scene.textures.get('outdoor-jarda-stunt-source').getSourceImage(),t=scene.textures.createCanvas('outdoor-jarda-superman',224,144),c=t.context;c.imageSmoothingEnabled=false;
+   const scale=Math.min(220/im.width,140/im.height);c.drawImage(im,Math.round((224-im.width*scale)/2),144-Math.round(im.height*scale),Math.round(im.width*scale),Math.round(im.height*scale));
+   const data=c.getImageData(0,0,224,144);for(let i=3;i<data.data.length;i+=4)data.data[i]=data.data[i]>160?255:0;c.putImageData(data,0,0);t.refresh();
+  }
   const make=(key,w,h,draw)=>{if(scene.textures.exists(key))return;const t=scene.textures.createCanvas(key,w,h),c=t.context;c.imageSmoothingEnabled=false;draw(c,(color,x,y,w,h)=>{c.fillStyle=color;c.fillRect(x,y,w,h);});t.refresh();};
   for(let pose=0;pose<2;pose++){
    make(`outdoor-jarda-${pose}`,128,96,(c,r)=>{
@@ -55,7 +60,7 @@
    this.shots=this.physics.add.group({allowGravity:false});
    const exit=this.add.graphics().setDepth(8);exit.fillStyle(0x4b8791,.8).fillRect(55,config.ground-122,66,122);exit.lineStyle(3,0xd5e9e3).strokeRect(55,config.ground-122,66,122).lineBetween(88,config.ground-122,88,config.ground);exit.fillStyle(0xffda78).fillRect(80,config.ground-61,3,15);this.add.text(88,config.ground-137,'RECEPCE',{font:'bold 13px monospace',color:'#fff0bf',backgroundColor:'#173e35',padding:{x:5,y:3}}).setOrigin(.5).setDepth(15);
    const bin=this.add.graphics().setDepth(14);bin.fillStyle(0x213831).fillRect(428,398,28,45);bin.fillStyle(0x637a68).fillRect(430,401,24,38);bin.fillStyle(0x172c28).fillRect(426,396,32,7);bin.fillStyle(0x98ae8a).fillRect(436,407,4,23).fillRect(446,407,3,23);this.smokers=[375,420,490].map((x,i)=>this.add.image(x,config.ground-6,`outdoor-smoker-${i}`).setOrigin(.5,1).setDepth(15));this.smoke=this.add.graphics().setDepth(17);
-   this.jarda=this.add.image(1040,config.ground,'outdoor-jarda-0').setOrigin(.5,1).setFlipX(true).setDepth(24);this.jardaSpeech=this.add.text(0,0,'',{font:'bold 15px monospace',color:'#172e29',backgroundColor:'#fff5d9',padding:{x:7,y:5},wordWrap:{width:230},align:'center'}).setOrigin(.5,1).setDepth(50).setVisible(false);this.jardaSpeechUntil=0;this.jardaTrick='roll';this.jardaJumped=false;this.jardaStuntArt=this.add.graphics().setDepth(25);this.jardaStart=2200;this.jardaLap=-1;this.jardaRollAt=Infinity;this.jardaRolling=false;this.reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;this.jardaLabel=this.add.text(1040,config.ground-102,'DžejTý • SKLÁDAČKA',{font:'bold 10px monospace',color:'#f4f5d5',backgroundColor:'#1b3c32'}).setOrigin(.5).setDepth(26);
+   this.jarda=this.add.image(1040,config.ground,'outdoor-jarda-0').setOrigin(.5,1).setFlipX(true).setDepth(24);this.jardaSpeech=this.add.text(0,0,'',{font:'bold 15px monospace',color:'#172e29',backgroundColor:'#fff5d9',padding:{x:7,y:5},wordWrap:{width:230},align:'center'}).setOrigin(.5,1).setDepth(50).setVisible(false);this.jardaSpeechUntil=0;this.jardaTrick='roll';this.jardaJumped=false;this.jardaStart=2200;this.jardaLap=-1;this.jardaRollAt=Infinity;this.jardaRolling=false;this.reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;this.jardaLabel=this.add.text(1040,config.ground-102,'DžejTý • SKLÁDAČKA',{font:'bold 10px monospace',color:'#f4f5d5',backgroundColor:'#1b3c32'}).setOrigin(.5).setDepth(26);
    this.rabbits=[this.add.image(535,config.ground,'outdoor-rabbit-0'),this.add.image(640,config.ground,'outdoor-rabbit-0')];this.rabbits.forEach(r=>r.setOrigin(.5,1).setDepth(22));
    const branch=this.add.graphics().setDepth(10);branch.lineStyle(8,0x62472d).lineBetween(837,294,780,270).lineBetween(800,281,762,276);branch.lineStyle(2,0x9d7950).lineBetween(837,290,780,267);
    this.it=this.add.image(config.treeX,config.ground,'colleague-idle').setOrigin(.5,1).setDepth(20);this.add.text(config.treeX,config.ground+8,'IT KOLEGA',{font:'bold 9px monospace',color:'#f6f4d7',backgroundColor:'#1a3b32'}).setOrigin(.5,0).setDepth(23);
@@ -79,18 +84,8 @@
    if(wasRolling&&!this.jardaRolling&&this.jarda.visible){this.jardaSpeech.setText(window.ITHeroDialogue.lines('jarda',this.jardaTrick)[0]);this.jardaSpeechUntil=this.clock+6000;}
    this.jardaSpeech.setPosition(Phaser.Math.Clamp(this.jarda.x,135,825),config.ground-115).setVisible(this.jarda.visible&&!this.jardaRolling&&this.clock<this.jardaSpeechUntil);
    const t=this.jardaRolling?rollAge/config.rollDuration:0;this.jarda.setOrigin(.5,this.jardaRolling?.5:1).setY(this.jardaRolling?config.ground-this.jarda.height/2-Math.sin(t*Math.PI)*config.rollLift:config.ground).setAngle(this.jardaRolling?(this.jardaTrick==='backflip'?360:this.jardaTrick==='superman'?0:-360)*t*t*(3-2*t):0);
-   this.jardaStuntArt.clear();this.jarda.setCrop();
-   if(this.jardaRolling&&this.jardaTrick==='superman'){
-    // Retain the moving bicycle, extend the rider horizontally behind the bars.
-    this.jarda.setCrop(0,this.jarda.height*.62,this.jarda.width,this.jarda.height*.38);
-    const g=this.jardaStuntArt,x=this.jarda.x,y=this.jarda.y+18,stretch=Math.sin(t*Math.PI);
-    g.lineStyle(8,0x17252d).lineBetween(x-18,y+5,x+26+stretch*22,y-12);
-    g.lineStyle(7,0x405e77).lineBetween(x+18,y-8,x+48+stretch*27,y-6).lineBetween(x+18,y-5,x+49+stretch*27,y+6);
-    g.lineStyle(10,0x7c8061).lineBetween(x-10,y-13,x+22,y-10);
-    g.lineStyle(5,0x7c8061).lineBetween(x-10,y-10,x-23,y+8);
-    g.fillStyle(0xe4ab7d).fillCircle(x-19,y-19,9);g.fillStyle(0xa5a69c).fillRect(x-28,y-29,16,5);
-    g.lineStyle(2,0x171e23).strokeRect(x-28,y-21,10,5).lineBetween(x-31,y-19,x-18,y-17);
-   }
+   this.jarda.setCrop();
+   if(this.jardaRolling&&this.jardaTrick==='superman')this.jarda.setTexture('outdoor-jarda-superman');
    this.jardaLabel.setPosition(this.jarda.x,this.jardaRolling?this.jarda.y-105:config.ground-102).setVisible(this.jarda.visible&&!this.jardaRolling);
    // A narrow bicycle/rider silhouette can be cleared by a normal jump.
    const bike=new Phaser.Geom.Rectangle(this.jarda.x-config.bikeHitWidth/2,(this.jardaRolling?this.jarda.y-config.bikeHitHeight/2:config.ground-config.bikeHitHeight),config.bikeHitWidth,config.bikeHitHeight);if(this.jarda.visible&&Phaser.Geom.Intersects.RectangleToRectangle(this.player.body,bike)){this.finish('Tam je provoz zase.');return;}

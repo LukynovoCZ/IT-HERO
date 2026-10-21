@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import {publicEncrypt,constants,randomBytes} from 'node:crypto';
+import {createHmac,publicEncrypt,constants,randomBytes} from 'node:crypto';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
@@ -22,8 +22,8 @@ export async function deployPublicCopy(){
   return data.result;
  }
  // Check permissions before changing resources. Never change the existing web or Worker.
- let existing;for(let page=1;page<=100;page++){
-  const projects=await api(`/pages/projects?per_page=10&page=${page}`);existing=projects.find(p=>p.name===project);if(existing||projects.length<10)break;
+ let existing;const accountProjects=[];for(let page=1;page<=100;page++){
+  const projects=await api(`/pages/projects?per_page=10&page=${page}`);accountProjects.push(...projects);existing=accountProjects.find(p=>p.name===project);if(projects.length<10)break;
  }
  let database;for(let page=1;page<=100;page++){
   const databases=await api(`/d1/database?per_page=100&page=${page}`);database=databases.find(d=>d.name==='it-hero-community');if(database||databases.length<100)break;
@@ -33,11 +33,18 @@ export async function deployPublicCopy(){
  const deployment={compatibility_date:'2026-10-01',d1_databases:{DB:{id:database.uuid}},env_vars:{ADMIN_TOKEN:{type:'secret_text',value:admin}}};
  const settings={deployment_configs:{production:deployment,preview:deployment}};
  await api(existing?`/pages/projects/${project}`:'/pages/projects',existing?'PATCH':'POST',existing?settings:{name:project,production_branch:'release',...settings});
+ const targets=[project];
+ const legacy='office-arcade-'+createHmac('sha256',admin).update('neutral-copy/v1').digest('hex').slice(0,14);
+ const legacyProject=accountProjects.find(p=>p.name===legacy);
+ if(legacyProject?.deployment_configs?.production?.d1_databases?.DB?.id===database.uuid){
+  console.log(`::add-mask::${legacy}`);console.log(`::add-mask::https://${legacy}.pages.dev`);
+  await api(`/pages/projects/${legacy}`,'PATCH',settings);targets.push(legacy);
+ }
  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'arcade-release-'));
  try{
   await buildPublicCopy(directory);
   try{
-   await run('npx',['--yes','wrangler@4','pages','deploy',directory,'--project-name',project,'--branch','release','--commit-dirty=true','--commit-hash',randomBytes(20).toString('hex'),'--commit-message','Public release'],{cwd:directory,env:{...process.env,CI:'true',WRANGLER_SEND_METRICS:'false'},timeout:600000,maxBuffer:8*1024*1024});
+   for(const target of targets)await run('npx',['--yes','wrangler@4','pages','deploy',directory,'--project-name',target,'--branch','release','--commit-dirty=true','--commit-hash',randomBytes(20).toString('hex'),'--commit-message','Public release'],{cwd:directory,env:{...process.env,CI:'true',WRANGLER_SEND_METRICS:'false'},timeout:600000,maxBuffer:8*1024*1024});
   }catch{throw Error('Pages upload failed. Output was withheld to avoid publishing the neutral URL or private configuration. Check token permissions for Cloudflare Pages / Edit.');}
   // Do not expose the neutral address in public logs or source history.
   let ready=false;

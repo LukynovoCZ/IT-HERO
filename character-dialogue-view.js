@@ -14,14 +14,15 @@
     if(!character.groups.length){const empty=document.createElement('p');empty.textContent='Zatím bez vlastních hlášek. Níže můžeš připravit nové.';card.append(empty);}
     const groups=character.groups.length?character.groups:[{id:'proposed',label:'Návrh nových hlášek',lines:[]}];
     for(const group of groups){
+      const visibleLines=window.ITHeroDialogue.lines(character.id,group.id);
       const label=document.createElement('h4');label.textContent=group.label;card.append(label);
       const list=document.createElement('ul');
-      for(const line of group.lines){const item=document.createElement('li');item.textContent=line;list.append(item);}
+      for(const line of visibleLines){const item=document.createElement('li');item.textContent=line;list.append(item);}
       card.append(list);
       const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Upravit / doplnit návrh';details.append(summary);
       const input=document.createElement('textarea');input.rows=5;input.setAttribute('aria-label',`${character.name}: ${group.label}`);input.placeholder='Nejdřív kafe.\nPak zachraňuj svět!';
       const hint=document.createElement('p');hint.id=`dialogue-hint-${character.id}-${group.id}`;hint.textContent='Jedna hláška = jeden řádek. Další odděl klávesou Enter. Bez odrážek a číslování; prázdné řádky se ignorují.';input.setAttribute('aria-describedby',hint.id);details.append(hint);
-      const key=`${character.id}/${group.id}`;input.value=typeof saved[key]==='string'?saved[key]:group.lines.join('\n');input.addEventListener('input',save);details.append(input);card.append(details);
+      const key=`${character.id}/${group.id}`;input.value=typeof saved[key]==='string'?saved[key]:visibleLines.join('\n');input.addEventListener('input',save);details.append(input);card.append(details);
       editors.push({character:character.id,group:group.id,label:group.label,input});
     }
     target.append(card);
