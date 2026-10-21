@@ -3,7 +3,21 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [cloud-api/public-copy-request.json]
+    paths:
+      - '*.html'
+      - '*.js'
+      - '*.css'
+      - '*.ico'
+      - site.webmanifest
+      - assets/**
+      - vendor/**
+      - cloud-api/public-copy-request.json
+      - cloud-api/worker.mjs
+      - cloud-api/character-groups.mjs
+      - cloud-api/avatar-ids.mjs
+      - scripts/build_public_copy.mjs
+      - scripts/deploy_public_copy.mjs
+      - .github/workflows/publish-neutral-copy.yml
 permissions:
   contents: write
 concurrency:

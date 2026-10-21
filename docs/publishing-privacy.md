@@ -77,3 +77,13 @@ zůstává funkční a tento postup ji nemaže.
 Regresní test `node tests/public-copy.mjs` ověřuje skutečné spuštění hry,
 galerii, formulář, SQLite API, soukromou správu, odmítnutí cizího původu,
 nepřítomnost vývojových souborů a nulové požadavky prohlížeče na jiné adresy.
+
+## Průběžné zveřejňování
+
+Podle pokynu uživatele z 21. října 2026 se až do odvolání změny zveřejňují
+v `main` na GitHubu i na public webu. Workflow čisté kopie se automaticky
+spustí při změnách herních HTML/JS/CSS, ikon, manifestu, grafiky nebo API,
+nejen při ruční změně požadavku nasazení. Aktualizuje hlavní adresu
+a také původní neutrální kopii, pokud patří ke stejné databázi. Změna
+šifrovaného potvrzení nasazení další běh nezpůsobí. GitHub Pages nadále
+přebírá zveřejněné změny z `main`.
