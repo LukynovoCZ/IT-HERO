@@ -17,12 +17,12 @@ export async function deployPublicCopy(){
  async function api(route,method='GET',body){
   const response=await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}${route}`,{method,headers:{Authorization:`Bearer ${token}`,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(60000)});
   const data=await response.json().catch(()=>null);
-  if(!response.ok||!data?.success){const codes=(data?.errors||[]).map(x=>Number(x.code)).filter(Number.isFinite).join(',');throw Error(`Cloudflare ${route.startsWith('/pages/')?'Pages':'D1'} ${method}: HTTP ${response.status}, codes ${codes||'none'}. The API token needs Account / Cloudflare Pages / Edit and Account / D1 / Read for the selected account.`);}
+  if(!response.ok||!data?.success){const codes=(data?.errors||[]).map(x=>Number(x.code)).filter(Number.isFinite).join(',');let details=(data?.errors||[]).map(x=>String(x.message||'')).join(' ').slice(0,1000);for(const value of [token,account,admin,project])details=details.split(value).join('[redacted]');details=details.replace(/https?:\/\/\S+/g,'[URL omitted]');throw Error(`Cloudflare ${route.startsWith('/pages/')?'Pages':'D1'} ${method}: HTTP ${response.status}, codes ${codes||'none'}. ${details}${response.status===403?' The API token needs Account / Cloudflare Pages / Edit and Account / D1 / Read for the selected account.':''}`);}
   return data.result;
  }
  // Check permissions before changing resources. Never change the existing web or Worker.
  let existing;for(let page=1;page<=100;page++){
-  const projects=await api(`/pages/projects?per_page=100&page=${page}`);existing=projects.find(p=>p.name===project);if(existing||projects.length<100)break;
+  const projects=await api(`/pages/projects?per_page=10&page=${page}`);existing=projects.find(p=>p.name===project);if(existing||projects.length<10)break;
  }
  let database;for(let page=1;page<=100;page++){
   const databases=await api(`/d1/database?per_page=100&page=${page}`);database=databases.find(d=>d.name==='it-hero-community');if(database||databases.length<100)break;
