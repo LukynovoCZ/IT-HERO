@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {DatabaseSync} from 'node:sqlite';
+import fs from 'node:fs';
+import {resetSQL} from '../scripts/reset_shared_scores.mjs';
+const db=new DatabaseSync(':memory:');
+for(const file of fs.readdirSync('cloud-api/migrations').filter(f=>f.endsWith('.sql')).sort())db.exec(fs.readFileSync('cloud-api/migrations/'+file,'utf8'));
+db.exec("INSERT INTO arcade_scores(request_id,name,score,elapsed_ms,created_at) VALUES('one','Old champion',9999,80000,1),('two','pokematy27',7170,150000,2);INSERT INTO arcade_score_avatars VALUES('one','manager'),('two','jarda');");
+const request={resetId:'test-hall-reset',name:'pokematy27',score:7170};
+db.exec(resetSQL(request));assert.deepEqual(db.prepare('SELECT name,score,elapsed_ms FROM arcade_scores').all().map(r=>({...r})),[{name:'pokematy27',score:7170,elapsed_ms:150000}]);assert.equal(db.prepare('SELECT avatar_id FROM arcade_score_avatars').get().avatar_id,'jarda');
+assert.equal(JSON.parse(db.prepare('SELECT scores_json FROM arcade_score_resets').get().scores_json).length,2);
+db.exec("INSERT INTO arcade_scores(request_id,name,score,elapsed_ms,created_at) VALUES('later','New player',8000,100000,3)");db.exec(resetSQL(request));assert.equal(db.prepare('SELECT count(*) AS n FROM arcade_scores').get().n,2,'Rerun must preserve later player records');assert.equal(JSON.parse(db.prepare('SELECT scores_json FROM arcade_score_resets').get().scores_json).length,2);
+db.close();console.log('PASS reset keeps exact target score/avatar, backs up former records and does not delete new scores when rerun.');
