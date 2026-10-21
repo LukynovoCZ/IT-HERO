@@ -285,22 +285,23 @@
         "id": "coffee",
         "label": "Nabídka kávy",
         "lines": [
-          "restart v kelímku?",
-          "Nejdřív kafe. Pak zázraky.",
+          "Cukr a kafe, víc netřeba",
           "Nazdar chlapíci!",
-          "Klídek, všechno dobře dopadne.",
-          "maká za mě mikina a bágl"
+          "Klídek,ono to dopadne..",
+          "Motáme se v kruzích, pane Frodo",
+          "To je na diplom s oslíkem."
         ]
       },
       {
         "id": "candy",
         "label": "Nabídka Sisinky",
         "lines": [
-          "Sisinka. Hotfix trudomyslnosti",
-          "Cukr a kafe, víc není třeba ",
+          "Sisinka proti trudomyslnosti",
+          "Cukr a kafe, víc netřeba",
           "Nazdar chlapíci!",
-          "Klídek, všechno dobře dopadne.",
-          "Motáme se v kruzích, pane Frodo"
+          "Klídek,ono to dopadne..",
+          "Motáme se v kruzích, pane Frodo",
+          "To je na diplom s oslíkem."
         ]
       }
     ]
