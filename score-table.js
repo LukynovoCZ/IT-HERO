@@ -25,6 +25,7 @@
     return memory;
   }
   function open(scene,{score,elapsed,bonus}){
+    if(window.ITHeroDifficulty?.easy(scene)){ITHeroDifficulty.finish(scene);return;}
     const training=!!window.ITHeroAppearance?.state.training||!!scene.registry?.get('trainingRun');
     const requestId=crypto.randomUUID();
     if(active)return;
@@ -59,7 +60,7 @@
       window.dispatchEvent(new Event('it-hero-score'));
       status.textContent=(rank<=limit?`ZAPSÁNO · ${rank}. MÍSTO`:'DOKONČENO · TENTOKRÁT MIMO TOP 10')+(storageWarning?' · Jen pro tuto návštěvu; prohlížeč nepovolil uložení.':'');
       if(window.ITHeroCommunity?.apiBase()){
-        const publish=async()=>{try{await ITHeroCommunity.request('/v1/scores',{method:'POST',body:{requestId,name:entry.name,avatar:entry.avatar,score,elapsedMs:Math.floor(scene.pacing?.state.elapsed||0),training:false,completed:true}});status.textContent='SKÓRE ULOŽENO DO SPOLEČNÉHO ŽEBŘÍČKU';window.dispatchEvent(new Event('it-hero-score'));retry.remove();}catch(error){status.textContent='Lokálně uloženo. Společný zápis neprošel: '+error.message;retry.hidden=false;}};
+        const publish=async()=>{try{await ITHeroCommunity.request('/v1/scores',{method:'POST',body:{requestId,name:entry.name,avatar:entry.avatar,score,elapsedMs:Math.floor(scene.pacing?.state.elapsed||0),training:false,completed:true,difficulty:scene.difficulty||'normal'}});status.textContent='SKÓRE ULOŽENO DO SPOLEČNÉHO ŽEBŘÍČKU';window.dispatchEvent(new Event('it-hero-score'));retry.remove();}catch(error){status.textContent='Lokálně uloženo. Společný zápis neprošel: '+error.message;retry.hidden=false;}};
         const retry=document.createElement('button');retry.type='button';retry.textContent='Zopakovat společný zápis';retry.hidden=true;retry.onclick=()=>{retry.hidden=true;publish();};status.after(retry);await publish();
       }
     });
@@ -70,5 +71,5 @@
     // Avoid opening the phone keyboard before the player chooses to enter their name.
     dialog.querySelector('.score-again').focus({preventScroll:true});
   }
-  window.ITHeroScores={open,read,isOpen:()=>!!active,storageKey,demoNames,demoRows};
+  window.ITHeroScores={open,read,isOpen:()=>!!active||!!window.ITHeroDifficulty?.isOpen(),storageKey,demoNames,demoRows};
 })();

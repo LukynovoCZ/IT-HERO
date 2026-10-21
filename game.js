@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.24.1 – mini plošinovka v Phaser 3.
+ * IT HERO 0.24.3 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -100,6 +100,7 @@
       if(!data.resumeCheckpoint)this.registry.remove('trainingRun');
       ITHeroAppearance.state.training=!!data.resumeCheckpoint&&!!this.registry.get('trainingRun')||ITHeroAppearance.state.god;
       if(ITHeroAppearance.state.training)this.registry.set('trainingRun',true);
+      ITHeroDifficulty.attach(this,!!data.resumeCheckpoint);
       this.makeTextures();
       this.buildOffice();
       window.ITHeroOutdoor.door(this,4320);
@@ -647,6 +648,7 @@
       this.overlayBody.setText(message);
       this.overlay.setVisible(true);
       ITHeroPlayer.sync(this);
+      ITHeroDifficulty.sync(this);
       const button = document.getElementById('game-action');
       if (button) {
         button.textContent = action;
@@ -659,11 +661,14 @@
       const button = document.getElementById('game-action');
       if (button) button.hidden = true;
       ITHeroPlayer.sync(this);
+      ITHeroDifficulty.sync(this);
     }
 
     handleStart() {
       if (window.ITHeroScores?.isOpen() || window.ITHeroEnding?.isRunning()) return;
       if (this.gameState === 'menu') {
+        this.registry.set('campaignDifficulty',this.difficulty);
+        if(ITHeroDifficulty.easy(this)){this.energy=this.maxEnergy;this.updateHUD();this.pacing.checkpoint();}
         this.gameState = 'playing';
         window.ITHeroPlayStats?.started();
         this.hideOverlay();
@@ -862,7 +867,7 @@
 
     takeDamage(sourceX, damage = 1) {
       if(ITHeroAppearance.state.god)return;
-      if (this.gameState !== 'playing' || this.time.now - this.lastHit < 1250) return;
+      if (this.gameState !== 'playing' || this.time.now - this.lastHit < (ITHeroDifficulty.easy(this)?2000:1250)) return;
       this.lastHit = this.time.now;
       this.playerHitUntil=this.time.now+180;
       this.player.setTexture(this.heroFrames.hit);
@@ -881,7 +886,7 @@
         this.player.setVelocityX(0);
         const line = this.nextDeathLine();
         this.time.delayedCall(350, () => this.showOverlay('DOSTALI TĚ!', 'TVŮJ NOVÝ ÚKOL:',
-          `${line}\n\nPatro ${this.floor + 1} / ${FLOOR_COUNT} • Skóre ${this.score}${this.pacing.state.checkpoint ? '\nPokračuješ ze zálohy v 5. patře.' : ''}`, this.pacing.state.checkpoint ? 'ENTER / KLIK = OBNOVIT ZÁLOHU' : 'ENTER / KLIK = ZKUSIT ZNOVU'));
+          `${line}\n\nPatro ${this.floor + 1} / ${FLOOR_COUNT} • Skóre ${this.score}${this.pacing.state.checkpoint ? `\nPokračuješ ze zálohy v ${(this.registry.get(ITHeroGameplay.checkpointKey)?.floor??4)+1}. patře.` : ''}`, this.pacing.state.checkpoint ? 'ENTER / KLIK = OBNOVIT ZÁLOHU' : 'ENTER / KLIK = ZKUSIT ZNOVU'));
       }
     }
 
@@ -927,6 +932,7 @@
         this.cameras.main.fadeIn(300, 7, 15, 28);
         this.popText(spawnX, FLOORS[this.floor] - 80, `PATRO ${this.floor + 1}  +150`, '#ffe6a6');
         this.transitioning = false;
+        if(ITHeroDifficulty.easy(this))this.pacing.checkpoint();
       });
     }
 
@@ -1027,7 +1033,7 @@
       if (pressed('interact')) this.interact();
       this.pacing.objective(delta, {held: crouching || down('interact'), moving, grounded});
       if (this.gameState !== 'playing') return;
-      this.trainingHud.setText(ITHeroAppearance.state.training?'TRÉNINK • SKÓRE SE NEZAPÍŠE':'');
+      this.trainingHud.setText(ITHeroAppearance.state.training?'TRÉNINK • SKÓRE SE NEZAPÍŠE':ITHeroDifficulty.easy(this)?'EASY • SKÓRE SE NEZAPÍŠE':'');
       this.coffees.getChildren().slice().forEach(coffee => {
         if(coffee.getData('expires')&&this.playTime>coffee.getData('expires')){coffee.destroy();return;}
         const steam = coffee.getData('steam');

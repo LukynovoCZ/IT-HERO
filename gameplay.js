@@ -80,11 +80,11 @@
       },
       recordDefeat(e){state.defeated.add(keyOf(e));},
       checkpoint(){
-        if(state.checkpoint)return;
-        const snapshot={floor:config.checkpointFloor-1,score:scene.score,weapon:scene.weapon,elapsed:state.elapsed,
+        if(state.checkpoint&&!window.ITHeroDifficulty?.easy(scene))return;
+        const snapshot={floor:window.ITHeroDifficulty?.easy(scene)?scene.floor:config.checkpointFloor-1,score:scene.score,weapon:scene.weapon,elapsed:state.elapsed,
           defeated:[...state.defeated]};
         scene.registry.set(checkpointKey,snapshot);state.checkpoint=true;
-        scene.posters.showMessage('ZÁLOHA ULOŽENA • 5. PATRO\nPo smrti pokračuješ odsud s plným zdravím.',7000);
+        scene.posters.showMessage(`ZÁLOHA ULOŽENA • ${snapshot.floor+1}. PATRO\nPo smrti pokračuješ odsud s plným zdravím.`,7000);
       },
       retainElapsed(){const cp=scene.registry.get(checkpointKey);if(cp)cp.elapsed=state.elapsed;},
       restore(){
@@ -95,7 +95,7 @@
         }
         scene.player.body.reset(saved.floor%2?872:88,floors[saved.floor]-40);scene.player.setVelocity(0,0);
         scene.lastHit=scene.time.now;scene.physics.world.resume();scene.gameState='playing';scene.hideOverlay();
-        scene.posters.showMessage('OBNOVENO ZE ZÁLOHY • 5. PATRO',5000);return true;
+        scene.posters.showMessage(`OBNOVENO ZE ZÁLOHY • ${saved.floor+1}. PATRO`,5000);return true;
       },
       interrupt(){state.disconnect=0;},
       requestDisconnect(){if(scene.floor===8)scene.promptText.setText(scene.touchControls?.enabled?'PODRŽ ▼ U HDD':'PODRŽ S / ↓ NEBO E U HDD');},
@@ -123,7 +123,7 @@
           door.lamp.setFillStyle(enabled?0xe49355:state.elapsed%door.period>door.period-650?0xffdc6c:0x94df63);
         }
         hud.setText(`ČAS ${formatTime(state.elapsed)}  •  BONUS +${manager.timeBonus()}`);
-        checkpointHud.setText(state.checkpoint?'ZÁLOHA: 5. PATRO ✓':'');
+        checkpointHud.setText(state.checkpoint?`ZÁLOHA: ${(scene.registry.get(checkpointKey)?.floor??4)+1}. PATRO ✓`:'');
         const show=scene.gameState==='playing'&&!scene.posters.tooltip.visible;hud.setVisible(show);checkpointHud.setVisible(show);
         if(!active){objective.setVisible(false);progress.clear();}
       },

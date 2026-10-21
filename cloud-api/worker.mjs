@@ -64,7 +64,7 @@ export default {async fetch(request,env){
   }
   if(url.pathname==='/v1/scores'&&request.method==='POST'){
    if(!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'Použij application/json.');
-   const d=await jsonBody(request);if(!d||d.training!==false||d.completed!==true||!Number.isSafeInteger(d.score)||d.score<0||d.score>100000||!Number.isSafeInteger(d.elapsedMs)||d.elapsedMs<1000||d.elapsedMs>86400000||typeof d.requestId!=='string'||! /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(d.requestId))fail(400,'Neplatný výsledek nebo tréninková hra.');
+   const d=await jsonBody(request);if(!d||(d.difficulty!==undefined&&d.difficulty!=='normal')||d.training!==false||d.completed!==true||!Number.isSafeInteger(d.score)||d.score<0||d.score>100000||!Number.isSafeInteger(d.elapsedMs)||d.elapsedMs<1000||d.elapsedMs>86400000||typeof d.requestId!=='string'||! /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(d.requestId))fail(400,'Neplatný výsledek nebo tréninková hra.');
    const avatar=d.avatar??'hero';if(!avatarIds.includes(avatar))fail(400,'Neplatný avatar.');
    const name=clean(d.name,12);if(!name)fail(400,'Vyplň přezdívku.');
    const lookup=()=>env.DB.prepare("SELECT s.*,COALESCE(a.avatar_id,'hero') AS avatar FROM arcade_scores s LEFT JOIN arcade_score_avatars a ON a.request_id=s.request_id WHERE s.request_id=?").bind(d.requestId).first();let row=await lookup();
