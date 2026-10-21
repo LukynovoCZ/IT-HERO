@@ -22,6 +22,7 @@
    const im=c.getImageData(0,0,w,h),d=im.data;
    for(let y=0;y<35;y++)for(let x=0;x<w;x++){
     const i=(y*w+x)*4,R=d[i],G=d[i+1],B=d[i+2];
+    if((key.includes('contact')||key.includes('whistle'))&&x>=48&&y>=18)continue;
     const highlight=y<15&&R>150&&G>140&&B>100&&R<G*1.15&&G<B*1.3;
     const hair=d[i+3]&&(highlight||R>65&&G>45&&R>G*1.02&&R<G*1.42&&G>B*1.3);
     if(!hair)continue;
