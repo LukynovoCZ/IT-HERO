@@ -81,7 +81,7 @@
    const cycle=(this.clock-this.jardaStart)%17000;this.jarda.setVisible(this.clock>=this.jardaStart&&cycle<15300);this.jarda.setX(1040-cycle*config.bikeSpeed/1000).setTexture(`outdoor-jarda-${Math.floor(this.clock/150)%2}`);const lap=Math.floor(Math.max(0,this.clock-this.jardaStart)/17000);
    if(this.jarda.visible&&lap!==this.jardaLap){this.jardaLap=lap;this.jardaJumped=false;this.jardaTrick=Math.random()<.5?'roll':'backflip';this.jardaRollAt=!this.reduceMotion&&Math.random()<config.rollChance?this.jardaStart+lap*17000+Phaser.Math.Between(config.rollEarliest,config.rollLatest):Infinity;}
    const wasRolling=this.jardaRolling;const rollAge=this.clock-this.jardaRollAt;this.jardaRolling=this.jarda.visible&&rollAge>=0&&rollAge<config.rollDuration;
-   if(wasRolling&&!this.jardaRolling&&this.jarda.visible){this.jardaSpeech.setText(window.ITHeroDialogue.lines('jarda',this.jardaTrick)[0]);this.jardaSpeechUntil=this.clock+6000;}
+   if(wasRolling&&!this.jardaRolling&&this.jarda.visible){this.jardaSpeech.setText(window.ITHeroDialogue.draw('jarda',this.jardaTrick));this.jardaSpeechUntil=this.clock+6000;}
    this.jardaSpeech.setPosition(Phaser.Math.Clamp(this.jarda.x,135,825),config.ground-115).setVisible(this.jarda.visible&&!this.jardaRolling&&this.clock<this.jardaSpeechUntil);
    const t=this.jardaRolling?rollAge/config.rollDuration:0;this.jarda.setOrigin(.5,this.jardaRolling?.5:1).setY(this.jardaRolling?config.ground-this.jarda.height/2-Math.sin(t*Math.PI)*config.rollLift:config.ground).setAngle(this.jardaRolling?(this.jardaTrick==='backflip'?360:this.jardaTrick==='superman'?0:-360)*t*t*(3-2*t):0);
    this.jarda.setCrop();
@@ -102,7 +102,7 @@
     if(bikeHit||Phaser.Geom.Intersects.RectangleToRectangle(this.player.body,r.getBounds())){const direction=bikeHit?-1:Math.sign(r.x-this.player.x)||this.facing;r.rabbitFlight={at:this.clock,x:r.x,y:r.y-r.height/2,vx:direction*config.rabbitKickSpeed,direction};r.setOrigin(.5).setY(r.rabbitFlight.y).setDepth(29);this.source.tone(660,.06,'triangle');}
    });
    this.smoke.clear();this.smokers.forEach((actor,i)=>{const t=((this.clock+i*610)%2400)/2400;this.smoke.fillStyle(0xe1e8d9,(1-t)*.5);this.smoke.fillRect(actor.x+21+Math.sin(t*8)*4,actor.y-55-t*24,3,5);this.smoke.fillRect(actor.x+24+Math.sin(t*7)*3,actor.y-65-t*22,2,4);});
-   if(this.clock>=this.nextBird){const i=this.birdIndex++%birdLines.length;this.bubble.setText(birdLines[i]).setVisible(true);this.placeBubble();this.birdUntil=this.clock+4400;this.nextBird=this.clock+8500;if(i===2)this.flightAt=this.clock+1800;}
+   if(this.clock>=this.nextBird){this.birdIndex++;const line=window.ITHeroDialogue.draw('jay','ambient');this.bubble.setText(line).setVisible(true);this.placeBubble();this.birdUntil=this.clock+4400;this.nextBird=this.clock+8500;if(line===birdLines[2])this.flightAt=this.clock+1800;}
    this.bubble.setVisible(this.clock<this.birdUntil);const flight=this.clock-this.flightAt;if(flight>=0&&flight<4400){const t=flight/4400;this.bird.setPosition(config.treeX+Math.sin(t*Math.PI)*235,config.birdY-Math.sin(t*Math.PI)*95).setFlipX(t<.5).setAngle(Math.sin(flight/80)*7);}else this.bird.setPosition(config.treeX,config.birdY).setAngle(0).setFlipX(Math.floor(this.clock/2500)%2===0);
   }
  }

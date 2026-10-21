@@ -3,10 +3,20 @@
  const D=window.ITHeroDialogue;
  const config={cooldownMin:7000,cooldownMax:10000,maxBubbles:1,gap:600,width:270,font:14};
  const duration=line=>line.length<=35?2800:line.length<=80?4000:Math.min(6000,4400+line.length*8);
- function pick(id,group,previous,random=Math.random,preferred){
-  const lines=D.lines(id,group),pool=lines.filter(line=>line!==previous);if(!pool.length)return lines[0];
-  const weights=pool.map(line=>(line.length>80?.2:line.length>60?.5:1)*(line===preferred?4:1));
-  let n=random()*weights.reduce((a,b)=>a+b,0);return pool.find((_,i)=>(n-=weights[i])<0)||pool.at(-1);
+ function pick(id,group,previous,random=Math.random){
+  const lines=D.lines(id,group),pool=lines.filter(line=>line!==previous);
+  return pool.length?pool[Math.floor(random()*pool.length)]:lines[0];
+ }
+ // Persist shuffled bags so even short visits eventually expose every line.
+ const rotationKey='it-hero-dialogue-rotation-v1';
+ let bags;
+ function loadBags(){if(bags)return;bags=Object.create(null);try{const raw=localStorage.getItem(rotationKey);if(raw&&raw.length<500000){const parsed=JSON.parse(raw);if(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))for(const [key,value] of Object.entries(parsed).slice(0,500))bags[key]=value;}}catch{}}
+ function draw(id,group,random=Math.random){
+  const lines=[...new Set(D.lines(id,group))];if(!lines.length)return;
+  loadBags();const key=id+'/'+group+'/'+(window.ITHeroAppearance?.state.original?'original':'public'),signature=JSON.stringify(lines);
+  let bag=bags[key];if(!bag||bag.signature!==signature||!Array.isArray(bag.remaining)||bag.remaining.some(line=>!lines.includes(line))||new Set(bag.remaining).size!==bag.remaining.length)bag=bags[key]={signature,remaining:[],last:null};
+  if(!bag.remaining.length){bag.remaining=[...lines];for(let i=bag.remaining.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[bag.remaining[i],bag.remaining[j]]=[bag.remaining[j],bag.remaining[i]];}if(bag.remaining.length>1&&bag.remaining[0]===bag.last)[bag.remaining[0],bag.remaining[1]]=[bag.remaining[1],bag.remaining[0]];}
+  const line=bag.remaining.shift();bag.last=line;try{localStorage.setItem(rotationKey,JSON.stringify(bags));}catch{}return line;
  }
  function layout(text,owner,camera){
   const left=camera.scrollX+12,right=camera.scrollX+camera.width-12;
@@ -25,7 +35,7 @@
    if(active&&!options.replace)return null;
    if(!options.replace&&state.clock<(state.next.get(owner)||0))return null;
    if(!active&&(state.active.size>=config.maxBubbles||state.clock<state.gapUntil)&&!options.priority)return null;
-   const line=options.line??pick(id,group,state.history.get(id),Math.random,options.preferred);if(!line)return null;
+   const line=options.line??draw(id,group);if(!line)return null;
    if(options.priority)clear();else remove(owner);
    const visibleLine=line.length>120?line.slice(0,120).replace(/\s+\S*$/,'')+'…':line;
    const text=scene.add.text(0,0,visibleLine,{font:`bold ${config.font}px monospace`,color:options.color||'#f6edce',backgroundColor:'#16362f',padding:{x:8,y:6},wordWrap:{width:config.width,useAdvancedWrap:true},align:'center'}).setOrigin(.5,1).setDepth(106);
@@ -45,5 +55,5 @@
   }
   scene.events.once('shutdown',clear);return {state,say,tick,clear,remove};
  }
- Object.assign(D,{config,duration,pick,layout,create});
+ Object.assign(D,{config,duration,pick,draw,rotationKey,layout,create});
 })();

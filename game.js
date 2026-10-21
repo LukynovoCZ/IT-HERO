@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.24.3 – mini plošinovka v Phaser 3.
+ * IT HERO 0.24.4 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -44,7 +44,6 @@
 
   const OLD_HELPER_TIMING = {offerAt:1800,visitDuration:6500,panelDuration:7000};
 
-  const DEATH_LINES = window.ITHeroDialogue.lines('hero','death');
 
   class ITGame extends Phaser.Scene {
     constructor() { super('ITGame'); }
@@ -854,15 +853,7 @@
     }
 
     nextDeathLine() {
-      let queue = this.registry.get('deathLines');
-      if (!queue || !queue.length) {
-        queue = Phaser.Utils.Array.Shuffle([...DEATH_LINES]);
-        if (queue[0] === this.registry.get('lastDeathLine')) [queue[0],queue[1]] = [queue[1],queue[0]];
-      }
-      const line = queue.shift();
-      this.registry.set('deathLines',queue);
-      this.registry.set('lastDeathLine',line);
-      return line;
+      return ITHeroDialogue.draw('hero','death');
     }
 
     takeDamage(sourceX, damage = 1) {
