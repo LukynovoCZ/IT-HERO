@@ -2,7 +2,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
 (async()=>{const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});try{
  const p=await b.newPage({viewport:{width:1280,height:900}}),errors=[];p.setDefaultTimeout(12000);p.on('pageerror',e=>errors.push(e.message));
  for(const file of ['game','character-preview'])await p.route(`**/${file}.js*`,async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__game=new Phaser.Game({')});});
- await p.goto('http://127.0.0.1:8000/character-preview.html');await p.waitForFunction(()=>window.__game?.scene.scenes[0].entries?.length===24);
+ await p.goto('http://127.0.0.1:8000/character-preview.html');await p.waitForFunction(()=>window.__game?.scene.scenes[0].entries?.length===25);
  assert(await p.evaluate(()=>__game.scene.scenes[0].entries.filter(e=>!e.outdoor).every(e=>e.itemIcons?.length>0)));
  assert.deepEqual(await p.evaluate(()=>__game.scene.scenes[0].entries.find(e=>e.name==='MANAŽER').itemIcons.map(i=>i.texture.key)),['sap-helmet','sap-pen','pingpong-ball']);
  await p.selectOption('#pose','contact');

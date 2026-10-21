@@ -3,7 +3,7 @@
  'use strict';
  const state={original:false,god:false,training:false};
  const kindOf=key=>{
-  if(key.endsWith('-source'))return null;
+  if(key.endsWith('-source')||key.startsWith('union-public-'))return null;
   if(key==='rainbow-flag')return 'flag';
   if(/^(union|legacy-union|preview-legacy-2)(-|$)/.test(key))return 'union';
   if(/^(manager|legacy-manager|preview-legacy-3)(-|$)/.test(key))return 'manager';
@@ -17,29 +17,6 @@
   const r=(color,x,y,a,b)=>{c.fillStyle=color;c.fillRect(x,y,a,b);};
   if(kind==='flag'){
    r('#f7cf48',4,3,48,30);r('#26332f',15,11,3,5);r('#26332f',36,11,3,5);r('#26332f',16,25,22,3);r('#26332f',12,20,4,5);r('#26332f',38,20,4,5);
-  }else if(kind==='union'){
-   // Keep warm skin pixels intact; shorten only the blonde hair outside the face.
-   const im=c.getImageData(0,0,w,h),d=im.data;
-   for(let y=0;y<35;y++)for(let x=0;x<w;x++){
-    const i=(y*w+x)*4,R=d[i],G=d[i+1],B=d[i+2];
-    if((key.includes('contact')||key.includes('whistle'))&&x>=48&&y>=18)continue;
-    const highlight=y<15&&R>150&&G>140&&B>100&&R<G*1.15&&G<B*1.3;
-    const hair=d[i+3]&&(highlight||R>65&&G>45&&R>G*1.02&&R<G*1.42&&G>B*1.3);
-    if(!hair)continue;
-    if(y>=18&&(x<27||x>48)){d[i+3]=0;continue;}
-    if(y<18||x<29||x>48){const light=(R+G)/500;d[i]=Math.round((highlight?150:98)*light);d[i+1]=Math.round((highlight?110:61)*light);d[i+2]=Math.round((highlight?75:37)*light);}
-   }c.putImageData(im,0,0);
-   // Swept-back hair, a dark tie at the nape and a single long tapered ponytail.
-   const dy=key.includes('contact')||key.includes('whistle')?2:0,dx=key.endsWith('-hit')?2:0;
-   c.save();c.translate(dx,dy);
-   r('#39291f',24,15,4,5);r('#68472f',24,14,3,5);r('#9b7250',25,15,1,3);
-   r('#241f1b',22,18,4,3);r('#ac8b54',23,19,2,1);
-   r('#35271f',19,21,6,6);r('#35271f',17,26,6,7);r('#35271f',18,32,4,5);
-   r('#68472f',20,21,4,6);r('#68472f',18,26,4,7);r('#68472f',19,32,2,4);
-   r('#9b7250',21,22,1,5);r('#9b7250',19,27,1,6);r('#4c3425',20,34,2,3);
-   c.restore();
-   // The original white beard belongs to the same brown hair palette.
-   const beard=c.getImageData(0,0,w,h);for(let y=25;y<34;y++)for(let x=28;x<47;x++){const i=(y*w+x)*4,d=beard.data;if(d[i+3]&&Math.max(d[i],d[i+1],d[i+2])-Math.min(d[i],d[i+1],d[i+2])<35&&d[i]>95){const l=d[i]/255;d[i]=Math.round(62+97*l);d[i+1]=Math.round(43+80*l);d[i+2]=Math.round(29+61*l);}}c.putImageData(beard,0,0);
   }else if(kind==='manager'){
    // Stepped jaw edges and the silver hair palette keep the goatee in the face.
    r('#626569',29,25,7,2);r('#96999b',30,26,5,3);r('#bfc0bd',31,27,3,3);r('#73777a',31,30,3,1);
@@ -79,16 +56,26 @@
    c.putImageData(im,0,0);if(xs.length){const x=Math.round((Math.min(...xs)+Math.max(...xs))/2),y=Math.round((Math.min(...ys)+Math.max(...ys))/2);r('#23302e',x-5,y-4,2,3);r('#23302e',x+3,y-4,2,3);r('#23302e',x-4,y+4,8,2);r('#23302e',x-6,y+1,2,3);r('#23302e',x+4,y+1,2,3);}
   }
  }
+ function preload(scene){scene.load.image('union-public-source','assets/characters/union-public.png?v=0.24.0');}
+ function unionFrames(scene){
+  if(scene.publicUnionFrames)return scene.publicUnionFrames;
+  const source=scene.textures.get('union-public-source').getSourceImage(),cw=Math.floor(source.width/2),scratch=document.createElement('canvas');scratch.width=source.width;scratch.height=source.height;const sc=scratch.getContext('2d');sc.drawImage(source,0,0);const pixels=sc.getImageData(0,0,source.width,source.height).data,bounds=[];
+  for(let k=0;k<2;k++){let left=cw,top=source.height,right=0,bottom=0;for(let y=0;y<source.height;y++)for(let x=0;x<cw;x++)if(pixels[(y*source.width+k*cw+x)*4+3]>160){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}bounds.push({x:k*cw+left,y:top,w:right-left+1,h:bottom-top+1});}
+  const scale=Math.min(76/Math.max(...bounds.map(b=>b.h)),62/Math.max(...bounds.map(b=>b.w))),frames={};
+  ['idle','contact'].forEach((pose,i)=>{const key='union-public-'+pose;frames[pose]=key;if(scene.textures.exists(key))return;const b=bounds[i],t=scene.textures.createCanvas(key,64,80),c=t.context;c.imageSmoothingEnabled=false;const w=Math.round(b.w*scale),h=Math.round(b.h*scale);c.drawImage(source,b.x,b.y,b.w,b.h,Math.round((64-w)/2),80-h,w,h);const data=c.getImageData(0,0,64,80);for(let j=3;j<data.data.length;j+=4)data.data[j]=data.data[j]>160?255:0;c.putImageData(data,0,0);t.refresh();});
+  scene.publicUnionFrames=ITHeroMotion.complete(scene,frames,{prefix:'union-public'});return scene.publicUnionFrames;
+ }
  function prepare(scene){
+  const approvedUnion=unionFrames(scene);
   const map=new Map();for(const key of scene.textures.getTextureKeys()){
    if(key.startsWith('free-'))continue;const kind=kindOf(key);if(!kind)continue;
    const src=scene.textures.get(key).getSourceImage();if(!src?.width)continue;
-   const alt=`free-${key}`;if(!scene.textures.exists(alt)){const t=scene.textures.createCanvas(alt,src.width,src.height);t.context.imageSmoothingEnabled=false;t.context.drawImage(src,0,0);draw(t.context,kind,src.width,src.height,key);t.refresh();}map.set(key,alt);
+   const alt=`free-${key}`;if(!scene.textures.exists(alt)){const t=scene.textures.createCanvas(alt,src.width,src.height);t.context.imageSmoothingEnabled=false;if(kind==='union'){const suffix=key.split('-').at(-1),pose=key.endsWith('walk-alt')?'walk_alt':key==='union-whistle'||suffix==='contact'?'contact':approvedUnion[suffix]?suffix:'idle';t.context.drawImage(scene.textures.get(approvedUnion[pose]).getSourceImage(),0,0);}else{t.context.drawImage(src,0,0);draw(t.context,kind,src.width,src.height,key);}t.refresh();}map.set(key,alt);
   }
   scene.appearanceMap=map;
   const sync=()=>{const visit=o=>{if(o.texture){const current=o.texture.key,base=current.startsWith('free-')?current.slice(5):current,alt=map.get(base);if(alt){const key=state.original?base:alt;if(key!==current)o.setTexture(key);}}if(o.list)o.list.forEach(visit);};scene.children.list.forEach(visit);};
   scene.events.on('postupdate',sync);scene.events.once('shutdown',()=>scene.events.off('postupdate',sync));sync();return map;
  }
  function texture(scene,key){return state.original?key:scene.appearanceMap?.get(key)||key;}
- window.ITHeroAppearance={state,prepare,texture,kindOf};
+ window.ITHeroAppearance={state,preload,prepare,texture,kindOf};
 })();

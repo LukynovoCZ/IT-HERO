@@ -50,13 +50,13 @@ export async function deployPublicCopy(){
   let ready=false;
   for(let attempt=0;attempt<12;attempt++){
    try{
-    const [home,config,scores,stats,moderation,preflight,icon,manifest]=await Promise.all([
+    const [home,config,scores,stats,moderation,preflight,icon,manifest,girlArt,unionArt]=await Promise.all([
      fetch(url),fetch(url+'/community-config.js'),fetch(url+'/v1/scores'),fetch(url+'/v1/play-stats'),
      fetch(url+'/v1/admin/dialogue-suggestions',{headers:{Authorization:`Bearer ${admin}`}}),
-     fetch(url+'/v1/dialogue-suggestions',{method:'OPTIONS',headers:{Origin:url}}),fetch(url+'/assets/icons/favicon-32.png'),fetch(url+'/site.webmanifest')
+     fetch(url+'/v1/dialogue-suggestions',{method:'OPTIONS',headers:{Origin:url}}),fetch(url+'/assets/icons/favicon-32.png'),fetch(url+'/site.webmanifest'),fetch(url+'/assets/characters/hero-girl.png'),fetch(url+'/assets/characters/union-public.png')
     ]);
     const html=await home.text(),configuration=await config.text(),scoreData=await scores.json(),statData=await stats.json(),adminData=await moderation.json();
-    ready=icon.ok&&icon.headers.get('Content-Type')?.includes('image/png')&&manifest.ok&&(await manifest.json()).icons?.length>=2&&home.ok&&html.includes('IT HERO')&&!/lukynovo|l-baborak|github\.io/i.test(html+configuration)&&configuration.includes('location.origin')&&scores.ok&&Array.isArray(scoreData.items)&&stats.ok&&Number.isSafeInteger(statData.total)&&moderation.ok&&Array.isArray(adminData.items)&&preflight.status===204&&preflight.headers.get('Access-Control-Allow-Origin')===url;
+    ready=girlArt.ok&&unionArt.ok&&html.includes('id="player-choice"')&&icon.ok&&icon.headers.get('Content-Type')?.includes('image/png')&&manifest.ok&&(await manifest.json()).icons?.length>=2&&home.ok&&html.includes('IT HERO')&&!/lukynovo|l-baborak|github\.io/i.test(html+configuration)&&configuration.includes('location.origin')&&scores.ok&&Array.isArray(scoreData.items)&&stats.ok&&Number.isSafeInteger(statData.total)&&moderation.ok&&Array.isArray(adminData.items)&&preflight.status===204&&preflight.headers.get('Access-Control-Allow-Origin')===url;
     if(ready)break;
    }catch{}
    await new Promise(resolve=>setTimeout(resolve,3000));

@@ -43,7 +43,7 @@ require('node:fs').mkdirSync('/tmp/it-hero-tests',{recursive:true});
  assert.equal(await p.evaluate(()=>window.__testGame.scene.getScene('ITGame').floor),1);await end(9);
  for(const viewport of [{width:390,height:844},{width:320,height:568},{width:844,height:390},{width:568,height:320}]){
  await p.setViewportSize(viewport);await p.waitForTimeout(180);
- const layout=await p.evaluate(()=>{const canvas=document.querySelector('canvas').getBoundingClientRect();return {canvasHeight:canvas.height,overflow:document.documentElement.scrollWidth>innerWidth,buttons:[...document.querySelectorAll('[data-touch-action],#touch-toolbar button:not([hidden])')].map(b=>{const r=b.getBoundingClientRect();return {w:r.width,h:r.height,bottom:r.bottom,below:r.top>=canvas.bottom-1||r.right<=canvas.left+1||r.left>=canvas.right-1};})};});
+ const layout=await p.evaluate(()=>{const canvas=document.querySelector('#game canvas').getBoundingClientRect();return {canvasHeight:canvas.height,overflow:document.documentElement.scrollWidth>innerWidth,buttons:[...document.querySelectorAll('[data-touch-action],#touch-toolbar button:not([hidden])')].map(b=>{const r=b.getBoundingClientRect();return {w:r.width,h:r.height,bottom:r.bottom,below:r.top>=canvas.bottom-1||r.right<=canvas.left+1||r.left>=canvas.right-1};})};});
  if(viewport.width===844)assert(layout.canvasHeight>=370,JSON.stringify(layout));
  assert.equal(layout.overflow,false);assert(layout.buttons.every(b=>b.w>=44&&b.h>=44&&b.bottom<=viewport.height&&b.below),JSON.stringify(layout));
  await p.screenshot({path:`/tmp/it-hero-tests/touch-${viewport.width}.png`});
@@ -66,7 +66,7 @@ require('node:fs').mkdirSync('/tmp/it-hero-tests',{recursive:true});
  await p.close();
  const landscape=await b.newPage({viewport:{width:844,height:390},hasTouch:true,isMobile:true});landscape.on('pageerror',e=>errors.push(e.message));
  await landscape.goto('http://127.0.0.1:8000');await landscape.locator('#game-action').waitFor({state:'visible'});await landscape.waitForTimeout(100);
- const hit=await landscape.evaluate(()=>{const b=document.getElementById('game-action').getBoundingClientRect(),c=document.querySelector('canvas').getBoundingClientRect();return b.left>=c.left&&b.right<=c.right&&b.top>=c.top&&b.bottom<=c.bottom;});assert(hit);
+ const hit=await landscape.evaluate(()=>{const b=document.getElementById('game-action').getBoundingClientRect(),c=document.querySelector('#game canvas').getBoundingClientRect();return b.left>=c.left&&b.right<=c.right&&b.top>=c.top&&b.bottom<=c.bottom;});assert(hit);
  await landscape.locator('#game-action').tap();await landscape.locator('#game-action').waitFor({state:'hidden'});await landscape.close();
  // PC retains its keyboard controls; touch buttons can be shown manually.
  const pc=await b.newPage();pc.on('pageerror',e=>errors.push(e.message));

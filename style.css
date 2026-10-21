@@ -198,3 +198,5 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
 
 /* The character gallery is a scrollable document, including over the canvas. */
 .character-preview #game, .character-preview #game canvas{touch-action:pan-y!important}
+
+.player-choice{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 16px;border:1px solid #527c68;padding:8px 12px;color:#e8edca}.player-choice[hidden]{display:none}.player-choice legend{color:#b3ed78;font-size:14px}.player-choice label{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px;border:2px solid transparent;border-radius:5px;font-size:14px}.player-choice label:has(input:checked){border-color:#b3ed78;background:#173d31}.player-choice canvas{width:40px;height:50px;image-rendering:pixelated}.player-choice input{accent-color:#b3ed78;width:20px;height:20px}.player-choice input:focus-visible{outline:2px solid #ffdd82;outline-offset:3px}

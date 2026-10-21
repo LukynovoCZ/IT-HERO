@@ -4,8 +4,9 @@
  if(typeof Phaser==='undefined'||!window.ITHeroEnding){status.textContent='Nepodařilo se načíst herní engine. Obnov stránku.';return;}
  class Preview extends Phaser.Scene{
   constructor(){super('ITGame');}
-  preload(){ITHeroEnding.preload(this);this.load.image('preview-hero-art','assets/characters.png');}
+  preload(){ITHeroPlayer.preload(this);ITHeroEnding.preload(this);this.load.image('preview-hero-art','assets/characters.png');}
   create(){source=this;this.gameState='win';this.energy=5;this.maxEnergy=5;this.score=12500;this.isMuted=muted;this.touchControls={clear(){},sync:()=>{muted=this.isMuted;sound.textContent=muted?'Zapnout zvuk':'Vypnout zvuk';sound.setAttribute('aria-pressed',String(!muted));}};this.player={setVelocity(){}};const image=this.textures.get('preview-hero-art').getSourceImage();for(const [key,x,y,w,h] of [['hero',40,16,245,342],['hero-walk',380,16,265,342]]){if(this.textures.exists(key))continue;const canvas=this.textures.createCanvas(key,64,80),width=Math.round(w*76/h);canvas.context.imageSmoothingEnabled=false;canvas.context.drawImage(image,x,y,w,h,Math.round((64-width)/2),4,width,76);canvas.refresh();}
+   ITHeroPlayer.textures(this);
    this.add.text(480,260,'ÚNIK ZE STŘECHY',{font:'bold 32px monospace',color:'#a4e963'}).setOrigin(.5);start.disabled=false;start.hidden=false;start.textContent='Přehrát animaci';this.events.once('shutdown',()=>this.audioCtx?.close().catch(()=>{}));
   }
   hideOverlay(){start.hidden=true;status.textContent='Přehrávám náhled. Enter, mezerník nebo PŘESKOČIT otevře konec náhledu.';}

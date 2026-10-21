@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.23.10 – mini plošinovka v Phaser 3.
+ * IT HERO 0.24.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -50,6 +50,8 @@
     constructor() { super('ITGame'); }
 
     preload() {
+      ITHeroAppearance.preload(this);
+      ITHeroPlayer.preload(this);
       window.ITHeroEnemyCatalog.preload(this);
       window.ITHeroColleague.preload(this);
       window.ITHeroOldBadger.preload(this);
@@ -102,6 +104,7 @@
       this.buildOffice();
       window.ITHeroOutdoor.door(this,4320);
       this.createActors();
+      ITHeroPlayer.attach(this);
       this.dbpm = window.ITHeroDBPM.create(this, FLOORS);
       this.configurePhysics();
       this.configureKeyboard();
@@ -130,7 +133,7 @@
       this.cameras.main.fadeIn(350, 6, 13, 26);
       this.updateHUD();
       if (!restored) this.showOverlay('IT HERO', 'NO MORE MEETING',
-        'Jsi ajťák na životně důležité misi.\nProjdi 9 pater a odpoj HDD u vedení.\nJakákoliv podobnost s čímkoliv z reálného světa a s čímkoliv jiným či podobným je čistě strategická.',
+        'Jsi na životně důležité misi.\nProjdi 9 pater a odpoj HDD u vedení.\nJakákoliv podobnost s čímkoliv z reálného světa a s čímkoliv jiným či podobným je čistě strategická.',
         'ENTER nebo kliknutí = HRÁT');
     }
 
@@ -176,6 +179,7 @@
         canvas.refresh();
       });
       this.heroFrames=window.ITHeroMotion.complete(this,{idle:'hero',walk:'hero-walk',contact:'hero-duck'},{prefix:'hero-motion'});
+      ITHeroPlayer.textures(this,this.heroFrames);
       this.secretaryVariants=window.ITHeroMotion.secretaries(this);
       this.legacyFrames={};for(const kind of ['secretary','union','manager','specialist'])this.legacyFrames[kind]=window.ITHeroMotion.complete(this,{idle:kind,contact:kind==='secretary'?'secretary-scream':kind==='union'?'union-whistle':kind==='manager'?'manager-stomp-0':'specialist-flag'},{prefix:`legacy-${kind}`});
       window.ITHeroItems.create(this);
@@ -318,7 +322,7 @@
     }
 
     createActors() {
-      this.player = this.physics.add.sprite(82, FLOORS[0] - 40, 'hero');
+      this.player = this.physics.add.sprite(82, FLOORS[0] - 40, ITHeroPlayer.key(this));
       this.player.setScale(1).setDepth(23).setMaxVelocity(250, 860);
       this.player.setCollideWorldBounds(true).setDragX(1050).setBounce(0);
       this.player.body.setSize(28, 72).setOffset(18, 8);
@@ -642,6 +646,7 @@
       this.overlayBody.setFontSize(this.gameState === 'lose' ? 13 : 14);
       this.overlayBody.setText(message);
       this.overlay.setVisible(true);
+      ITHeroPlayer.sync(this);
       const button = document.getElementById('game-action');
       if (button) {
         button.textContent = action;
@@ -653,6 +658,7 @@
       this.overlay.setVisible(false);
       const button = document.getElementById('game-action');
       if (button) button.hidden = true;
+      ITHeroPlayer.sync(this);
     }
 
     handleStart() {
@@ -871,6 +877,7 @@
       if (this.energy === 0) {
         this.pacing.retainElapsed();
         this.gameState = 'lose';
+        this.player.setTexture(this.heroFrames.defeat);
         this.player.setVelocityX(0);
         const line = this.nextDeathLine();
         this.time.delayedCall(350, () => this.showOverlay('DOSTALI TĚ!', 'TVŮJ NOVÝ ÚKOL:',
@@ -996,9 +1003,9 @@
         this.lastOnGroundAt = -5000;
         this.tone(380, 0.095, 'triangle');
       }
-      if (crouching) this.player.setTexture('hero-duck');
-      else if (grounded && moving) this.player.setTexture(Math.floor(time / 130) % 2 ? 'hero' : 'hero-walk');
-      else this.player.setTexture('hero');
+      if (crouching) this.player.setTexture(ITHeroPlayer.key(this,'crouch'));
+      else if (grounded && moving) this.player.setTexture(ITHeroPlayer.key(this,Math.floor(time / 130) % 2 ? 'walk_alt' : 'walk'));
+      else this.player.setTexture(ITHeroPlayer.key(this,grounded?'idle':'jump'));
       if(!crouching&&time<(this.playerAttackUntil||0))this.player.setTexture(this.heroFrames.attack);
       if(time<(this.playerHitUntil||0))this.player.setTexture(this.heroFrames.hit);
       const shootPressed = pressed('shoot');

@@ -4,6 +4,8 @@
   class CharacterPreview extends Phaser.Scene {
     constructor() { super('CharacterPreview'); }
     preload() {
+      ITHeroAppearance.preload(this);
+      ITHeroPlayer.preload(this);
       ITHeroEnemyCatalog.preload(this);
       ITHeroColleague.preload(this);
       ITHeroOldBadger.preload(this);
@@ -23,7 +25,7 @@
       this.paused = false;
       this.animationTime = 0;
       const graphics = this.add.graphics();
-      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 3260);
+      graphics.fillStyle(0x152f2b).fillRect(0, 0, 960, 3660);
       for (const baseline of [260, 660, 1060, 1460, 1860, 2260, 2660, 3060]) {
         graphics.lineStyle(1, 0x24453e);
         for (let y = baseline - 240; y < baseline; y += 20) graphics.lineBetween(0, y, 960, y);
@@ -73,6 +75,7 @@
       for(let i=0;i<3;i++)this.entries.push(ambient(i===2?'KOLEGYNĚ U KOŠE':`KOLEGA U KOŠE ${i+1}`,76,80,80,{idle:`outdoor-smoker-${i}`},'PAUZA U KOŠE'));
       this.entries.push(ambient('SOJKA',30,48,36,{idle:'outdoor-jay'},'POZORUJE A HLÁSÍ'));
       for(let i=0;i<2;i++)this.entries.push(ambient(`HNĚDÝ KRÁLÍK ${i+1}`,26,36,30,{idle:'outdoor-rabbit-0',walk:'outdoor-rabbit-1',walk_alt:'outdoor-rabbit-0'},'POSKAKUJE'));
+      const playable=ITHeroPlayer.textures(this,this.entries[0].frames);this.entries.push({name:'AJŤAČKA',height:76,frameWidth:64,frameHeight:80,frames:playable.girl,body:{width:28,height:72,x:18,y:8},itemKeys:['floppy','cd'],attackPose:'attack',contactPose:'crouch'});
       this.entries.forEach((entry, i) => {
         const x = 160 + (i % 3) * 320;
         entry.baseline = 260 + Math.floor(i / 3) * 400;
@@ -83,7 +86,7 @@
         }
         const keys=entry.itemKeys||entry.offerKeys||entry.projectiles?.map(w=>w.key)||[];
         const labels={'pingpong-ball':'Pingpongový míček','gold-card':'Zlatá karta',floppy:'Disketa',cd:'CD',folder:'Šanon',mug:'Hrnek',hammer:'Kladivo',gear:'Kolečko',beer:'Pivo',hotdog:'Párek',coffee:'Káva',unicorn:'Jednorožec','rainbow-spray':'Sprej','rainbow-flag':'Vlajka','red-heel':'Střevíc','red-tennis-ball':'Tenisák','handcuffs':'Želízka',fireball:'Fireball','golf-ball':'Golfový míček','golf-club':'Golfová hůl',calculator:'Kalkulačka','colleague-coffee':'Káva','colleague-candy':'Sisinka','sap-helmet':'Helma','sap-pen':'Propiska','dbpm-laptop':'Notebook','dbpm-baguette':'Bageta','gen-z-phone':'Mobil'};
-        const role=entry.activity|| (entry.name.startsWith('GEN Z')?'SCROLLUJE':entry.name==='SENIOR MASTER'?'JÍ A PIJE':entry.offerKeys||entry.name==='STARÝ AJŤÁK'?'NABÍZÍ':entry.name==='AJŤÁK'?'STŘELBA':'ÚTOKY');
+        const role=entry.activity|| (entry.name.startsWith('GEN Z')?'SCROLLUJE':entry.name==='SENIOR MASTER'?'JÍ A PIJE':entry.offerKeys||entry.name==='STARÝ AJŤÁK'?'NABÍZÍ':['AJŤÁK','AJŤAČKA'].includes(entry.name)?'STŘELBA':'ÚTOKY');
         this.add.text(x,entry.baseline+96,role,{font:'9px monospace',color:'#dfd4a0'}).setOrigin(.5,1);
         entry.itemIcons=keys.map((key,index)=>{
           const ix=x+(index-(keys.length-1)/2)*74;
@@ -140,7 +143,7 @@
     }
   }
   new Phaser.Game({
-    type: Phaser.AUTO, parent: 'game', width: 960, height: 3260,
+    type: Phaser.AUTO, parent: 'game', width: 960, height: 3660,
     pixelArt: true, roundPixels: true, antialias: false,
     input: { activePointers: 0, mouse: false, touch: false },
     disableContextMenu: false,

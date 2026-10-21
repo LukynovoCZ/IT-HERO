@@ -25,10 +25,10 @@
    this.campus=this.add.image(480,270,'escape-campus').setDisplaySize(960,540).setAlpha(0);
    const deck=this.add.graphics();deck.fillStyle(0x122a2c).fillRect(0,351,960,189);deck.fillStyle(0x81968b).fillRect(0,350,960,8);deck.fillStyle(0xb2c7a4).fillRect(0,350,960,2);deck.lineStyle(2,0x3a5a50);for(let x=0;x<960;x+=80)deck.lineBetween(x,365,x+40,540);deck.lineBetween(0,403,960,403);deck.lineStyle(2,0x78a76f).strokeRect(475,365,350,36);this.deck=deck;
    this.door=this.add.graphics(); // The painted access door is already open in the background.
-   this.hero=this.add.image(155,298,'hero').setScale(1.3).setDepth(5);
+   this.hero=this.add.image(155,298,ITHeroPlayer.key(this)).setScale(1.3).setDepth(5);
    this.disk=this.add.graphics().setDepth(6);this.disk.fillStyle(0x18232c).fillRect(0,0,14,20);this.disk.fillStyle(0xb6c8c8).fillRect(2,2,10,14);this.disk.fillStyle(0x7cdb9d).fillRect(9,15,2,2);this.disk.lineStyle(2,0x18232c).lineBetween(7,20,7,28);
    const parked=sceneSize(this,'escape-car-park'),hover=sceneSize(this,'escape-car-hover');this.carHeight=parked.h;this.park=this.add.image(0,0,'escape-car-park').setDisplaySize(config.carWidth,parked.h);this.hover=this.add.image(0,0,'escape-car-hover').setDisplaySize(config.carWidth,hover.h).setAlpha(0);
-   this.jets=this.add.graphics();this.wheels=this.add.graphics();this.driver=this.add.image(34,-parked.h*.16,'hero').setScale(.46).setCrop(0,0,64,42).setAlpha(0);
+   this.jets=this.add.graphics();this.wheels=this.add.graphics();this.driver=this.add.image(34,-parked.h*.16,ITHeroPlayer.key(this)).setScale(.46).setCrop(0,0,64,42).setAlpha(0);
    this.carDoor=this.add.graphics();this.carDoor.fillStyle(0xa8b9b2).fillRect(0,-34,47,58);this.carDoor.fillStyle(0x0a242d).fillRect(4,-30,39,24);this.carDoor.lineStyle(2,0x55a888).strokeRect(0,-34,47,58);this.carDoor.setPosition(14,0).setAlpha(0);
    this.car=this.add.container(650,350-parked.h/2,[this.jets,this.park,this.hover,this.wheels,this.driver,this.carDoor]).setDepth(10);
    this.add.rectangle(480,499,960,82,0x061724,.95).setDepth(20);this.caption=this.add.text(480,480,'',{font:'bold 18px monospace',color:'#f5e9c9',align:'center',wordWrap:{width:840}}).setOrigin(.5).setDepth(21);
@@ -46,7 +46,7 @@
    const phase=t<3000?0:t<6000?1:t<9000?2:t<12000?3:t<16000?4:5;
    if(phase!==this.phase){this.phase=phase;this.chapter.setText(['01 / STŘECHA','02 / DESIGN PROTOTYPE','03 / NÁSTUP','04 / LETOVÝ REŽIM','05 / MLADÁ BOLESLAV','06 / MISE SPLNĚNA'][phase]);this.caption.setText(['ZÁLOHA ZACHRÁNĚNA.','Co to zas kluci z designu vyváděli?','Hlavně ať to nechce aktualizaci.','Tak nashle, Hasta la Vista, a nachystejte mi k snídani uzenáče…','Tak nashle, Hasta la Vista, a nachystejte mi k snídani uzenáče…','Kariéra zachráněna. Kafe počká.'][phase]);if(!this.reduced)this.source.tone([440,290,380,520,660,880][phase],.13,phase===3?'triangle':'sine');}
    const walk=t<3000?155+Math.min(1,t/2500)*128:t<6000?283:283+Math.min(1,(t-6000)/2350)*368;
-   this.hero.setPosition(walk,298).setTexture((t<2500||t>6000&&t<8350)&&Math.floor(t/150)%2?'hero-walk':'hero').setAlpha(t<8100?1:Math.max(0,1-(t-8100)/600));
+   this.hero.setPosition(walk,298).setTexture(ITHeroPlayer.key(this,(t<2500||t>6000&&t<8350)&&Math.floor(t/150)%2?'walk':'idle')).setAlpha(t<8100?1:Math.max(0,1-(t-8100)/600));
    this.disk.setPosition(walk+18,301).setAlpha(this.hero.alpha).setVisible(t<8500);
    this.door.setAlpha(t<9000?1:Math.max(0,1-(t-9000)/3000));
    const lift=Phaser.Math.Clamp((t-9000)/3000,0,1),flight=Phaser.Math.Clamp((t-12000)/4000,0,1),campus=Phaser.Math.Clamp((t-12000)/650,0,1);

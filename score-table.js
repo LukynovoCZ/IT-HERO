@@ -33,7 +33,7 @@
     dialog.querySelector('.score-result').textContent=`TVOJE SCORE: ${score.toString().padStart(6,'0')}`;
     dialog.querySelector('.score-details').textContent=`Čas ${elapsed} · bonus za rychlost +${bonus}`;
     const form=dialog.querySelector('form'),status=dialog.querySelector('.score-status'),body=dialog.querySelector('[data-score-list]');
-    let selectedAvatar=ITHeroAvatars.normalize((()=>{try{return localStorage.getItem('it-hero-avatar');}catch{return null;}})());
+    let selectedAvatar=ITHeroAvatars.normalize((()=>{try{return localStorage.getItem('it-hero-avatar')||(window.ITHeroPlayer?.state.id==='girl'?'hero_girl':'hero');}catch{return null;}})());
     const selectedLabel=document.createElement('p');selectedLabel.className='avatar-selected';const labelAvatar=()=>selectedLabel.textContent=ITHeroAvatars.choices.find(a=>a.id===selectedAvatar).name;labelAvatar();form.querySelector('.avatar-picker').append(selectedLabel);
     for(const avatar of ITHeroAvatars.choices){const label=document.createElement('label');label.className='avatar-option';const input=document.createElement('input');input.type='radio';input.name='avatar';input.value=avatar.id;input.checked=avatar.id===selectedAvatar;input.setAttribute('aria-label',avatar.name);input.onchange=()=>{selectedAvatar=avatar.id;labelAvatar();};label.append(input,ITHeroAvatars.portrait(scene,avatar.id,64));label.title=avatar.name;form.querySelector('.avatar-options').append(label);}
     const render=rows=>{

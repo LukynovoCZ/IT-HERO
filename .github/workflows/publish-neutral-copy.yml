@@ -44,4 +44,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add cloud-api/public-copy-receipt.json
           git commit -m "Record verified neutral deployment (encrypted address)"
+          git pull --rebase origin main
           git push origin HEAD:main
