@@ -14,7 +14,7 @@ export async function buildPublicCopy(destination){
  const included=new Set();
  while(pending.length){
   const name=pending.shift();if(included.has(name))continue;
-  if(!/^[a-zA-Z0-9_./-]+\.(?:html|js|css|png|txt)$/.test(name)||name.includes('..'))throw Error('Unexpected asset path.');
+  if(!/^[a-zA-Z0-9_./-]+\.(?:html|js|css|png|txt|ico|webmanifest)$/.test(name)||name.includes('..'))throw Error('Unexpected asset path.');
   included.add(name);let bytes=await fs.readFile(path.join(root,name));
   if(name==='community-config.js')bytes=Buffer.from('window.ITHeroCommunityConfig={apiBaseUrl:location.origin};\n');
   if(/\.(html|js|css)$/.test(name)){
@@ -24,13 +24,14 @@ export async function buildPublicCopy(destination){
     text=text.replace('<head>','<head><meta name="robots" content="noindex,nofollow,noarchive">');
     for(const match of text.matchAll(/(?:src|href)=["']([^"'#?]+)(?:\?[^"']*)?["']/g)){
      if(/^(?:https?:|\/\/|mailto:)/i.test(match[1]))throw Error('External link in public page.');
-     if(/\.(?:html|js|css)$/.test(match[1]))pending.push(match[1]);
+     if(/\.(?:html|js|css|png|ico|webmanifest)$/.test(match[1]))pending.push(match[1]);
     }
    }
    for(const match of text.matchAll(/assets\/[a-zA-Z0-9_./-]+\.png/g))pending.push(match[0]);
    if(/lukynovo|l-baborak|baborak@|github\.com\/LukynovoCZ|github\.io/i.test(text))throw Error(`Personal reference in ${name}`);
    bytes=Buffer.from(text);
   }
+  if(name.endsWith('.webmanifest'))for(const icon of JSON.parse(bytes.toString()).icons||[])pending.push(icon.src.replace(/^\.\//,''));
   if(name.endsWith('.png')){
    // Remove text, timestamps and EXIF without changing image pixels.
    const chunks=[bytes.subarray(0,8)];let i=8;
