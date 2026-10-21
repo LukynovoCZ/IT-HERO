@@ -194,7 +194,7 @@ export const catalog=[
   },
   {
     "id": "dbpm",
-    "name": "PROJEKŤÁK DBPM",
+    "name": "BYZNYSÁK",
     "groups": [
       {
         "id": "chase",
@@ -218,7 +218,7 @@ export const catalog=[
       },
       {
         "id": "arrival",
-        "label": "Druhý projekťák vystupuje z výtahu v 6. patře"
+        "label": "Druhý byznysák vystupuje z výtahu v 6. patře"
       }
     ]
   },

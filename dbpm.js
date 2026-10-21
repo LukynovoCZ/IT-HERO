@@ -10,7 +10,7 @@
     demandMin:12000,demandMax:18000,demandWindup:500,demandLifetime:5000,demandHealth:2,
     placements:[{floor:4,x:140,enabled:true},{floor:6,x:225,encounter:'sixth_first',enabled:true},{floor:6,x:500,encounter:'sixth_second',after:'sixth_first',enabled:true},{floor:8,x:820,health:8,speed:105,enabled:false}]};
   const frame=index=>[index*160,0,160,96];
-  const profile={id:'dbpm',name:'PROJEKŤÁK DBPM',enabled:true,behavior:'dbpm',health:config.health,
+  const profile={id:'dbpm',name:'BYZNYSÁK',enabled:true,behavior:'dbpm',health:config.health,
     speed:config.speed,patrol:425,attackRange:config.throwRange,attackInterval:config.throwCooldown,
     attackType:'dbpm',damage:1,score:config.score,contactPose:'melee',attackPose:'throw_laptop',
     frameWidth:160,frameHeight:96,renderHeight:96,previewHeight:82,body:{width:26,height:80,x:67,y:16},
@@ -243,7 +243,7 @@
         }
         for(const [e,end] of state.deaths)if(state.clock>=end||!e.active){if(e.active)e.destroy();state.deaths.delete(e);}
         const target=selected.find(e=>!e.defeated&&e.active);hud.setVisible(active&&!!target);
-        if(target){bar.clear().fillStyle(0x18342c).fillRect(0,0,360,33).fillStyle(0x3b5b4c).fillRect(8,22,344,6).fillStyle(0xe4bb69).fillRect(8,22,344*Math.max(0,target.hp)/target.maxHp,6);label.setText(`PROJEKŤÁK DBPM – VŠE KOMPLIKUJE  ${target.hp}/${target.maxHp}`);}
+        if(target){bar.clear().fillStyle(0x18342c).fillRect(0,0,360,33).fillStyle(0x3b5b4c).fillRect(8,22,344,6).fillStyle(0xe4bb69).fillRect(8,22,344*Math.max(0,target.hp)/target.maxHp,6);label.setText(`BYZNYSÁK – VŠE KOMPLIKUJE  ${target.hp}/${target.maxHp}`);}
       },
       destroy(){
         if(state.destroyed)return;state.destroyed=true;actors.forEach(clear);removeDemand();for(const shot of [...state.shots])destroyShot(shot);
