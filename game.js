@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.24.4 – mini plošinovka v Phaser 3.
+ * IT HERO 0.24.7 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -522,6 +522,11 @@
         }
       };
       const onKeyDown = (event) => {
+        if(event.target.closest?.('details')){
+          const summary=event.target.closest('summary');
+          if(summary&&['Enter','NumpadEnter','Space'].includes(event.code)){event.preventDefault();if(!event.repeat)summary.closest('details').open=!summary.closest('details').open;}
+          event.stopPropagation();return;
+        }
         if (isTyping(event.target)) return;
         if (!allGameCodes.has(event.code)) return;
         event.preventDefault();

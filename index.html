@@ -5,36 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111a2a">
   <title>IT HERO | Save the world — but first, coffee</title>
-  <link rel="stylesheet" href="style.css?v=0.24.6">
+  <link rel="stylesheet" href="style.css?v=0.24.7">
   <script defer src="vendor/phaser.min.js"></script>
-  <script defer src="character-dialogue.js?v=0.24.6"></script>
-  <script defer src="dialogue-runtime.js?v=0.24.6"></script>
-  <script defer src="posters.js?v=0.24.6"></script>
-  <script defer src="item-textures.js?v=0.24.6"></script>
-  <script defer src="trio-attacks.js?v=0.24.6"></script>
-  <script defer src="player-character.js?v=0.24.6"></script>
-  <script defer src="appearance-mode.js?v=0.24.6"></script>
-  <script defer src="character-motion.js?v=0.24.6"></script>
-  <script defer src="enemy-catalog.js?v=0.24.6"></script>
-  <script defer src="dbpm.js?v=0.24.6"></script>
-  <script defer src="sap-integrator.js?v=0.24.6"></script>
-  <script defer src="it-colleague.js?v=0.24.6"></script>
-  <script defer src="gen-z-blockers.js?v=0.24.6"></script>
-  <script defer src="old-badger.js?v=0.24.6"></script>
-  <script defer src="touch-controls.js?v=0.24.6"></script>
-  <script defer src="difficulty.js?v=0.24.6"></script>
-  <script defer src="gameplay.js?v=0.24.6"></script>
+  <script defer src="character-dialogue.js?v=0.24.7"></script>
+  <script defer src="dialogue-runtime.js?v=0.24.7"></script>
+  <script defer src="posters.js?v=0.24.7"></script>
+  <script defer src="item-textures.js?v=0.24.7"></script>
+  <script defer src="trio-attacks.js?v=0.24.7"></script>
+  <script defer src="player-character.js?v=0.24.7"></script>
+  <script defer src="appearance-mode.js?v=0.24.7"></script>
+  <script defer src="character-motion.js?v=0.24.7"></script>
+  <script defer src="enemy-catalog.js?v=0.24.7"></script>
+  <script defer src="dbpm.js?v=0.24.7"></script>
+  <script defer src="sap-integrator.js?v=0.24.7"></script>
+  <script defer src="it-colleague.js?v=0.24.7"></script>
+  <script defer src="gen-z-blockers.js?v=0.24.7"></script>
+  <script defer src="old-badger.js?v=0.24.7"></script>
+  <script defer src="touch-controls.js?v=0.24.7"></script>
+  <script defer src="difficulty.js?v=0.24.7"></script>
+  <script defer src="gameplay.js?v=0.24.7"></script>
   <script defer src="community-config.js?v=cloud-9e7cbf2f4eb1"></script>
-  <script defer src="dialogue-community.js?v=0.24.6"></script>
-  <script defer src="play-stats.js?v=0.24.6"></script>
-  <script defer src="avatars.js?v=0.24.6"></script>
-  <script defer src="score-table.js?v=0.24.6"></script>
-  <script defer src="ending-scene.js?v=0.24.6"></script>
-  <script defer src="secret-console.js?v=0.24.6"></script>
-  <script defer src="final-manager.js?v=0.24.6"></script>
-  <script defer src="lobby.js?v=0.24.6"></script>
-  <script defer src="outdoor-bonus.js?v=0.24.6"></script>
-  <script defer src="game.js?v=0.24.6"></script>
+  <script defer src="dialogue-community.js?v=0.24.7"></script>
+  <script defer src="play-stats.js?v=0.24.7"></script>
+  <script defer src="avatars.js?v=0.24.7"></script>
+  <script defer src="score-table.js?v=0.24.7"></script>
+  <script defer src="ending-scene.js?v=0.24.7"></script>
+  <script defer src="secret-console.js?v=0.24.7"></script>
+  <script defer src="final-manager.js?v=0.24.7"></script>
+  <script defer src="lobby.js?v=0.24.7"></script>
+  <script defer src="outdoor-bonus.js?v=0.24.7"></script>
+  <script defer src="game.js?v=0.24.7"></script>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png?v=1">
   <link rel="icon" href="favicon.ico?v=1" sizes="16x16 32x32 48x48">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png?v=1">
@@ -47,7 +47,7 @@
         <span class="eyebrow">PTG PIXEL OFFICE ARCADE</span>
         <h1>IT<span>HERO</span><small> / Save the world — but first, coffee</small></h1>
       </div>
-      <span class="version">BUILD 0.24.6</span>
+      <span class="version">BUILD 0.24.7</span>
     </header>
     <fieldset id="difficulty-choice" class="player-choice difficulty-choice"><legend>Obtížnost</legend><label><input type="radio" name="difficulty" value="normal" checked><span><strong>NORMAL</strong></span></label><label><input type="radio" name="difficulty" value="easy"><span><strong>EASY <small>(prokikoti)</small></strong></span></label></fieldset>
     <fieldset id="player-choice" class="player-choice">
@@ -111,6 +111,42 @@
       <p>Nemáš.</p>
       <p>Žádná porada. Žádný brífink. Žádný stand-up, společný oběd ani rychlý brainstorming.</p>
       <p><strong>Popadni diskety, přeskoč agendu a dostaň se nahoru.</strong></p>
+    </details>
+    <details class="mission-story making-of" id="making-of">
+      <summary>JAK VZNIKAL IT HERO · Nahlédni do zákulisí</summary>
+      <article aria-labelledby="making-of-title">
+        <h2 id="making-of-title">IT HERO: Z kanceláře do pixelového světa</h2>
+        <p>Na začátku byla jednoduchá otázka: <strong>Co kdyby se běžný den v kanceláři změnil v arkádovou hru?</strong> Místo příšer kolegové, místo kouzelných lektvarů káva a místo meče diskety. Tak vznikl IT HERO — hra pro pobavení a zároveň praktický pokus, co dnes dokáže člověk vytvořit s pomocí AI.</p>
+        <h3>Nejdřív pár kostiček a tři patra</h3>
+        <figure><a href="assets/making-of/first-version.png" target="_blank" rel="noopener noreferrer" aria-label="Zvětšit obrázek první verze hry"><img src="assets/making-of/first-version.png" width="1100" height="870" loading="lazy" decoding="async" alt="První verze IT HERO 0.1.1: jednoduché postavičky, obdélníkové kancelářské vybavení, káva a schody."></a><figcaption>První prototyp měl tři patra a kancelář poskládanou z obdélníků. Už uměl pohyb, skok, střelbu a doplňování energie kávou. Snímek původní verze 0.1.1.</figcaption></figure>
+        <p>První verze nepotřebovala dokonalou grafiku. Bylo důležité zjistit, jestli bude základ hry fungovat: projít patro, přeskočit překážku, vyhnout se šanonu a najít schody.</p>
+        <p>Teprve potom přibývala další patra, nové postavy, venkovní mezihra, mobilní ovládání a závěrečný odlet. Dnešní hra má devět pater. <strong>Ajťačka přibyla až na přání hráčů, stejně jako lehčí obtížnost Easy.</strong> Připomínky tak mění nejen drobnosti, ale i způsob, jakým se hra hraje.</p>
+        <h3>Jak vznikají postavy</h3>
+        <figure><a href="assets/making-of/visual-concept.png" target="_blank" rel="noopener noreferrer" aria-label="Zvětšit původní grafický koncept a lineup postav"><img src="assets/making-of/visual-concept.png" width="1536" height="1024" loading="lazy" decoding="async" alt="Původní vizuální koncept: kancelářská budova, sestava Ajťáka, sekretářky, odboráře a manažera, paleta barev a návrhy předmětů."></a><figcaption>Původní vizuální koncept a lineup, tedy sestava návrhů postav. Společný přehled pomáhá porovnat velikosti, barvy i styl. Některé podoby a útoky se od té doby změnily.</figcaption></figure>
+        <p>Postava nejdřív vzniká jako návrh: jak bude vypadat, co ponese v ruce a čím bude charakteristická. Potom potřebuje několik podob pro různé situace.</p>
+        <figure class="making-of-character"><a href="assets/characters/it_colleague.png" target="_blank" rel="noopener noreferrer" aria-label="Zvětšit obrázky IT kolegy v několika pózách"><img src="assets/characters/it_colleague.png" width="1774" height="887" loading="lazy" decoding="async" alt="IT kolega v několika pózách: stojí, přikrčí se a mává, nabízí kávu a podává sladkost."></a><figcaption>Jedna postava, několik situací: IT kolega v klidu, přikrčený, s kávou a se sladkostí. Ukázka obrázkového podkladu pro hru.</figcaption></figure>
+        <p>Takovým jednotlivým obrázkům se říká <strong>sprity</strong>. Když hra rychle střídá obrázky chůze, postava se zdánlivě pohybuje. Podobně funguje skok, útok nebo reakce na zásah — jako malý obrázkový film.</p>
+        <p>Vytvořit hezký návrh je ale jen začátek. Ve hře musí správně sedět ruce, vlasy i předměty. Knír, který vypadá dobře na velkém obrázku, může na malé postavičce působit jako přilepený. Proto se grafika opakovaně upravuje a kontroluje přímo při hraní. Současné podoby si můžeš prohlédnout v <a href="character-preview.html">porovnání postav</a>.</p>
+        <h3>Z čeho se skládá obraz hry</h3>
+        <p>Celá scéna má několik vrstev, podobně jako divadelní jeviště:</p>
+        <ul><li><strong>Pozadí</strong> tvoří kanceláře, okna, město nebo prostor před budovou. Vytváří atmosféru.</li><li><strong>Herní předměty</strong> jsou stoly, plošiny, dveře nebo vozíky. Hráč musí dobře poznat, kudy může projít a na co vyskočit.</li><li><strong>Postavy a střely</strong> se pohybují před pozadím. Patří sem také létající diskety, míčky a další kancelářská výzbroj.</li><li><strong>Efekty</strong> ukazují zásah, páru nad kávou nebo pohon létajícího auta.</li><li><strong>Ukazatele a texty</strong> sdělují energii, skóre, patro a hlášky postav.</li></ul>
+        <p>Vzhled vychází z <strong>pixel artu</strong> — obrázků, u kterých jsou záměrně vidět malé barevné čtverečky. Připomíná staré herní automaty, ale kombinuje je s podrobnějším kancelářským prostředím. Barevná paleta na konceptu pomáhá udržet společný styl; výrazné obrysy zase oddělují postavy a překážky od pozadí.</p>
+        <p>Vedle viditelného obrázku má postava také neviditelnou <strong>zásahovou oblast</strong>. Podle ní hra pozná, zda hráč stojí na stole, narazil do kolegy nebo ho zasáhla střela. Nemusí přesně kopírovat každý vlas; jejím úkolem je, aby střety působily spravedlivě.</p>
+        <h3>Než vznikne animace, přijde storyboard</h3>
+        <p><strong>Storyboard je obrázkový plán děje.</strong> Je to něco jako krátký komiks, podle kterého se připravuje průběh hry a jednotlivé scény. Následující přehled shrnuje dnešní kampaň a ukazuje i její závěr.</p>
+        <figure><a href="assets/making-of/campaign-storyboard.png" target="_blank" rel="noopener noreferrer" aria-label="Zvětšit storyboard kampaně"><img src="assets/making-of/campaign-storyboard.png" width="1536" height="1024" loading="lazy" decoding="async" alt="Šest obrázků kampaně: recepce, kancelářské překážky, přestávka venku, poslední manažer, odlet autem a vítězství."></a><figcaption>Obrázkový přehled kampaně. Ilustrace děje, nikoli šest snímků ze spuštěné hry.</figcaption></figure>
+        <ol><li><strong>Recepce:</strong> Ajťák nebo Ajťačka vyráží zachránit externí disk.</li><li><strong>Cesta vzhůru:</strong> kanceláře, kolegové, překážky a jejich hlášky.</li><li><strong>Pauza venku:</strong> káva, zásoby CD, DžejTý na skládačce a pozorující sojka.</li><li><strong>Poslední patro:</strong> souboj s hlavním manažerem a odpojení HDD.</li><li><strong>Únik ze střechy:</strong> nástup do upraveného sportovního auta a odlet nad městem.</li><li><strong>Závěr:</strong> na Normal zápis do Hall of Fame, na Easy manažerova výzva zkusit vyšší obtížnost.</li></ol>
+        <figure><a href="assets/making-of/rooftop-storyboard.png" target="_blank" rel="noopener noreferrer" aria-label="Zvětšit storyboard závěrečného odletu"><img src="assets/making-of/rooftop-storyboard.png" width="1774" height="887" loading="lazy" decoding="async" alt="Podrobnější storyboard závěru: příchod na střechu, nástup do auta, změna kol na pohon, odlet nad kampusem a tabulka skóre."></a><figcaption>I krátká závěrečná animace potřebuje plán: příchod na střechu, nástup, spuštění pohonu a samotný odlet. Návrh se při realizaci dále upravoval.</figcaption></figure>
+        <h3>Co je pod kapotou</h3>
+        <p>Hra běží přímo v internetovém prohlížeči, takže se nic neinstaluje. Její pravidla jsou napsaná v <strong>JavaScriptu</strong>. Knihovna <strong>Phaser</strong> pomáhá zobrazovat obrázky, pohybovat postavami a počítat srážky. Python se využíval při přípravě některých podkladů a pomocných úpravách.</p>
+        <dl class="making-of-tech"><dt>GitHub — dílna a archiv</dt><dd>Uchovává soubory hry a historii změn. Je možné dohledat, co se kdy upravovalo.</dd><dt>Cloudflare — webová výloha</dt><dd>Odtud se hotová hra načítá do počítače nebo telefonu.</dd><dt>Společná databáze — výsledková kniha a schránka nápadů</dt><dd>Uchovává rekordy a odeslané návrhy či připomínky.</dd><dt>Prohlížeč hráče — malý poznámkový blok</dt><dd>Pamatuje si drobnosti, například které hlášky ještě nezazněly.</dd></dl>
+        <p>Hlášky se promíchávají jako balíček karet. V příslušné situaci se postupně vystřídají všechny a potom se seznam znovu zamíchá. Návrhy nových hlášek mají vlastní schránku, kde je možné je před uvolněním upravit a schválit.</p>
+        <h3>A kde je v tom AI?</h3>
+        <p>Hra vzniká metodou označovanou jako <strong>vibecoding</strong>. Autor popíše nápad a s pomocí Codexu připravuje kód, řeší chyby a přidává funkce. AI pomáhá také s grafickými návrhy.</p>
+        <p>Není to ale jedno tlačítko „vytvoř hotovou hru“. Každá změna se musí vyzkoušet. Část kontrol dělají automatické testy v opravdovém prohlížeči, další problémy odhalí až hráči: někde nejde vyskočit na plošinu, jinde palec zakrývá obraz nebo se překrývají dvě hlášky.</p>
+        <p>IT HERO tak postupně roste díky nápadům, zkoušení a připomínkám. Jeho cílem je pobavit, vykouzlit úsměv a naučit autora něco nového.</p>
+        <p><strong>A když při tom dochází energie? No nejdřív kávu, pak zázraky…</strong></p>
+      </article>
     </details>
     <p><a href="dialogue-suggestions.html">Nápady, komentáře, připomínky a nové hlášky</a></p>
     <p><a href="character-preview.html">Zkušební scéna: porovnání postav</a></p>
