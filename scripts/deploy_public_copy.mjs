@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import {createHmac,publicEncrypt,constants,randomBytes} from 'node:crypto';
+import {publicEncrypt,constants,randomBytes} from 'node:crypto';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
@@ -11,7 +11,8 @@ const root=fileURLToPath(new URL('../',import.meta.url)),run=promisify(execFile)
 export async function deployPublicCopy(){
  const token=process.env.CLOUDFLARE_API_TOKEN,account=process.env.CLOUDFLARE_ACCOUNT_ID,admin=process.env.IT_HERO_ADMIN_TOKEN;
  if(!token||!account||!admin||admin.length<32)throw Error('Cloudflare credentials or moderation password are not configured.');
- const project='office-arcade-'+createHmac('sha256',admin).update('neutral-copy/v1').digest('hex').slice(0,14);
+ const manifest=JSON.parse(await fs.readFile(path.join(root,'site.webmanifest'),'utf8'));
+ const project=manifest.short_name.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-arcade';
  const url=`https://${project}.pages.dev`;
  console.log(`::add-mask::${project}`);console.log(`::add-mask::${url}`);
  async function api(route,method='GET',body){
@@ -28,6 +29,7 @@ export async function deployPublicCopy(){
   const databases=await api(`/d1/database?per_page=100&page=${page}`);database=databases.find(d=>d.name==='it-hero-community');if(database||databases.length<100)break;
  }
  if(!database?.uuid)throw Error('Existing community database not found. No replacement database was created.');
+ if(existing&&existing.deployment_configs?.production?.d1_databases?.DB?.id!==database.uuid)throw Error('The chosen project name already belongs to another website in this account. Nothing was overwritten.');
  const deployment={compatibility_date:'2026-10-01',d1_databases:{DB:{id:database.uuid}},env_vars:{ADMIN_TOKEN:{type:'secret_text',value:admin}}};
  const settings={deployment_configs:{production:deployment,preview:deployment}};
  await api(existing?`/pages/projects/${project}`:'/pages/projects',existing?'PATCH':'POST',existing?settings:{name:project,production_branch:'release',...settings});

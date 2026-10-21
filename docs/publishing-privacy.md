@@ -48,8 +48,8 @@ spojení zachovat i po jejich vypnutí.
 ## Připravené nasazení čisté kopie
 
 Workflow `.github/workflows/publish-neutral-copy.yml` vytváří samostatný projekt
-Cloudflare Pages s neutrálním názvem odvozeným pomocí HMAC ze správcovského
-hesla. Původní GitHub Pages, Worker a databázi nemění. Název nové adresy se
+Cloudflare Pages s neutrálním názvem odvozeným z krátkého názvu hry
+v manifestu a přípony „arcade“. Původní GitHub Pages, Worker a databázi nemění. Název nové adresy se
 nezapisuje do veřejného kódu ani do veřejného protokolu nasazení.
 
 Distribuci připraví `node scripts/build_public_copy.mjs /tmp/clean-release`
@@ -71,8 +71,8 @@ Ověřená URL se ukládá do `cloud-api/public-copy-receipt.json` šifrovaně p
 veřejného RSA klíče `cloud-api/public-copy-receipt.pem`. Soukromý klíč nepatří do
 repozitáře ani do distribuční kopie. Při ztrátě soukromého klíče lze adresu
 najít ve vlastním Cloudflare dashboardu; případně vyměnit veřejný klíč a spustit
-nasazení znovu. Změna správcovského hesla odvodí jiný název projektu a vytvoří
-novou kopii, původní neutrální projekt sama nesmaže.
+nasazení znovu. Změna správcovského hesla adresu nemění. Dřívější kopie s náhodným názvem
+zůstává funkční a tento postup ji nemaže.
 
 Regresní test `node tests/public-copy.mjs` ověřuje skutečné spuštění hry,
 galerii, formulář, SQLite API, soukromou správu, odmítnutí cizího původu,
