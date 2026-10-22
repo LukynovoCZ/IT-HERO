@@ -386,7 +386,7 @@
     }
 
     sayOldHelper(visit, category) {
-      visit.speech=this.dialogue.say(visit.sprite,'old_it',category,{replace:true,priority:true,persist:true,duration:5500});
+      visit.speech=this.dialogue.say(visit.sprite,'old_it',category,{replace:true,priority:true,persist:true});
     }
 
     updateHelper(delta) {
