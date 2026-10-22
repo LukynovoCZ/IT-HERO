@@ -513,6 +513,20 @@
         ]
       }
     ]
+  },
+  {
+    "id": "laurin_klement",
+    "name": "LAURIN & KLEMENT",
+    "groups": [
+      {
+        "id": "debate",
+        "label": "Společná debata",
+        "lines": [
+          "Tesla jim říkal: \"Klement, nešahaj na tu cívku.\" Ale voni, né..",
+          "Elektro velocipéd? Poslouchaj, to je nějakej renonc, ne? Ještě je napadne dělat takhle automobil."
+        ]
+      }
+    ]
   }
 ];
  window.ITHeroDialogue={characters,lines(id,group){const g=characters.find(c=>c.id===id)?.groups.find(g=>g.id===group);return [...(g?.lines||[]),...(window.ITHeroAppearance?.state.original?g?.originalLines||[]:[])];}};

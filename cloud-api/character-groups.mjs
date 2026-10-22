@@ -267,5 +267,15 @@ export const catalog=[
         "label": "Po přeskočení a zásahu zezadu"
       }
     ]
+  },
+  {
+    "id": "laurin_klement",
+    "name": "LAURIN & KLEMENT",
+    "groups": [
+      {
+        "id": "debate",
+        "label": "Společná debata"
+      }
+    ]
   }
 ];
