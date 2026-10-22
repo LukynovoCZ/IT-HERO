@@ -522,7 +522,7 @@
         "id": "debate",
         "label": "Společná debata",
         "lines": [
-          "Tesla jim říkal: \"Klement, nešahaj na tu cívku.\" Ale voni, né..",
+          "Tesla jim říkal: \"Klement, nešahaj na tu cívku.\" Ale voni né..",
           "Elektro velocipéd? Poslouchaj, to je nějakej renonc, ne? Ještě je napadne dělat takhle automobil."
         ]
       }
