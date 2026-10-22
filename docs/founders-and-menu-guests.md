@@ -6,6 +6,6 @@ Jde o přátelskou vizuální návštěvu kancelářských pater. První možnos
 
 Pauza zmrazí čas návštěvy. Přechod do jiného patra, smrt a konec scény odstraní návštěvu. Venkovní mezihra pauzuje hlavní scénu stejně jako ostatní prvky kanceláře.
 
-`menu-guests.js` doplňuje do pravého panelu úvodu a prohry náhodnou skutečnou herní postavu, její jméno a citaci z jejího vlastního katalogu. Volí pouze postavy s dostupnými hláškami (nyní 20 podob). Sekretářky, Gen Z dvojice a Ajťák/Ajťačka sdílejí příslušný katalog. Laurin a Klement zatím do tohoto výběru nepatří, protože ještě nemají hlášky. Výběr respektuje public/původní vzhled a hlášky i při přepnutí konzolí. Nepřidává herní pokus ani jinou statistiku. Pauza a vítězná obrazovka zachovávají původní pozadí.
+`menu-guests.js` doplňuje do pravého panelu pouze po prohře náhodnou skutečnou herní postavu a citaci z jejího vlastního katalogu. Volí pouze postavy s dostupnými hláškami (nyní 20 podob). Sekretářky, Gen Z dvojice a Ajťák/Ajťačka sdílejí příslušný katalog. Laurin a Klement zatím do tohoto výběru nepatří, protože ještě nemají hlášky. Výběr respektuje public/původní vzhled a hlášky i při přepnutí konzolí. Nepřidává herní pokus ani jinou statistiku. Úvod, pauza a vítězná obrazovka zachovávají původní pozadí. Jméno ani nadpis se u citace nezobrazují.
 
 Ověření: `node tests/founders-menu.cjs`, `node tests/player-choice.cjs`, `node tests/public-copy.mjs`.
