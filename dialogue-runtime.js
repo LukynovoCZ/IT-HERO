@@ -11,13 +11,16 @@
  const rotationKey='it-hero-dialogue-rotation-v1';
  let bags;
  function loadBags(){if(bags)return;bags=Object.create(null);try{const raw=localStorage.getItem(rotationKey);if(raw&&raw.length<500000){const parsed=JSON.parse(raw);if(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))for(const [key,value] of Object.entries(parsed).slice(0,500))bags[key]=value;}}catch{}}
- function draw(id,group,random=Math.random){
-  const lines=[...new Set(D.lines(id,group))];if(!lines.length)return;
+ function drawPool(id,group,pool,random=Math.random){
+  const lines=[...new Set(pool)];if(!lines.length)return;
   loadBags();const key=id+'/'+group+'/'+(window.ITHeroAppearance?.state.original?'original':'public'),signature=JSON.stringify(lines);
   let bag=bags[key];if(!bag||bag.signature!==signature||!Array.isArray(bag.remaining)||bag.remaining.some(line=>!lines.includes(line))||new Set(bag.remaining).size!==bag.remaining.length)bag=bags[key]={signature,remaining:[],last:null};
   if(!bag.remaining.length){bag.remaining=[...lines];for(let i=bag.remaining.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[bag.remaining[i],bag.remaining[j]]=[bag.remaining[j],bag.remaining[i]];}if(bag.remaining.length>1&&bag.remaining[0]===bag.last)[bag.remaining[0],bag.remaining[1]]=[bag.remaining[1],bag.remaining[0]];}
   const line=bag.remaining.shift();bag.last=line;try{localStorage.setItem(rotationKey,JSON.stringify(bags));}catch{}return line;
  }
+ function draw(id,group,random=Math.random){return drawPool(id,group,D.lines(id,group),random);}
+ function humanLines(){return [...new Set(D.characters.filter(c=>!['jay','rabbit_one','rabbit_two'].includes(c.id)).flatMap(c=>c.groups.flatMap(g=>D.lines(c.id,g.id))))];}
+ function smokerQuote(random=Math.random){const prefix=drawPool('outdoor-smokers','prefix',['Prej','On na to','Slyšeli jste to, prej'],random),line=drawPool('outdoor-smokers','quotes',humanLines(),random);return {line,prefix,text:prefix+(prefix==='On na to'?': ':' ')+`„${line}“`};}
  function layout(text,owner,camera){
   const left=camera.scrollX+12,right=camera.scrollX+camera.width-12;
   const top=camera.scrollY+150,bottom=camera.scrollY+camera.height-75;
@@ -55,5 +58,5 @@
   }
   scene.events.once('shutdown',clear);return {state,say,tick,clear,remove};
  }
- Object.assign(D,{config,duration,pick,draw,rotationKey,layout,create});
+ Object.assign(D,{config,duration,pick,draw,drawPool,humanLines,smokerQuote,rotationKey,layout,create});
 })();
