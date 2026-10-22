@@ -1,5 +1,6 @@
 import {avatarIds} from './avatar-ids.mjs';
 import {catalog} from './character-groups.mjs';
+const killerIds=['secretary','union','manager','specialist','security_guard','hr_manager','design_manager','sap_integrator','dbpm'];
 const statuses=['pending','accepted','rejected'];
 class HTTPError extends Error{constructor(status,message){super(message);this.status=status;}}
 const fail=(status,message)=>{throw new HTTPError(status,message);};
@@ -52,10 +53,36 @@ export default {async fetch(request,env){
    const previous=await lookup();if(previous)return reply({resetId:previous.request_id,resetAt:previous.reset_at,duplicate:true});
    const guard=' WHERE NOT EXISTS (SELECT 1 FROM arcade_statistics_resets WHERE request_id=?)';
    await env.DB.batch([
-    ...['arcade_score_avatars','arcade_scores','arcade_plays'].map(table=>env.DB.prepare('DELETE FROM '+table+guard).bind(data.requestId)),
+    ...['arcade_score_avatars','arcade_scores','arcade_plays','arcade_game_runs'].map(table=>env.DB.prepare('DELETE FROM '+table+guard).bind(data.requestId)),
+    env.DB.prepare('UPDATE arcade_game_stats_state SET since=?,reset_id=?'+guard).bind(now,data.requestId,data.requestId),
     env.DB.prepare('INSERT INTO arcade_statistics_resets(request_id,reset_at) VALUES(?,?) ON CONFLICT(request_id) DO NOTHING').bind(data.requestId,now)
    ]);
    const result=await lookup();return reply({resetId:result.request_id,resetAt:result.reset_at});
+  }
+  if(url.pathname==='/v1/game-stats'&&request.method==='GET'){
+   const state=await env.DB.prepare('SELECT since,reset_id FROM arcade_game_stats_state WHERE singleton=1').first();
+   const {total}=await env.DB.prepare('SELECT COUNT(*) AS total FROM arcade_game_runs WHERE training=0').first();
+   const {results}=await env.DB.prepare('SELECT killer_id AS characterId,COUNT(*) AS kills FROM arcade_game_runs WHERE training=0 AND killer_id IS NOT NULL GROUP BY killer_id ORDER BY kills DESC,killer_id LIMIT 3').all();
+   return reply({total,since:state.since,resetId:state.reset_id,killers:results});
+  }
+  if(['/v1/game-runs','/v1/game-runs/death','/v1/game-runs/training'].includes(url.pathname)&&request.method==='POST'){
+   if(!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'Použij application/json.');
+   const data=await jsonBody(request);
+   if(typeof data?.requestId!=='string'||! /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(data.requestId))fail(400,'Neplatný identifikátor hry.');
+   if(url.pathname==='/v1/game-runs'){
+    if(!['normal','easy'].includes(data.difficulty)||data.training!==false)fail(400,'Neplatná obtížnost nebo trénink.');
+    const state=await env.DB.prepare('SELECT reset_id FROM arcade_game_stats_state WHERE singleton=1').first();if(data.resetId!==state.reset_id)fail(409,'Statistiky byly mezitím vynulovány.');
+    const prior=await env.DB.prepare('SELECT difficulty FROM arcade_game_runs WHERE request_id=?').bind(data.requestId).first();
+    if(prior){if(prior.difficulty!==data.difficulty)fail(409,'Hra už má jinou obtížnost.');return reply({recorded:true,duplicate:true},202);}
+    const bytes=await digest(`runs/${env.ADMIN_TOKEN}/${request.headers.get('CF-Connecting-IP')||'unknown'}/${Math.floor(now/600)}`),bucket=Array.from(bytes,n=>n.toString(16).padStart(2,'0')).join('');
+    await env.DB.prepare('DELETE FROM dialogue_rate_limits WHERE expires_at < ?').bind(now).run();
+    await env.DB.prepare('INSERT INTO dialogue_rate_limits(bucket,count,expires_at) VALUES(?,0,?) ON CONFLICT(bucket) DO NOTHING').bind(bucket,now+1200).run();
+    if(!await env.DB.prepare('UPDATE dialogue_rate_limits SET count=count+1 WHERE bucket=? AND count<120 RETURNING count').bind(bucket).first())fail(429,'Příliš mnoho spuštění. Zkus to později.');
+    await env.DB.prepare('INSERT INTO arcade_game_runs(request_id,difficulty,created_at) SELECT ?,?,? WHERE EXISTS (SELECT 1 FROM arcade_game_stats_state WHERE reset_id=?) ON CONFLICT(request_id) DO NOTHING').bind(data.requestId,data.difficulty,now,data.resetId).run();return reply({recorded:true},202);
+   }
+   if(url.pathname.endsWith('/training')){await env.DB.prepare('UPDATE arcade_game_runs SET training=1,killer_id=NULL WHERE request_id=?').bind(data.requestId).run();return reply({recorded:true},202);}
+   if(!killerIds.includes(data.killerId))fail(400,'Neplatná záporná postava.');
+   const result=await env.DB.prepare('UPDATE arcade_game_runs SET killer_id=? WHERE request_id=? AND training=0 AND killer_id IS NULL').bind(data.killerId,data.requestId).run();return reply({recorded:!!result.meta.changes},202);
   }
   if(url.pathname==='/v1/play-stats'&&request.method==='GET'){
    const period=playPeriods();const counts=await env.DB.prepare('SELECT COUNT(DISTINCT CASE WHEN play_day=? THEN player_hash END) AS today,COUNT(DISTINCT CASE WHEN play_day>=? AND play_day<=? THEN player_hash END) AS week,COUNT(DISTINCT player_hash) AS total FROM arcade_plays').bind(period.today,period.monday,period.today).first();

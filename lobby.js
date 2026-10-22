@@ -12,7 +12,7 @@
   const gallery=document.getElementById('employee-portraits');if(!gallery||!current)return;gallery.replaceChildren();
   rows.forEach((row,i)=>{const card=document.createElement('figure'),canvas=ITHeroAvatars.portrait(current,row.avatar,96),caption=document.createElement('figcaption'),name=document.createElement('strong'),score=document.createElement('span');name.textContent=`${i+1}. ${row.name}`;score.textContent=String(row.score).padStart(6,'0');score.className='hall-score';caption.append(name,score);if(i>=realCount){const demo=document.createElement('small');demo.textContent='UKÁZKOVÝ SOUPEŘ';caption.append(demo);}card.append(canvas,caption);gallery.append(card);});
  }
- function mount(scene){current=scene;refreshScores();}
+ function mount(scene){current=scene;window.ITHeroPlayStats?.mount(scene);refreshScores();}
  window.addEventListener('it-hero-appearance',()=>{if(current?.sys?.isActive())mount(current);});window.addEventListener('it-hero-score',refreshScores);
  window.ITHeroLobby={mount,refreshScores};
 })();

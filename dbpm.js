@@ -100,7 +100,7 @@
       e.dbpm.speech=scene.dialogue.say(e,'dbpm',group)||e.dbpm.speech;
     }
     function track(shot,e,lifetime){
-      shot.setData('dbpmOwner',e).setData('floor',e.floorIndex).setData('damage',1)
+      shot.setData('killerId',e.kind).setData('dbpmOwner',e).setData('floor',e.floorIndex).setData('damage',1)
         .setData('activeExpires',state.clock+lifetime).setData('expires',scene.time.now+lifetime);
       state.shots.add(shot);return shot;
     }

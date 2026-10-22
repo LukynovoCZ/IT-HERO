@@ -58,7 +58,7 @@
     shot.body.setAllowGravity(false);
     shot.body.setSize(weapon.key==='golf-ball'?12:weapon.key === 'fireball' ? 22 : 20, weapon.key==='golf-ball'?12:22, true);
     if (weapon.spin) shot.setAngularVelocity(direction * weapon.spin);
-    shot.setData('expires', scene.time.now + 1900).setData('damage', enemy.profile.damage).setData('floor', enemy.floorIndex);
+    shot.setData('killerId',enemy.kind).setData('expires', scene.time.now + 1900).setData('damage', enemy.profile.damage).setData('floor', enemy.floorIndex);
     scene.tone(weapon.key === 'fireball' ? 110 : 210, 0.07, 'triangle');
   }
   function clear(enemy) {
@@ -77,7 +77,7 @@
     if (!g) return;
     if (!enemy.active || enemy.defeated || enemy.floorIndex !== scene.floor || scene.gameState !== 'playing' || time >= enemy.effectUntil) { clear(enemy); return; }
     const reach = enemy.profile.contactEffect === 'whip' ? 62 : 50;
-    if (Math.abs(scene.player.x - enemy.x) < reach && Math.abs(scene.player.body.bottom - enemy.body.bottom) < 65) scene.takeDamage(enemy.x, enemy.profile.damage);
+    if (Math.abs(scene.player.x - enemy.x) < reach && Math.abs(scene.player.body.bottom - enemy.body.bottom) < 65) scene.takeDamage(enemy.x, enemy.profile.damage,enemy.kind);
     g.clear().setPosition(enemy.x, enemy.body.bottom);
     const phase = Math.floor(time / 70) % 3;
     if (enemy.profile.contactEffect === 'firewall') {

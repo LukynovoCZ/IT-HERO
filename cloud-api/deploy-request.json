@@ -1,1 +1,1 @@
-{"request":"admin-statistics-reset-0.24.10","purpose":"Install authenticated manual statistics and Hall of Fame reset, no reset performed on deployment"}
+{"request":"game-runs-and-killers-0.25.0","purpose":"Add anonymous attempt counts and final-life killer statistics without resetting existing data"}

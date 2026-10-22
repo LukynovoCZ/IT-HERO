@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.24.10 – mini plošinovka v Phaser 3.
+ * IT HERO 0.25.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -67,6 +67,7 @@
     create(data = {}) {
       this.gameState = 'menu';
       this.energy = 4;
+      this.statisticRun=null;
       this.maxEnergy = 5;
       this.score = 0;
       this.weapon = 'floppy';
@@ -122,7 +123,7 @@
       this.trainingHud=this.add.text(480,74,'',{font:'bold 12px monospace',color:'#ffdd85',backgroundColor:'#182b28'}).setOrigin(.5).setScrollFactor(0).setDepth(110);
       window.ITHeroLobby?.mount(this);
       const restored = this.pacing.restore();
-      if(restored)window.ITHeroPlayStats?.started();
+      if(restored)window.ITHeroPlayStats?.started(this);
 
       this.cameras.main.setBounds(0, 0, WIDTH, WORLD_HEIGHT);
       this.cameras.main.setRoundPixels(true);
@@ -463,8 +464,9 @@
         if (shot.getData('floor') !== undefined && shot.getData('floor') !== this.floor) { shot.destroy(); return; }
         const sourceX = shot.x;
         const damage = shot.getData('damage') || 1;
+        const killerId=shot.getData('killerId');
         shot.destroy();
-        this.takeDamage(sourceX, damage);
+        this.takeDamage(sourceX, damage, killerId);
       });
       this.physics.add.overlap(this.player, this.enemies, (_, enemy) => this.enemyContact(enemy));
     }
@@ -674,7 +676,7 @@
         this.registry.set('campaignDifficulty',this.difficulty);
         if(ITHeroDifficulty.easy(this)){this.energy=this.maxEnergy;this.updateHUD();this.pacing.checkpoint();}
         this.gameState = 'playing';
-        window.ITHeroPlayStats?.started();
+        window.ITHeroPlayStats?.started(this);
         this.hideOverlay();
         this.tone(420, 0.07, 'triangle');
       } else if (this.gameState === 'paused') {
@@ -765,7 +767,7 @@
       if (enemy.profile) { this.enemyTrio.contact(enemy); return; }
       if (this.gameState !== 'playing' || !enemy.active || enemy.floorIndex !== this.floor) return;
       this.pacing.cancel(enemy);
-      this.takeDamage(enemy.x);
+      this.takeDamage(enemy.x,1,enemy.kind);
       if (this.time.now < enemy.contactUntil) return;
       enemy.contactUntil = this.time.now + 1000;
       enemy.setVelocityX(0);
@@ -809,7 +811,7 @@
       item.body.setAllowGravity(false);
       item.setVelocity(direction * (enemy.kind === 'manager' ? 315 : 245), enemy.kind === 'manager' ? 0 : -45);
       item.setAngularVelocity(direction * (projectile === 'gear' ? 600 : 360));
-      item.setData('expires', this.time.now + 1900);
+      item.setData('killerId',enemy.kind).setData('expires', this.time.now + 1900);
       enemy.setFlipX(direction < 0);
       this.tone(170, 0.06, 'triangle');
     }
@@ -821,7 +823,7 @@
       const item = this.enemyShots.create(enemy.x + direction*(short ? 52 : 27),enemy.y-5,projectile).setDepth(26);
       item.body.setAllowGravity(false);
       item.setFlipX(direction<0).setVelocityX(short ? direction*35 : direction*270);
-      item.setData('expires',this.time.now+(short ? 350 : 1800));
+      item.setData('killerId',enemy.kind).setData('expires',this.time.now+(short ? 350 : 1800));
       if (!short) item.setScale(1.3);
       enemy.setFlipX(direction<0);
       if (projectile === 'rainbow-spray') {
@@ -861,7 +863,7 @@
       return ITHeroDialogue.draw('hero','death');
     }
 
-    takeDamage(sourceX, damage = 1) {
+    takeDamage(sourceX, damage = 1, killerId) {
       if(ITHeroAppearance.state.god)return;
       if (this.gameState !== 'playing' || this.time.now - this.lastHit < (ITHeroDifficulty.easy(this)?2000:1250)) return;
       this.lastHit = this.time.now;
@@ -876,6 +878,7 @@
       this.popText(this.player.x, this.player.y - 42, `-${damage} ENERGIE`, '#ff8ca6');
       this.updateHUD();
       if (this.energy === 0) {
+        window.ITHeroPlayStats?.died(this,killerId);
         this.pacing.retainElapsed();
         this.gameState = 'lose';
         this.player.setTexture(this.heroFrames.defeat);

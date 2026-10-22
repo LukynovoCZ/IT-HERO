@@ -141,7 +141,7 @@
           while(state.finalShots<3&&state.finalElapsed>=config.finalWarning+state.finalShots*config.finalShotGap){
             const shot=scene.enemyShots.create(690,ground-28,'gold-card').setDepth(26).setScale(1.5);
             shot.body.setAllowGravity(false);shot.setVelocityX(260).setAngularVelocity(300);
-            shot.setData('floor',8).setData('damage',1).setData('expires',scene.time.now+1800);state.finalShots++;
+            shot.setData('killerId','manager').setData('floor',8).setData('damage',1).setData('expires',scene.time.now+1800);state.finalShots++;
           }
           if(state.finalElapsed>=config.finalWarning+2*config.finalShotGap+config.finalRecovery)state.phase='ready';
           return;

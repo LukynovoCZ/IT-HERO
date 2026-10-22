@@ -181,7 +181,7 @@
         if(e.profile.behavior==='dbpm'){scene.dbpm.attack(e,pose,'melee');return;}
         if(e.profile.behavior==='sap'){window.ITHeroSAP.attack(scene,e,pose,'melee');return;}
         scene.pacing?.cancel(e);
-        scene.takeDamage(e.x,e.profile.damage);
+        scene.takeDamage(e.x,e.profile.damage,e.kind);
         scene.enemyDialogue?.(e,e.kind==='design_manager'?'contact':'combat');
         if(scene.time.now<e.contactUntil)return;
         e.facingDirection=scene.player.x>=e.x?1:-1;
@@ -209,7 +209,7 @@
     const shot=scene.enemyShots.create(e.x+direction*24,originY,key).setDepth(25).setScale(1.5);
     shot.body.setAllowGravity(false);
     shot.setVelocity(direction*245,-45).setAngularVelocity(direction*360);
-    shot.setData('expires',scene.time.now+1900).setData('damage',e.profile.damage);
+    shot.setData('killerId',e.kind).setData('expires',scene.time.now+1900).setData('damage',e.profile.damage);
     scene.tone(170,0.06,'triangle');
   });
   window.ITHeroEnemyCatalog={profiles,placements,preload,create,createTextures,

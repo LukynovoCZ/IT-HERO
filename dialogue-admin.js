@@ -17,7 +17,7 @@
  let resetRequestId=null;
  document.getElementById('admin-reset-statistics').addEventListener('click',()=>{
   if(busy||!token)return;
-  if(prompt('Trvale smazat statistiky hraní a všechny skutečné rekordy Hall of Fame? Komentáře a návrhy zůstanou. Pro potvrzení napiš VYNULOVAT.')!=='VYNULOVAT'){status.textContent='Vynulování zrušeno. Data se nezměnila.';return;}
+  if(prompt('Trvale smazat statistiky hráčů, počty her, žebříček metel a všechny skutečné rekordy Hall of Fame? Komentáře a návrhy zůstanou. Pro potvrzení napiš VYNULOVAT.')!=='VYNULOVAT'){status.textContent='Vynulování zrušeno. Data se nezměnila.';return;}
   resetRequestId||=crypto.randomUUID();
   run(async()=>{const result=await api.request('/v1/admin/reset-statistics',{method:'POST',token,body:{requestId:resetRequestId,confirmation:'VYNULOVAT'}});resetRequestId=null;
    try{localStorage.removeItem('it-hero-high-scores-v1');localStorage.setItem('it-hero-score-reset-v1',result.resetId);}catch{}

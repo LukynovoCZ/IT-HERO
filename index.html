@@ -5,36 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111a2a">
   <title>IT HERO | Save the world — but first, coffee</title>
-  <link rel="stylesheet" href="style.css?v=0.24.10">
+  <link rel="stylesheet" href="style.css?v=0.25.0">
   <script defer src="vendor/phaser.min.js"></script>
-  <script defer src="character-dialogue.js?v=0.24.10"></script>
-  <script defer src="dialogue-runtime.js?v=0.24.10"></script>
-  <script defer src="posters.js?v=0.24.10"></script>
-  <script defer src="item-textures.js?v=0.24.10"></script>
-  <script defer src="trio-attacks.js?v=0.24.10"></script>
-  <script defer src="player-character.js?v=0.24.10"></script>
-  <script defer src="appearance-mode.js?v=0.24.10"></script>
-  <script defer src="character-motion.js?v=0.24.10"></script>
-  <script defer src="enemy-catalog.js?v=0.24.10"></script>
-  <script defer src="dbpm.js?v=0.24.10"></script>
-  <script defer src="sap-integrator.js?v=0.24.10"></script>
-  <script defer src="it-colleague.js?v=0.24.10"></script>
-  <script defer src="gen-z-blockers.js?v=0.24.10"></script>
-  <script defer src="old-badger.js?v=0.24.10"></script>
-  <script defer src="touch-controls.js?v=0.24.10"></script>
-  <script defer src="difficulty.js?v=0.24.10"></script>
-  <script defer src="gameplay.js?v=0.24.10"></script>
+  <script defer src="character-dialogue.js?v=0.25.0"></script>
+  <script defer src="dialogue-runtime.js?v=0.25.0"></script>
+  <script defer src="posters.js?v=0.25.0"></script>
+  <script defer src="item-textures.js?v=0.25.0"></script>
+  <script defer src="trio-attacks.js?v=0.25.0"></script>
+  <script defer src="player-character.js?v=0.25.0"></script>
+  <script defer src="appearance-mode.js?v=0.25.0"></script>
+  <script defer src="character-motion.js?v=0.25.0"></script>
+  <script defer src="enemy-catalog.js?v=0.25.0"></script>
+  <script defer src="dbpm.js?v=0.25.0"></script>
+  <script defer src="sap-integrator.js?v=0.25.0"></script>
+  <script defer src="it-colleague.js?v=0.25.0"></script>
+  <script defer src="gen-z-blockers.js?v=0.25.0"></script>
+  <script defer src="old-badger.js?v=0.25.0"></script>
+  <script defer src="touch-controls.js?v=0.25.0"></script>
+  <script defer src="difficulty.js?v=0.25.0"></script>
+  <script defer src="gameplay.js?v=0.25.0"></script>
   <script defer src="community-config.js?v=cloud-9e7cbf2f4eb1"></script>
-  <script defer src="dialogue-community.js?v=0.24.10"></script>
-  <script defer src="play-stats.js?v=0.24.10"></script>
-  <script defer src="avatars.js?v=0.24.10"></script>
-  <script defer src="score-table.js?v=0.24.10"></script>
-  <script defer src="ending-scene.js?v=0.24.10"></script>
-  <script defer src="secret-console.js?v=0.24.10"></script>
-  <script defer src="final-manager.js?v=0.24.10"></script>
-  <script defer src="lobby.js?v=0.24.10"></script>
-  <script defer src="outdoor-bonus.js?v=0.24.10"></script>
-  <script defer src="game.js?v=0.24.10"></script>
+  <script defer src="dialogue-community.js?v=0.25.0"></script>
+  <script defer src="play-stats.js?v=0.25.0"></script>
+  <script defer src="avatars.js?v=0.25.0"></script>
+  <script defer src="score-table.js?v=0.25.0"></script>
+  <script defer src="ending-scene.js?v=0.25.0"></script>
+  <script defer src="secret-console.js?v=0.25.0"></script>
+  <script defer src="final-manager.js?v=0.25.0"></script>
+  <script defer src="lobby.js?v=0.25.0"></script>
+  <script defer src="outdoor-bonus.js?v=0.25.0"></script>
+  <script defer src="game.js?v=0.25.0"></script>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png?v=1">
   <link rel="icon" href="favicon.ico?v=1" sizes="16x16 32x32 48x48">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png?v=1">
@@ -47,7 +47,7 @@
         <span class="eyebrow">PTG PIXEL OFFICE ARCADE</span>
         <h1>IT<span>HERO</span><small> / Save the world — but first, coffee</small></h1>
       </div>
-      <span class="version">BUILD 0.24.10</span>
+      <span class="version">BUILD 0.25.0</span>
     </header>
     <fieldset id="difficulty-choice" class="player-choice difficulty-choice"><legend>Obtížnost</legend><label><input type="radio" name="difficulty" value="normal" checked><span><strong>NORMAL</strong></span></label><label><input type="radio" name="difficulty" value="easy"><span><strong>EASY <small>(prokikoti)</small></strong></span></label></fieldset>
     <fieldset id="player-choice" class="player-choice">
@@ -97,7 +97,8 @@
     <button type="button" id="touch-toggle" class="touch-toggle" aria-controls="touch-controls" aria-expanded="false">Dotykové ovládání</button>
     <section class="play-statistics" aria-labelledby="play-stats-title"><h2 id="play-stats-title">KOLIK NÁS HRAJE</h2>
     <dl class="play-stat-values"><div><dt>Dnes</dt><dd id="players-today">—</dd></div><div><dt>Tento týden</dt><dd id="players-week">—</dd></div><div><dt>Celkem</dt><dd id="players-total">—</dd></div></dl>
-    <p id="play-stats-status" role="status">Načítám statistiku…</p><p class="play-stats-note">Počítají se hráči, kteří spustili hru, podle anonymního ID prohlížeče. Opakované pokusy se v daném období nesčítají. Jiný prohlížeč nebo smazání dat znamená nového hráče. Den i týden počítáme podle českého času, týden od pondělí. Starší hraní před spuštěním počítadla není zahrnuto.</p></section>
+    <p id="play-stats-status" role="status">Načítám statistiku…</p><p class="play-stats-note">Počítají se hráči, kteří spustili hru, podle anonymního ID prohlížeče. Opakované pokusy se v daném období nesčítají. Jiný prohlížeč nebo smazání dat znamená nového hráče. Den i týden počítáme podle českého času, týden od pondělí. Starší hraní před spuštěním počítadla není zahrnuto.</p>
+    <div class="game-activity"><h3>HERNÍ PROVOZ</h3><dl class="play-stat-values"><div><dt>Spuštěné hry</dt><dd id="games-started">—</dd></div></dl><p id="games-since"></p><h3>NEJVĚTŠÍ METLA AJŤÁCTVA</h3><div id="game-killers" class="game-killers"></div><p id="game-stats-status" role="status">Načítám statistiku her…</p><p class="play-stats-note">Každý start nové kampaně i pokračování ze zálohy po prohře je nový pokus. Pauza, venkovní mezihra ani samotné otevření stránky se nepočítají. Starší hry zpětně dopočítat neumíme.</p></div></section>
     <section class="employee-hall" aria-labelledby="employee-title"><h2 id="employee-title">HALL OF FAME · ZAMĚSTNANEC ROKU</h2><p>Zde můžeš být i ty.</p><div id="employee-portraits" class="employee-portraits"></div>
     <h3>NEJLEPŠÍ SCORE</h3><p id="lobby-status" role="status">Načítám společné výsledky…</p><table class="lobby-table"><thead><tr><th scope="col">#</th><th scope="col">HRÁČ</th><th scope="col">SCORE</th></tr></thead><tbody id="lobby-scores"></tbody></table></section>
     <details class="mission-story">

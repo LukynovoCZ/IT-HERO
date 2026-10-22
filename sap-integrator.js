@@ -53,7 +53,7 @@
     if(helmet) {shot.body.setAllowGravity(true);shot.body.setGravityY(c.helmetGravity-scene.physics.world.gravity.y);}
     shot.setAngularVelocity(direction*(helmet?270:100));
     shot.body.setSize(helmet?22:21,helmet?15:5,true);
-    shot.setData('floor',e.floorIndex).setData('damage',1).setData('expires',scene.time.now+(helmet?c.helmetLifetime:c.penLifetime));
+    shot.setData('killerId',e.kind).setData('floor',e.floorIndex).setData('damage',1).setData('expires',scene.time.now+(helmet?c.helmetLifetime:c.penLifetime));
   }
   function attack(scene,e,pose,forced) {
     if(!valid(scene,e)||e.sapBusy||scene.time.now<(e.sapNextAttack||0)||scene.time.now<e.hitUntil)return;
@@ -74,7 +74,7 @@
         const g=e.sapEffect;g?.clear().lineStyle(4,0xb9cfdb).lineBetween(e.x+direction*12,e.body.bottom-27,e.x+direction*c.meleeRange,e.body.bottom-27);
         g?.lineStyle(5,0x23394b).lineBetween(e.x+direction*(c.meleeRange-5),e.body.bottom-34,e.x+direction*(c.meleeRange-5),e.body.bottom-20);
         const dx=scene.player.x-e.x, feet=scene.player.body.bottom;
-        if(dx*direction>=-8&&Math.abs(dx)<=c.meleeRange&&feet>e.body.bottom-35&&scene.player.body.top<e.body.bottom-15)scene.takeDamage(e.x,c.meleeDamage);
+        if(dx*direction>=-8&&Math.abs(dx)<=c.meleeRange&&feet>e.body.bottom-35&&scene.player.body.top<e.body.bottom-15)scene.takeDamage(e.x,c.meleeDamage,e.kind);
         scene.tone(120,0.1,'triangle');
       });
     } else if(type==='helmet')later(scene,e,c.windup,()=>fire(scene,e,'helmet',direction));
