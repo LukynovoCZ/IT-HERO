@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.25.3 – mini plošinovka v Phaser 3.
+ * IT HERO 0.26.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -51,6 +51,7 @@
     preload() {
       ITHeroAppearance.preload(this);
       ITHeroPlayer.preload(this);
+      ITHeroFounders.preload(this);
       window.ITHeroEnemyCatalog.preload(this);
       window.ITHeroColleague.preload(this);
       window.ITHeroOldBadger.preload(this);
@@ -105,6 +106,7 @@
       this.buildOffice();
       window.ITHeroOutdoor.door(this,4320);
       this.createActors();
+      this.founders=ITHeroFounders.create(this,FLOORS);
       ITHeroPlayer.attach(this);
       this.dbpm = window.ITHeroDBPM.create(this, FLOORS);
       this.configurePhysics();
@@ -645,6 +647,7 @@
       this.overlayAction.destroy(); // Tlačítko je nyní skutečný HTML element s nativní obsluhou kliknutí.
       this.overlayAction = null;
       this.overlay.setDepth(400).setScrollFactor(0);
+      this.menuGuest=ITHeroMenuGuests.create(this,this.overlay,exterior);
     }
 
     showOverlay(title, sub, message, action) {
@@ -653,6 +656,7 @@
       this.overlayBody.setFontSize(this.gameState === 'lose' ? 13 : 14);
       this.overlayBody.setText(message);
       this.overlay.setVisible(true);
+      this.menuGuest.show();
       ITHeroPlayer.sync(this);
       ITHeroDifficulty.sync(this);
       const button = document.getElementById('game-action');
@@ -956,6 +960,7 @@
       this.genZ.update(delta);
       this.colleague.update(delta);
       this.oldBadger.update(delta);
+      this.founders.update(delta);
       // START/PAUZA/RESTART mají přímou DOM obsluhu, nezávislou na Phaser input.
       if (this.gameState !== 'playing' || this.transitioning) {
         if (this.gameState !== 'playing') this.promptText.setText('');
