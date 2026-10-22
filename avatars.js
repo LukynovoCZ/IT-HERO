@@ -7,7 +7,7 @@
  ['it_colleague','IT KOLEGA','colleague-idle'],['old_badger','SENIOR MASTER','badger-idle'],['dbpm','BYZNYSÁK','trio-dbpm-idle'],['gen_z_girl','GEN Z – HOLKA','gen-z-girl-idle'],['gen_z_boy','GEN Z – KLUČINA','gen-z-boy-idle'],
  ['jarda','DžejTý','outdoor-jarda-0'],['smoker_grey','KOLEGA U KOŠE – ŠEDOVLASÝ','outdoor-smoker-0'],['smoker_brown','KOLEGA U KOŠE – HNĚDOVLASÝ','outdoor-smoker-1'],['smoker_woman','KOLEGYNĚ U KOŠE','outdoor-smoker-2'],['jay','SOJKA','outdoor-jay'],['rabbit_one','KRÁLÍK 1','outdoor-rabbit-0'],['rabbit_two','KRÁLÍK 2','outdoor-rabbit-1'],['hero_girl','AJŤAČKA','girl-idle']
  ].map(([id,name,key])=>({id,name,key}));
- const crops={hero:[18,3,30,33],union:[22,4,29,30],manager:[21,2,29,30],old_it:[52,2,33,34],specialist:[52,2,27,33],security_guard:[24,3,32,35],hr_manager:[24,3,32,36],design_manager:[27,1,25,33],sap_integrator:[43,8,25,27],old_badger:[21,1,38,34],it_colleague:[31,5,34,32],dbpm:[64,1,36,36]};
+ const crops={hero:[18,3,30,33],union:[22,4,29,30],manager:[21,2,29,30],old_it:[52,2,33,34],specialist:[52,2,27,33],security_guard:[24,3,32,35],hr_manager:[24,3,32,36],design_manager:[27,1,25,33],sap_integrator:[43,8,25,27],old_badger:[21,1,38,34],it_colleague:[31,5,34,32]};
  const normalize=id=>choices.some(a=>a.id===id)?id:'hero';
  function portrait(scene,id,size=64){
   const entry=choices.find(a=>a.id===normalize(id));if(entry.key.startsWith('outdoor-'))ITHeroOutdoor.textures(scene);
