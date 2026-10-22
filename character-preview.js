@@ -6,6 +6,7 @@
     preload() {
       ITHeroAppearance.preload(this);
       ITHeroPlayer.preload(this);
+      ITHeroFounders.preload(this);
       ITHeroEnemyCatalog.preload(this);
       ITHeroColleague.preload(this);
       ITHeroOldBadger.preload(this);
@@ -16,6 +17,7 @@
     }
     create() {
       this.floor = 0; this.gameState = 'playing';
+      ITHeroFounders.textures(this);
       this.player = {x: -9999, body: {bottom: 0}};
       this.tone = () => {}; this.takeDamage = () => {};
       ITHeroItems.create(this);
