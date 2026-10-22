@@ -214,7 +214,10 @@
         "lines": [
           "Tohle ti změní paradigma.",
           "koukejte vyleštit ty prezentace",
-          "pěkně připravená schůzka"
+          "pěkně připravená schůzka",
+          "Samej vymačkanej citron tady.",
+          "Nadechni se a vem si brejle!",
+          "Sabbe sattā sukhino vā khemino hontu"
         ]
       },
       {
@@ -223,7 +226,10 @@
         "lines": [
           "Uhni citróne!",
           "Už máš diplom surfaře?",
-          "teď se buď ztrácím, nebo s vámi úplně nesouhlasím"
+          "teď se buď ztrácím, nebo s vámi úplně nesouhlasím",
+          "Samej vymačkanej citron tady.",
+          "Nadechni se a vem si brejle!",
+          "Sabbe sattā sukhino vā khemino hontu"
         ]
       },
       {
