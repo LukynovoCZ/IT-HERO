@@ -14,6 +14,16 @@
  document.getElementById('admin-export').addEventListener('click',()=>{const ids=selected();if(!ids.size){status.textContent='Nejprve vyber návrhy.';return;}if(hasUnsaved(ids))return;api.download(rows.filter(row=>ids.has(row.id)));status.textContent='JSON stažen; stav návrhů se nezměnil. Po převzetí je označ nebo smaž.';});
  for(const button of document.querySelectorAll('[data-moderation]'))button.addEventListener('click',()=>{const ids=[...selected()];if(!ids.length){status.textContent='Nejprve vyber návrhy.';return;}if(hasUnsaved(new Set(ids)))return;run(async()=>{await api.request('/v1/admin/dialogue-suggestions',{method:'PATCH',token,body:{ids,status:button.dataset.moderation}});await load();});});
  document.getElementById('admin-delete').addEventListener('click',()=>{const ids=[...selected()];if(!ids.length){status.textContent='Nejprve vyber návrhy.';return;}if(!confirm(`Trvale smazat ${ids.length} vybraných návrhů?`))return;run(async()=>{await api.request('/v1/admin/dialogue-suggestions',{method:'DELETE',token,body:{ids}});await load();});});
+ let resetRequestId=null;
+ document.getElementById('admin-reset-statistics').addEventListener('click',()=>{
+  if(busy||!token)return;
+  if(prompt('Trvale smazat statistiky hraní a všechny skutečné rekordy Hall of Fame? Komentáře a návrhy zůstanou. Pro potvrzení napiš VYNULOVAT.')!=='VYNULOVAT'){status.textContent='Vynulování zrušeno. Data se nezměnila.';return;}
+  resetRequestId||=crypto.randomUUID();
+  run(async()=>{const result=await api.request('/v1/admin/reset-statistics',{method:'POST',token,body:{requestId:resetRequestId,confirmation:'VYNULOVAT'}});resetRequestId=null;
+   try{localStorage.removeItem('it-hero-high-scores-v1');localStorage.setItem('it-hero-score-reset-v1',result.resetId);}catch{}
+   status.textContent='Statistiky a skutečné rekordy byly vynulovány. Nové hraní se počítá od začátku. Komentáře a návrhy zůstaly zachované.';
+  });
+ });
  function logout(){token='';rows=[];nextCursor=null;render();workspace.hidden=true;login.hidden=false;document.getElementById('admin-token').value='';status.textContent='Odhlášeno.';}
  document.getElementById('admin-logout').addEventListener('click',logout);window.addEventListener('pagehide',logout);
  try{if(!api.apiBase()){login.hidden=true;status.textContent='Společná schránka zatím není připojená. Veřejný formulář umí stáhnout návrh do JSON.';}}catch(error){login.hidden=true;status.textContent=error.message;}

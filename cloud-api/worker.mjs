@@ -43,6 +43,20 @@ export default {async fetch(request,env){
   if(!env.DB||!env.ALLOWED_ORIGIN||!env.ADMIN_TOKEN||env.ADMIN_TOKEN.length<32)fail(503,'Schránka zatím není nakonfigurovaná.');
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'Access-Control-Allow-Methods':'GET, POST, PATCH, DELETE, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Access-Control-Max-Age':'600'}});
   const url=new URL(request.url),now=Math.floor(Date.now()/1000);
+  if(url.pathname==='/v1/admin/reset-statistics'&&request.method==='POST'){
+   await authorize(request,env);
+   if(!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'Použij application/json.');
+   const data=await jsonBody(request);
+   if(data?.confirmation!=='VYNULOVAT'||typeof data.requestId!=='string'||! /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(data.requestId))fail(400,'Pro vynulování napiš VYNULOVAT a použij platný identifikátor.');
+   const lookup=()=>env.DB.prepare('SELECT request_id,reset_at FROM arcade_statistics_resets WHERE request_id=?').bind(data.requestId).first();
+   const previous=await lookup();if(previous)return reply({resetId:previous.request_id,resetAt:previous.reset_at,duplicate:true});
+   const guard=' WHERE NOT EXISTS (SELECT 1 FROM arcade_statistics_resets WHERE request_id=?)';
+   await env.DB.batch([
+    ...['arcade_score_avatars','arcade_scores','arcade_plays'].map(table=>env.DB.prepare('DELETE FROM '+table+guard).bind(data.requestId)),
+    env.DB.prepare('INSERT INTO arcade_statistics_resets(request_id,reset_at) VALUES(?,?) ON CONFLICT(request_id) DO NOTHING').bind(data.requestId,now)
+   ]);
+   const result=await lookup();return reply({resetId:result.request_id,resetAt:result.reset_at});
+  }
   if(url.pathname==='/v1/play-stats'&&request.method==='GET'){
    const period=playPeriods();const counts=await env.DB.prepare('SELECT COUNT(DISTINCT CASE WHEN play_day=? THEN player_hash END) AS today,COUNT(DISTINCT CASE WHEN play_day>=? AND play_day<=? THEN player_hash END) AS week,COUNT(DISTINCT player_hash) AS total FROM arcade_plays').bind(period.today,period.monday,period.today).first();
    return reply({...counts,timeZone:'Europe/Prague',weekStartsOn:'Monday'});
@@ -60,7 +74,7 @@ export default {async fetch(request,env){
    await env.DB.prepare('INSERT INTO arcade_plays(player_hash,play_day) VALUES(?,?) ON CONFLICT(player_hash,play_day) DO NOTHING').bind(player,day).run();return reply({recorded:true},202);
   }
   if(url.pathname==='/v1/scores'&&request.method==='GET'){
-   const {results}=await env.DB.prepare("SELECT s.name,s.score,COALESCE(a.avatar_id,'hero') AS avatar FROM arcade_scores s LEFT JOIN arcade_score_avatars a ON a.request_id=s.request_id ORDER BY s.score DESC,s.created_at,s.id LIMIT 10").all();return reply({items:results});
+   const {results}=await env.DB.prepare("SELECT s.name,s.score,COALESCE(a.avatar_id,'hero') AS avatar FROM arcade_scores s LEFT JOIN arcade_score_avatars a ON a.request_id=s.request_id ORDER BY s.score DESC,s.created_at,s.id LIMIT 10").all();const reset=await env.DB.prepare('SELECT request_id,reset_at FROM arcade_statistics_resets ORDER BY rowid DESC LIMIT 1').first();return reply({items:results,resetId:reset?.request_id||null,resetAt:reset?.reset_at||null});
   }
   if(url.pathname==='/v1/scores'&&request.method==='POST'){
    if(!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'Použij application/json.');

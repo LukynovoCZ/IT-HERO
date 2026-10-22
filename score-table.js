@@ -12,7 +12,7 @@
     }return demoAvatars[name];
   }
   const demoRows=score=>score>0?demoNames.map((name,i)=>({name,avatar:demoAvatar(name),score:Math.max(0,Math.min(score-1,Math.floor(score*(.90-i*.075))))})):[];
-  let active=null,memory=[],storageWarning=false;
+  let active=null,memory=[],storageWarning=false,observedResetId=null;
   const nameOf=value=>String(value??'').normalize('NFC').replace(/[\u0000-\u001f\u007f]/g,'').replace(/\s+/g,' ').trim().toLocaleUpperCase('cs').slice(0,12)||'AJŤÁK';
   function read(){
     try{
@@ -23,6 +23,12 @@
       memory=rows.slice(0,100).filter(r=>r&&typeof r.name==='string'&&Number.isSafeInteger(r.score)&&r.score>=0&&r.score<=999999999).map(r=>({name:nameOf(r.name),score:r.score,avatar:ITHeroAvatars.normalize(r.avatar)})).sort((a,b)=>b.score-a.score).slice(0,limit);
     }catch(_){storageWarning=true;}
     return memory;
+  }
+  function observeReset(data){
+    if(!data?.resetId||observedResetId===data.resetId)return false;
+    observedResetId=data.resetId;
+    try{if(localStorage.getItem('it-hero-score-reset-v1')===data.resetId)return false;localStorage.removeItem(storageKey);localStorage.setItem('it-hero-score-reset-v1',data.resetId);}catch{}
+    memory=[];return true;
   }
   function open(scene,{score,elapsed,bonus}){
     if(window.ITHeroDifficulty?.easy(scene)){ITHeroDifficulty.finish(scene);return;}
@@ -71,5 +77,5 @@
     // Avoid opening the phone keyboard before the player chooses to enter their name.
     dialog.querySelector('.score-again').focus({preventScroll:true});
   }
-  window.ITHeroScores={open,read,isOpen:()=>!!active||!!window.ITHeroDifficulty?.isOpen(),storageKey,demoNames,demoRows};
+  window.ITHeroScores={open,read,observeReset,isOpen:()=>!!active||!!window.ITHeroDifficulty?.isOpen(),storageKey,demoNames,demoRows};
 })();
