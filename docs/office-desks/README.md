@@ -31,7 +31,7 @@ Každý stůl má 2–5 různých položek; monitor a otevřený notebook se nev
 
 Pro opakovatelné rozložení nastavte před vytvořením scény `scene.registry.set('officeDeskSeed', 'demo-1')`. Běžný start používá nové náhodné rozložení; žádná náhodnost neběží v `update()`.
 
-Další předmět: přidat ID do `items`, nakreslit jeho samostatnou texturu v příslušné větvi `switch` (28×30 px, spodní hrana na y=30) a případně přidat ID do `themes[].favorites`. Zachovat průhledné okolí. Obrázek lze nahradit přímo v `assets/office-desks/office-item-ID.png`; při přidání nového ID je nutné dodat i jeho PNG. Generátor existující texturu zachová. Stoly používají `office-desk-wood` a `office-desk-modern` (88×38 px); i náhradní textura musí mít pracovní plochu na horním řádku a půdorys po celé šířce.
+Další předmět: přidat ID do `items` i cestu PNG do `textureSources`, nakreslit jeho samostatnou texturu v příslušné větvi `switch` (28×30 px, spodní hrana na y=30) a případně přidat ID do `themes[].favorites`. Zachovat průhledné okolí. Obrázek lze nahradit přímo v `assets/office-desks/office-item-ID.png`; při přidání nového ID je nutné dodat i jeho PNG. Generátor existující texturu zachová. Stoly používají `office-desk-wood` a `office-desk-modern` (88×38 px); i náhradní textura musí mít pracovní plochu na horním řádku a půdorys po celé šířce.
 
 Po úpravě kreslicího kódu vygenerujte PNG příkazem `node scripts/export_office_desks.cjs` při běžícím místním serveru na portu 8000. Při ruční výměně PNG tento příkaz nepouštějte, přepsal by je původní kresbou.
 
@@ -46,3 +46,18 @@ Srovnání zachycuje stejnou scénu, stejného hrdinu na stejném místě, stejn
 | Před | Po |
 | --- | --- |
 | ![Původní stoly](before.png) | ![Nové stoly](after.png) |
+
+### Výsledky ověření této větve
+
+- `node tests/office-desks.cjs`: PASS, všech 36 skutečných skoků a seskoků, geometrie i viditelná chodidla, devět pater, obě varianty, různorodé dekorace, seed/restart, mobilní rozměr 844×390, žádné chyby JavaScriptu.
+- `node tests/dbpm.cjs`: PASS, překonávání obou stolů v obou směrech, útoky na blízko/na dálku, DEMAND, životní cyklus a úklid kolizí.
+- `node tests/trio-collisions.cjs`: PASS, skutečné zásahy Security mastera, HR a design manažera disketou/CD, porážka a skóre.
+- `node tests/public-copy.mjs`: PASS, všech 27 PNG zahrnuto, hra i galerie funkční v sestavené veřejné kopii; žádné externí požadavky, funkční API a moderace.
+- Výkon: stejný headless Chromium, viewport 844×390, stejné místo, vypnutí nepřátelé a návštěvy, zahřátí 1 s a 120 snímků. Původní verze: medián 33,3 ms, p95 50,1 ms. Nová: medián 33,3 ms, p95 50,0 ms. V tomto prostředí není patrný rozdíl; nejde o měření na skutečném telefonu a výkon závisí na zařízení.
+- `git diff --check` a syntaktická kontrola JS: PASS.
+
+![Mobilní herní plátno](mobile.png)
+
+### Změněné soubory
+
+`game.js` (integrace místo původních obdélníků), `index.html` (nový modul a cache), `character-preview.html` (shodná verze cache), `office-desks.js` (nový modul), `assets/office-desks/*.png` (27 textur), `scripts/export_office_desks.cjs` (export PNG), `tests/office-desks.cjs` (nový fyzikální test), `tests/public-copy.mjs` (kontrola balení textur), `docs/office-desks/` (dokumentace a screenshoty).
