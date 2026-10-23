@@ -51,6 +51,7 @@
     preload() {
       ITHeroAppearance.preload(this);
       ITHeroPlayer.preload(this);
+      ITHeroOfficeDesks.preload(this);
       ITHeroFounders.preload(this);
       window.ITHeroEnemyCatalog.preload(this);
       window.ITHeroColleague.preload(this);
@@ -254,25 +255,9 @@
         this.addStatic(this.platforms, WIDTH / 2, y + 17, WIDTH, 30, 0x77877a, 11);
       });
 
-      // Stoly – překážky, které je potřeba přeskočit.
-      FLOOR_PLANS.flatMap((plan, level) => plan.desks.map(x => [level, x])).forEach(([level, x]) => {
-        const y = FLOORS[level];
-        this.addStatic(this.obstacles, x, y - 19, 88, 38, 0x737d79, 10).setStrokeStyle(3,0x172b2b);
-        this.add.rectangle(x, y - 42, 96, 9, 0xfff4d9).setStrokeStyle(2,0x203531).setDepth(11);
-        this.add.rectangle(x - 19, y - 63, 45, 31, 0x132a3c).setDepth(12);
-        this.add.rectangle(x - 19, y - 65, 38, 24, 0x42809b).setDepth(13);
-        this.add.rectangle(x + 26, y - 42, 12, 7, 0xffdf82).setDepth(13);
-        this.add.rectangle(x - 17, y - 43, 32, 4, 0xd4dee6).setDepth(13);
-        const detail = this.add.graphics().setDepth(14);
-        detail.fillStyle(0xa7e970).fillRect(x - 35, y - 73, 19, 2);
-        detail.fillStyle(0x9bb7b1).fillRect(x - 35, y - 68, 10, 2);
-        detail.fillStyle(0x6c7773).fillRect(x - 38, y - 35, 76, 2);
-        detail.fillStyle(0x596661).fillRect(x + 5, y - 31, 2, 28);
-        for (let line = 0; line < 3; line++) {
-          detail.fillStyle(0xc4cbc3).fillRect(x + 12, y - 26 + line * 9, 20, 1);
-          detail.fillStyle(0xe8ebde).fillRect(x + 21, y - 24 + line * 9, 4, 1);
-        }
-      });
+      // The rendered tabletop and the original 88×38 solid body share y=ground-38.
+      this.officeDesks = window.ITHeroOfficeDesks.placeDesks(this, FLOOR_PLANS, FLOORS,
+        {seed: this.registry.get('officeDeskSeed') ?? Math.random()});
 
       // Schodišťové dveře; každé další patro začíná u stejné šachty.
       this.doors = FLOORS.map((y, floor) => ({
