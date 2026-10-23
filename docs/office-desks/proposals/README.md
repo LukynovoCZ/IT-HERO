@@ -1,6 +1,6 @@
 # Varianty pro porovnání čitelnosti
 
-Pouze návrhy k výběru, nikoli vybraná výsledná úprava hry. Snímky skutečného Phaseru, stejný seed dekorací, místo hráče a viewport. Vlevo dřevěná, vpravo moderní varianta.
+Porovnání návrhů. Uživatel následně schválil variantu C; ta je nyní zapracovaná ve větvi a v pull requestu. Snímky skutečného Phaseru, stejný seed dekorací, místo hráče a viewport. Vlevo dřevěná, vpravo moderní varianta.
 
 - A: širší hliníkové nohy se světlou hranou; původní pozadí.
 - B: bílé nohy a světlejší zásuvky moderního stolu; pozadí kanceláře utlumeno o 20 %.

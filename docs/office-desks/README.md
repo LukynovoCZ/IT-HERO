@@ -4,6 +4,8 @@ Větev `feature/office-desks-redesign`. Návrh není určen k automatickému slo
 
 ## Grafika a fyzika
 
+Schválená varianta **C**: krémové kovové nohy široké 5 pixelů se světlou hranou, výraznější medová deska a světlé zásuvky dřevěné varianty. Pozadí všech devíti kanceláří je utlumené vrstvou s průhledností 0,36; dveře, postavy, stoly ani rozhraní nejsou touto vrstvou ovlivněny.
+
 Dva sdílené typy: medově dřevěný (výchozí pro odbory, management a vedení) a světlý moderní (zejména recepce a HR). Oba mají tmavý obrys, světlou silnou desku, stín, kovové nohy a zásuvkový kontejner. Boční perspektiva, průhledné pozadí, ostré pixely.
 
 Původních 18 pevných těles na devíti patrech zůstává širokých 88 a vysokých 38 herních pixelů na stejných souřadnicích. Původní deska přesahovala těleso do stran a ležela 8,5 pixelu nad ním. Nový vrchol textury je přesně `ground - 38`, shodný s `body.top`; šířka textury odpovídá kolizi. Nemění se rychlosti, skok ani algoritmus překonávání překážek Byznysáka.
@@ -21,6 +23,8 @@ Každý stůl má 2–5 různých položek; monitor a otevřený notebook se nev
 `office-desks.js` obsahuje:
 
 - `palettes`: barvy desky, její čelní hrany, kresby a zásuvek pro oba typy.
+- `structure`: barva kovových nohou, světlé hrany a šířka nohou.
+- `background`: barva, průhlednost a hloubka vrstvy tlumící kanceláře; `shadeBackdrop(scene, ground, width)` ji vytvoří za herními objekty.
 - `themes`: devět řádků v pořadí skutečných pater. `wood` je pravděpodobnost dřevěné varianty 0–1; `favorites` jsou preferované položky. Preferovaná skupina se při každém výběru použije s pravděpodobností 0,72, je-li dostupná. Zbývající výběr čerpá ze všech zbývajících položek.
 - `dimensions`, `depth`: výchozí rozměry a vrstvy. Rozměry neměnit bez opětovného fyzikálního ověření.
 - `preload(scene)`: načte 27 samostatných průhledných PNG z `assets/office-desks/`.
@@ -49,11 +53,11 @@ Srovnání zachycuje stejnou scénu, stejného hrdinu na stejném místě, stejn
 
 ### Výsledky ověření této větve
 
-- `node tests/office-desks.cjs`: PASS, všech 36 skutečných skoků a seskoků, geometrie i viditelná chodidla, devět pater, obě varianty, různorodé dekorace, seed/restart, mobilní rozměr 844×390, žádné chyby JavaScriptu.
+- `node tests/office-desks.cjs`: PASS, všech 36 skutečných skoků a seskoků, geometrie i viditelná chodidla, devět pater, obě varianty, různorodé dekorace, seed/restart, mobilní rozměr 844×390, žádné chyby JavaScriptu. Kontroluje také světlé nohy v načtených PNG a devět vrstev utlumeného pozadí.
 - `node tests/dbpm.cjs`: PASS, překonávání obou stolů v obou směrech, útoky na blízko/na dálku, DEMAND, životní cyklus a úklid kolizí.
 - `node tests/trio-collisions.cjs`: PASS, skutečné zásahy Security mastera, HR a design manažera disketou/CD, porážka a skóre.
 - `node tests/public-copy.mjs`: PASS, všech 27 PNG zahrnuto, hra i galerie funkční v sestavené veřejné kopii; žádné externí požadavky, funkční API a moderace.
-- Výkon: stejný headless Chromium, viewport 844×390, stejné místo, vypnutí nepřátelé a návštěvy, zahřátí 1 s a 120 snímků. Původní verze: medián 33,3 ms, p95 50,1 ms. Nová: medián 33,3 ms, p95 50,0 ms. V tomto prostředí není patrný rozdíl; nejde o měření na skutečném telefonu a výkon závisí na zařízení.
+- Výkon: stejný headless Chromium, viewport 844×390, stejné místo, vypnutí nepřátelé a návštěvy, zahřátí 1 s a 120 snímků. Původní verze: medián 49,9 ms, p95 66,6 ms. Schválená varianta C: medián 50,0 ms, p95 66,7 ms. V tomto prostředí není patrný rozdíl; nejde o měření na skutečném telefonu a výkon závisí na zařízení.
 - `git diff --check` a syntaktická kontrola JS: PASS.
 
 ![Mobilní herní plátno](mobile.png)

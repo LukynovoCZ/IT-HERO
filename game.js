@@ -229,6 +229,7 @@
         r(0xb3a66b,650,-148,110,72);r(0x275d45,654,-144,102,64);
         this.add.text(705,y-112,'POSLEDNÍ\nZÁLOHA',{font:'bold 12px monospace',align:'center',color:'#e9ddb7'}).setOrigin(0.5).setDepth(-8);
       }
+      ITHeroOfficeDesks.shadeBackdrop(this, y, WIDTH);
       return plan;
     }
 

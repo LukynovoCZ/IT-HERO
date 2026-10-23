@@ -1,9 +1,11 @@
 /* Side-view furniture. Texture y=0 is the exact solid landing surface. */
 (()=>{'use strict';
  const palettes={
-  wood:{top:'#f5d49a',edge:'#c18a50',grain:'#e2b676',drawer:'#b9c5ca'},
+  wood:{top:'#ffdda0',edge:'#d99a54',grain:'#e2b676',drawer:'#ddd2b5'},
   modern:{top:'#edf2ed',edge:'#abbcc6',grain:'#d2dfdf',drawer:'#d0d9de'}
  };
+ const structure={metal:'#e4d6b6',highlight:'#fff7df',legWidth:5};
+ const background={color:0x142c29,alpha:.36,depth:-8.5};
  const items=['monitor','laptop','closed-laptop','keyboard','mouse','mug','papers','files','binders','pens','phone','mobile','lamp','plant','cactus','apple','banana','water','lunch','car','dinosaur','robot','hero-figure','controller','spaceship'];
  const themes=[
   {wood:.15,favorites:['monitor','phone','plant','pens']},
@@ -48,14 +50,14 @@
   "office-item-spaceship": "assets/office-desks/office-item-spaceship.png",
   "office-item-water": "assets/office-desks/office-item-water.png"
 };
- function preload(scene){for(const [key,url] of Object.entries(textureSources))scene.load.image(key,url);}
+ function preload(scene){for(const [key,url] of Object.entries(textureSources))scene.load.image(key,url+'?v=0.26.7');}
  function createDeskTextures(scene){
   for(const [type,p] of Object.entries(palettes))canvas(scene,'office-desk-'+type,88,38,(c,r)=>{
-   const ink='#111f25',metal='#3f515c';
+   const ink='#111f25',metal=structure.metal;
    r(ink,0,0,88,9);r(p.top,2,1,84,3);r(p.edge,2,4,84,3);r(p.grain,8,2,22,1);r(p.grain,51,2,24,1);
    r('#17272c',5,9,78,3); // underside shadow, inside the solid silhouette
-   r(ink,4,9,7,29);r(metal,6,12,3,24);r('#7d9098',6,12,1,24);
-   r(ink,77,9,7,29);r(metal,79,12,3,24);r('#7d9098',79,12,1,24);
+   r(ink,4,9,7,29);r(metal,6,10,structure.legWidth,26);r(structure.highlight,6,10,2,26);
+   r(ink,77,9,7,29);r(metal,78,10,structure.legWidth,26);r(structure.highlight,78,10,2,26);
    r(ink,53,11,23,27);r(p.drawer,55,12,19,24);r('#eef2e5',55,12,2,23);
    for(let y=19;y<36;y+=8){r('#61717b',57,y,16,1);r('#364650',63,y-4,6,2);}
    r('#14252a',11,35,42,3);r('#33474c',11,35,40,1);
@@ -101,6 +103,7 @@
   const slot=desk.displayWidth/list.length;
   return list.map((id,i)=>{const texture='office-item-'+id,w=Math.min(28,slot-2),image=scene.add.image(desk.x-desk.displayWidth/2+slot*(i+.5),desk.body.top-1,texture).setOrigin(.5,1).setDisplaySize(w,30*w/28).setDepth(depth.decorations);image.setData('deskItem',id);return image;});
  }
+ function shadeBackdrop(scene,ground,width){return scene.add.rectangle(width/2,ground-207,width,414,background.color,background.alpha).setDepth(background.depth).setData('officeBackdrop',true);}
  function createDesk(scene,config){
   createDeskTextures(scene);
   const random=config.random||Math.random,type=config.type||(random()<(themes[config.floor||0]||themes[0]).wood?'wood':'modern');
@@ -115,5 +118,5 @@
   const random=options.random||seeded(options.seed??Math.random());
   return floorPlans.flatMap((plan,floor)=>plan.desks.map(x=>createDesk(scene,{x,ground:floors[floor],floor,random})));
  }
- window.ITHeroOfficeDesks={palettes,items,themes,dimensions,depth,seeded,preload,createDeskTextures,createDesk,generateDeskDecorations,placeDesks};
+ window.ITHeroOfficeDesks={palettes,structure,background,shadeBackdrop,items,themes,dimensions,depth,seeded,preload,createDeskTextures,createDesk,generateDeskDecorations,placeDesks};
 })();
