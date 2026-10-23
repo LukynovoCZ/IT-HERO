@@ -2,7 +2,7 @@
 (()=>{'use strict';
  const D=window.ITHeroDialogue;
  const config={cooldownMin:7000,cooldownMax:10000,maxBubbles:1,gap:600,width:270,font:14};
- const duration=line=>line.length<=35?2800:line.length<=80?4000:Math.min(6000,4400+line.length*8);
+ const duration=line=>Math.max(6000,Math.min(12000,3000+line.length*60));
  function pick(id,group,previous,random=Math.random){
   const lines=D.lines(id,group),pool=lines.filter(line=>line!==previous);
   return pool.length?pool[Math.floor(random()*pool.length)]:lines[0];
