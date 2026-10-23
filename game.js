@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.26.3 – mini plošinovka v Phaser 3.
+ * IT HERO 0.26.9 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -735,7 +735,7 @@
 
     fire() {
       this.playerAttackUntil=this.time.now+160;
-      this.player.setTexture(this.heroFrames.attack);
+      if(!this.wasCrouching)this.player.setTexture(ITHeroPlayer.attackKey(this));
       const x = this.player.x + this.facing * 22;
       const y = this.player.y - 5;
       const bullet = this.playerShots.create(x, y, this.weapon);
@@ -999,10 +999,7 @@
         this.lastOnGroundAt = -5000;
         this.tone(380, 0.095, 'triangle');
       }
-      if (crouching) this.player.setTexture(ITHeroPlayer.key(this,'crouch'));
-      else if (grounded && moving) this.player.setTexture(ITHeroPlayer.key(this,Math.floor(time / 130) % 2 ? 'walk_alt' : 'walk'));
-      else this.player.setTexture(ITHeroPlayer.key(this,grounded?'idle':'jump'));
-      if(!crouching&&time<(this.playerAttackUntil||0))this.player.setTexture(this.heroFrames.attack);
+      this.player.setTexture(ITHeroPlayer.movementKey(this,time,{moving,grounded,crouching,attacking:!crouching&&time<(this.playerAttackUntil||0)}));
       if(time<(this.playerHitUntil||0))this.player.setTexture(this.heroFrames.hit);
       const shootPressed = pressed('shoot');
       if ((down('shoot') || shootPressed) && time - this.lastShot > 240) {
