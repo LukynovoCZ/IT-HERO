@@ -97,11 +97,13 @@
  function generateDeskDecorations(scene,desk,config={}){
   const random=config.random||Math.random,theme=themes[config.floor||0]||themes[0];
   const count=2+Math.floor(random()*4),pool=[...items],chosen=[];
+  if(config.monitor){chosen.push('monitor');pool.splice(pool.indexOf('monitor'),1);pool.splice(pool.indexOf('laptop'),1);}
   while(chosen.length<count){const favorites=pool.filter(id=>theme.favorites.includes(id)),source=favorites.length&&random()<.72?favorites:pool;const id=source[Math.floor(random()*source.length)];chosen.push(id);pool.splice(pool.indexOf(id),1);if(['monitor','laptop'].includes(id)){const other=pool.indexOf(id==='monitor'?'laptop':'monitor');if(other>=0)pool.splice(other,1);}}
   const list=config.decorations??chosen;
   if(list.length<2||list.length>5||list.some(id=>!items.includes(id)))throw Error('Desk decorations must contain 2–5 known item IDs');
-  const slot=desk.displayWidth/list.length;
-  return list.map((id,i)=>{const texture='office-item-'+id,w=Math.min(28,slot-2),image=scene.add.image(desk.x-desk.displayWidth/2+slot*(i+.5),desk.body.top-1,texture).setOrigin(.5,1).setDisplaySize(w,30*w/28).setDepth(depth.decorations);image.setData('deskItem',id);return image;});
+  const wideIndex=list.findIndex(id=>['monitor','laptop'].includes(id));
+  let cursor=desk.x-desk.displayWidth/2;
+  return list.map((id,i)=>{const slot=wideIndex>=0&&list.length>2?(i===wideIndex?32:(desk.displayWidth-32)/(list.length-1)):desk.displayWidth/list.length;const texture='office-item-'+id,w=Math.min(28,slot-2),image=scene.add.image(cursor+slot/2,desk.body.top-1,texture).setOrigin(.5,1).setDisplaySize(w,30*w/28).setDepth(depth.decorations);image.setData('deskItem',id);cursor+=slot;return image;});
  }
  function shadeBackdrop(scene,ground,width){return scene.add.rectangle(width/2,ground-207,width,414,background.color,background.alpha).setDepth(background.depth).setData('officeBackdrop',true);}
  function createDesk(scene,config){
@@ -116,7 +118,7 @@
  }
  function placeDesks(scene,floorPlans,floors,options={}){
   const random=options.random||seeded(options.seed??Math.random());
-  return floorPlans.flatMap((plan,floor)=>plan.desks.map(x=>createDesk(scene,{x,ground:floors[floor],floor,random})));
+  return floorPlans.flatMap((plan,floor)=>{const monitorIndex=Math.floor(random()*plan.desks.length);return plan.desks.map((x,index)=>createDesk(scene,{x,ground:floors[floor],floor,monitor:index===monitorIndex,random}));});
  }
  window.ITHeroOfficeDesks={palettes,structure,background,shadeBackdrop,items,themes,dimensions,depth,seeded,preload,createDeskTextures,createDesk,generateDeskDecorations,placeDesks};
 })();

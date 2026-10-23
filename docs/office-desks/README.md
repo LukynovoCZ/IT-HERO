@@ -16,7 +16,7 @@ Hloubka stolů 10, dekorací 12: za hráčem a nepřáteli, před pozadím. Pře
 
 25 položek: monitor, otevřený notebook, zavřený notebook, klávesnice, myš, hrnek, papíry, hromádka složek, pořadače, psací potřeby, stolní telefon, mobil, lampička, rostlina, kaktus, jablko, banán, láhev vody, svačinový box, model auta, dinosaurus, robot, maskovaná figurka, ovladač, vesmírná loď. Figurky jsou původní siluety bez log.
 
-Každý stůl má 2–5 různých položek; monitor a otevřený notebook se nevyskytují společně. Předměty jsou vybírány bez opakování, mají oddělené sloty a během hry se nepřeskupují. Menší stůl s více předměty používá přiměřeně zmenšené dekorace.
+V každém patře má alespoň jeden náhodně zvolený stůl monitor v plné šířce 28 herních pixelů, pro který je rezervován samostatný širší slot. Každý stůl má 2–5 různých položek; monitor a otevřený notebook se nevyskytují společně. Předměty jsou vybírány bez opakování, mají oddělené sloty a během hry se nepřeskupují. Menší stůl s více předměty používá přiměřeně zmenšené dekorace.
 
 ## Konfigurace a rozšíření
 
