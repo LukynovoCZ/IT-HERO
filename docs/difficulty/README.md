@@ -50,3 +50,5 @@ Návrh další opravy: stejný postup jako u Ajťačky – čtyři jasné fáze 
 ![Ukázkové testovací výsledky – nejsou to produkční rekordy](hall-example.png)
 
 ![Zvýrazněné lávky ve druhém patře](platforms.png)
+
+Aktualizace 0.28.1: uživatel následně schválil návrh Ajťákovy chůze a oprava byla zapracována; podrobnosti viz [boy-walk.md](../boy-walk.md).

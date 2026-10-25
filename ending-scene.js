@@ -46,7 +46,7 @@
    const phase=t<3000?0:t<6000?1:t<9000?2:t<12000?3:t<16000?4:5;
    if(phase!==this.phase){this.phase=phase;this.chapter.setText(['01 / STŘECHA','02 / DESIGN PROTOTYPE','03 / NÁSTUP','04 / LETOVÝ REŽIM','05 / MLADÁ BOLESLAV','06 / MISE SPLNĚNA'][phase]);this.caption.setText(['ZÁLOHA ZACHRÁNĚNA.','Co to zas kluci z designu vyváděli?','Hlavně ať to nechce aktualizaci.','Tak nashle, Hasta la Vista, a nachystejte mi k snídani uzenáče…','Tak nashle, Hasta la Vista, a nachystejte mi k snídani uzenáče…','Kariéra zachráněna. Kafe počká.'][phase]);if(!this.reduced)this.source.tone([440,290,380,520,660,880][phase],.13,phase===3?'triangle':'sine');}
    const walk=t<3000?155+Math.min(1,t/2500)*128:t<6000?283:283+Math.min(1,(t-6000)/2350)*368;
-   const walking=t<2500||t>6000&&t<8350,pose=ITHeroPlayer.state.id==='girl'&&walking?ITHeroPlayer.cycleKey(this,t/90):ITHeroPlayer.key(this,walking&&Math.floor(t/150)%2?'walk':'idle');
+   const walking=t<2500||t>6000&&t<8350,pose=walking?ITHeroPlayer.cycleKey(this,t/90):ITHeroPlayer.key(this,walking&&Math.floor(t/150)%2?'walk':'idle');
    this.hero.setPosition(walk,298).setTexture(pose).setAlpha(t<8100?1:Math.max(0,1-(t-8100)/600));
    this.disk.setPosition(walk+18,301).setAlpha(this.hero.alpha).setVisible(t<8500);
    this.door.setAlpha(t<9000?1:Math.max(0,1-(t-9000)/3000));

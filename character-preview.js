@@ -77,7 +77,7 @@
       for(let i=0;i<3;i++)this.entries.push(ambient(i===2?'KOLEGYNĚ U KOŠE':`KOLEGA U KOŠE ${i+1}`,76,80,80,{idle:`outdoor-smoker-${i}`},'PAUZA U KOŠE'));
       this.entries.push(ambient('SOJKA',30,48,36,{idle:'outdoor-jay'},'POZORUJE A HLÁSÍ'));
       for(let i=0;i<2;i++)this.entries.push(ambient(`HNĚDÝ KRÁLÍK ${i+1}`,26,36,30,{idle:'outdoor-rabbit-0',walk:'outdoor-rabbit-1',walk_alt:'outdoor-rabbit-0'},'POSKAKUJE'));
-      const playable=ITHeroPlayer.textures(this,this.entries[0].frames);this.entries.push({name:'AJŤAČKA',walkCycle:true,height:76,frameWidth:64,frameHeight:80,frames:playable.girl,body:{width:28,height:72,x:18,y:8},itemKeys:['floppy','cd'],attackPose:'attack',contactPose:'crouch'});
+      const playable=ITHeroPlayer.textures(this,this.entries[0].frames);this.entries[0].frames=playable.boy;this.entries[0].walkCycle=true;this.entries[0].playerId='boy';this.entries.push({name:'AJŤAČKA',walkCycle:true,playerId:'girl',height:76,frameWidth:64,frameHeight:80,frames:playable.girl,body:{width:28,height:72,x:18,y:8},itemKeys:['floppy','cd'],attackPose:'attack',contactPose:'crouch'});
       this.entries.forEach((entry, i) => {
         const x = 160 + (i % 3) * 320;
         entry.baseline = 260 + Math.floor(i / 3) * 400;
@@ -121,7 +121,7 @@
         if (pose === 'walk' && Math.floor(this.animationTime / 180) % 2 === 0) frame = entry.frames.walk_alt ? 'walk_alt' : 'idle';
         if(['attack','contact'].includes(pose)&&entry.name==='MANAŽER')frame=['paddle','paddle-strike','paddle-follow'][Math.floor(this.animationTime/150)%3];
         if(pose==='attack'&&entry.id==='design_manager')frame=Math.floor(this.animationTime/180)%2?'golf':'golf_follow';
-        entry.sprite.setTexture(pose==='walk'&&entry.walkCycle?ITHeroPlayer.cycleKey(this,this.animationTime/90,false,'girl'):entry.frames[frame] || entry.frames.idle).setScale(zoom);
+        entry.sprite.setTexture(pose==='walk'&&entry.walkCycle?ITHeroPlayer.cycleKey(this,this.animationTime/90,false,entry.playerId):entry.frames[frame] || entry.frames.idle).setScale(zoom);
         if(entry.id==='dbpm'){entry.sprite.clearTint();if(pose==='hit'&&Math.floor(this.animationTime/90)%2)entry.sprite.setTintFill(0xffffff);}
         if (entry.id && !['sap','dbpm'].includes(entry.behavior)) {
           if (pose === 'contact') {
