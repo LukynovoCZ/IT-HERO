@@ -2,7 +2,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
 (async()=>{const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});try{
  const page=await browser.newPage({viewport:{width:1280,height:900}}),errors=[];page.setDefaultTimeout(10000);page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/game.js*',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('new Phaser.Game({','window.__testGame=new Phaser.Game({')});});
- await page.goto('http://127.0.0.1:8000');await page.locator('#game-action').waitFor({state:'visible'});await page.keyboard.press('Enter');
+ await page.goto(process.env.IT_HERO_PREVIEW_URL||'http://127.0.0.1:8000');await page.locator('#game-action').waitFor({state:'visible'});await page.keyboard.press('Enter');
  await page.evaluate(()=>{const s=window.__testGame.scene.getScene('ITGame');s.lastHit=Infinity;s.enemies.getChildren().forEach(e=>{e.lastAttack=Infinity;e.sapNextAttack=Infinity;});s.nextHelperAt=Infinity;s.colleague.state.nextAt=Infinity;s.oldBadger.state.nextAt=Infinity;
  s.floor=1;s.updateHUD();s.player.body.reset(s.doors[1].x,3835-40);s.player.setVelocity(0);});
  await page.waitForFunction(()=>window.__testGame.scene.getScene('ITGame').player.body.blocked.down);

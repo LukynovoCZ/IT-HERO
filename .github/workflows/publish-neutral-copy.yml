@@ -12,6 +12,7 @@ on:
       - assets/**
       - vendor/**
       - cloud-api/public-copy-request.json
+      - cloud-api/migrations/**
       - cloud-api/worker.mjs
       - cloud-api/character-groups.mjs
       - cloud-api/avatar-ids.mjs

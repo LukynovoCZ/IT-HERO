@@ -2,7 +2,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
 (async()=>{const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});try{
  const p=await b.newPage({viewport:{width:1280,height:900}}),errors=[];p.setDefaultTimeout(25000);p.on('pageerror',e=>errors.push(e.message));
  await p.route('**/game.js*',async r=>{const q=await r.fetch();await r.fulfill({response:q,body:(await q.text()).replace('new Phaser.Game({','window.__game=new Phaser.Game({')});});
- await p.goto('http://127.0.0.1:8000');await p.locator('#game-action').waitFor({state:'visible'});await p.keyboard.press('Enter');
+ await p.goto(process.env.IT_HERO_PREVIEW_URL||'http://127.0.0.1:8000');await p.locator('#game-action').waitFor({state:'visible'});await p.check('[name=difficulty][value=hard]');await p.keyboard.press('Enter');
  const initial=await p.evaluate(()=>{
   window.s=__game.scene.getScene('ITGame');window.e=s.dbpm.actors[0];window.ground=4320-3*485;
   s.enemies.getChildren().filter(o=>o!==e).forEach(o=>{s.pacing.cancel(o);o.body.enable=false;o.lastAttack=Infinity;o.sapNextAttack=Infinity;});s.enemyShots.clear(true,true);

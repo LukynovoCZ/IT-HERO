@@ -21,6 +21,11 @@ function proposal(data){
  const lines=[...new Set(data.lines.map(line=>clean(line,200)))];if(lines.some(line=>!line))fail(400,'Hláška nesmí být prázdná.');
  return {requestId:data.requestId,characterId:character.id,groupId:data.groupId,lines,author:clean(data.author??'',24)};
 }
+function difficultyOf(data){
+ if(data.rulesVersion!==undefined&&data.rulesVersion!==2)fail(400,'Neplatná verze obtížnosti.');
+ const value=data.difficulty??'normal';if(!['easy','normal','hard'].includes(value))fail(400,'Neplatná obtížnost.');
+ return data.rulesVersion===2?value:value==='normal'?'hard':value;
+}
 const digest=async text=>new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)));
 async function authorize(request,env){
  const header=request.headers.get('Authorization')||'';if(!header.startsWith('Bearer ')||header.length>300)fail(401,'Je potřeba správcovský klíč.');
@@ -53,7 +58,7 @@ export default {async fetch(request,env){
    const previous=await lookup();if(previous)return reply({resetId:previous.request_id,resetAt:previous.reset_at,duplicate:true});
    const guard=' WHERE NOT EXISTS (SELECT 1 FROM arcade_statistics_resets WHERE request_id=?)';
    await env.DB.batch([
-    ...['arcade_score_avatars','arcade_scores','arcade_plays','arcade_game_runs'].map(table=>env.DB.prepare('DELETE FROM '+table+guard).bind(data.requestId)),
+    ...['arcade_score_modes','arcade_run_modes','arcade_score_avatars','arcade_scores','arcade_plays','arcade_game_runs'].map(table=>env.DB.prepare('DELETE FROM '+table+guard).bind(data.requestId)),
     env.DB.prepare('UPDATE arcade_game_stats_state SET since=?,reset_id=?'+guard).bind(now,data.requestId,data.requestId),
     env.DB.prepare('INSERT INTO arcade_statistics_resets(request_id,reset_at) VALUES(?,?) ON CONFLICT(request_id) DO NOTHING').bind(data.requestId,now)
    ]);
@@ -70,15 +75,16 @@ export default {async fetch(request,env){
    const data=await jsonBody(request);
    if(typeof data?.requestId!=='string'||! /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(data.requestId))fail(400,'Neplatný identifikátor hry.');
    if(url.pathname==='/v1/game-runs'){
-    if(!['normal','easy'].includes(data.difficulty)||data.training!==false)fail(400,'Neplatná obtížnost nebo trénink.');
+    if(!['normal','easy','hard'].includes(data.difficulty)||data.training!==false)fail(400,'Neplatná obtížnost nebo trénink.');
     const state=await env.DB.prepare('SELECT reset_id FROM arcade_game_stats_state WHERE singleton=1').first();if(data.resetId!==state.reset_id)fail(409,'Statistiky byly mezitím vynulovány.');
-    const prior=await env.DB.prepare('SELECT difficulty FROM arcade_game_runs WHERE request_id=?').bind(data.requestId).first();
-    if(prior){if(prior.difficulty!==data.difficulty)fail(409,'Hra už má jinou obtížnost.');return reply({recorded:true,duplicate:true},202);}
+    const mode=difficultyOf(data),storedMode=mode==='hard'?'normal':mode;
+    const prior=await env.DB.prepare("SELECT COALESCE(m.difficulty,CASE WHEN r.difficulty='normal' THEN 'hard' ELSE r.difficulty END) AS difficulty FROM arcade_game_runs r LEFT JOIN arcade_run_modes m ON m.request_id=r.request_id WHERE r.request_id=?").bind(data.requestId).first();
+    if(prior){if(prior.difficulty!==mode)fail(409,'Hra už má jinou obtížnost.');return reply({recorded:true,duplicate:true},202);}
     const bytes=await digest(`runs/${env.ADMIN_TOKEN}/${request.headers.get('CF-Connecting-IP')||'unknown'}/${Math.floor(now/600)}`),bucket=Array.from(bytes,n=>n.toString(16).padStart(2,'0')).join('');
     await env.DB.prepare('DELETE FROM dialogue_rate_limits WHERE expires_at < ?').bind(now).run();
     await env.DB.prepare('INSERT INTO dialogue_rate_limits(bucket,count,expires_at) VALUES(?,0,?) ON CONFLICT(bucket) DO NOTHING').bind(bucket,now+1200).run();
     if(!await env.DB.prepare('UPDATE dialogue_rate_limits SET count=count+1 WHERE bucket=? AND count<120 RETURNING count').bind(bucket).first())fail(429,'Příliš mnoho spuštění. Zkus to později.');
-    await env.DB.prepare('INSERT INTO arcade_game_runs(request_id,difficulty,created_at) SELECT ?,?,? WHERE EXISTS (SELECT 1 FROM arcade_game_stats_state WHERE reset_id=?) ON CONFLICT(request_id) DO NOTHING').bind(data.requestId,data.difficulty,now,data.resetId).run();return reply({recorded:true},202);
+    await env.DB.batch([env.DB.prepare('INSERT INTO arcade_game_runs(request_id,difficulty,created_at) SELECT ?,?,? WHERE EXISTS (SELECT 1 FROM arcade_game_stats_state WHERE reset_id=?) ON CONFLICT(request_id) DO NOTHING').bind(data.requestId,storedMode,now,data.resetId),env.DB.prepare('INSERT INTO arcade_run_modes(request_id,difficulty) SELECT ?,? WHERE EXISTS (SELECT 1 FROM arcade_game_runs WHERE request_id=?) ON CONFLICT(request_id) DO NOTHING').bind(data.requestId,mode,data.requestId)]);return reply({recorded:true},202);
    }
    if(url.pathname.endsWith('/training')){await env.DB.prepare('UPDATE arcade_game_runs SET training=1,killer_id=NULL WHERE request_id=?').bind(data.requestId).run();return reply({recorded:true},202);}
    if(!killerIds.includes(data.killerId))fail(400,'Neplatná záporná postava.');
@@ -101,21 +107,23 @@ export default {async fetch(request,env){
    await env.DB.prepare('INSERT INTO arcade_plays(player_hash,play_day) VALUES(?,?) ON CONFLICT(player_hash,play_day) DO NOTHING').bind(player,day).run();return reply({recorded:true},202);
   }
   if(url.pathname==='/v1/scores'&&request.method==='GET'){
-   const {results}=await env.DB.prepare("SELECT s.name,s.score,COALESCE(a.avatar_id,'hero') AS avatar FROM arcade_scores s LEFT JOIN arcade_score_avatars a ON a.request_id=s.request_id ORDER BY s.score DESC,s.created_at,s.id LIMIT 10").all();const reset=await env.DB.prepare('SELECT request_id,reset_at FROM arcade_statistics_resets ORDER BY rowid DESC LIMIT 1').first();return reply({items:results,resetId:reset?.request_id||null,resetAt:reset?.reset_at||null});
+   const mode=url.searchParams.get('difficulty')||null;if(mode&&!['normal','hard'].includes(mode))fail(400,'Neplatný filtr obtížnosti.');
+   const {results}=await env.DB.prepare("SELECT s.name,s.score,COALESCE(a.avatar_id,'hero') AS avatar,COALESCE(m.difficulty,'hard') AS difficulty FROM arcade_scores s LEFT JOIN arcade_score_avatars a ON a.request_id=s.request_id LEFT JOIN arcade_score_modes m ON m.request_id=s.request_id WHERE (? IS NULL OR COALESCE(m.difficulty,'hard')=?) ORDER BY s.score DESC,s.created_at,s.id LIMIT 10").bind(mode,mode).all();const reset=await env.DB.prepare('SELECT request_id,reset_at FROM arcade_statistics_resets ORDER BY rowid DESC LIMIT 1').first();return reply({items:results,resetId:reset?.request_id||null,resetAt:reset?.reset_at||null});
   }
   if(url.pathname==='/v1/scores'&&request.method==='POST'){
    if(!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'Použij application/json.');
-   const d=await jsonBody(request);if(!d||(d.difficulty!==undefined&&d.difficulty!=='normal')||d.training!==false||d.completed!==true||!Number.isSafeInteger(d.score)||d.score<0||d.score>100000||!Number.isSafeInteger(d.elapsedMs)||d.elapsedMs<1000||d.elapsedMs>86400000||typeof d.requestId!=='string'||! /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(d.requestId))fail(400,'Neplatný výsledek nebo tréninková hra.');
+   const d=await jsonBody(request);if(!d||(d.difficulty!==undefined&&!['normal','hard'].includes(d.difficulty))||d.training!==false||d.completed!==true||!Number.isSafeInteger(d.score)||d.score<0||d.score>100000||!Number.isSafeInteger(d.elapsedMs)||d.elapsedMs<1000||d.elapsedMs>86400000||typeof d.requestId!=='string'||! /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(d.requestId))fail(400,'Neplatný výsledek nebo tréninková hra.');
+   const mode=difficultyOf(d);
    const avatar=d.avatar??'hero';if(!avatarIds.includes(avatar))fail(400,'Neplatný avatar.');
    const name=clean(d.name,12);if(!name)fail(400,'Vyplň přezdívku.');
-   const lookup=()=>env.DB.prepare("SELECT s.*,COALESCE(a.avatar_id,'hero') AS avatar FROM arcade_scores s LEFT JOIN arcade_score_avatars a ON a.request_id=s.request_id WHERE s.request_id=?").bind(d.requestId).first();let row=await lookup();
-   const matches=r=>r.name===name&&r.score===d.score&&r.elapsed_ms===d.elapsedMs&&r.avatar===avatar;
+   const lookup=()=>env.DB.prepare("SELECT s.*,COALESCE(a.avatar_id,'hero') AS avatar,COALESCE(m.difficulty,'hard') AS difficulty FROM arcade_scores s LEFT JOIN arcade_score_avatars a ON a.request_id=s.request_id LEFT JOIN arcade_score_modes m ON m.request_id=s.request_id WHERE s.request_id=?").bind(d.requestId).first();let row=await lookup();
+   const matches=r=>r.name===name&&r.score===d.score&&r.elapsed_ms===d.elapsedMs&&r.avatar===avatar&&r.difficulty===mode;
    if(row){if(!matches(row))fail(409,'Tento zápis již má jiný obsah.');return reply({id:row.id,duplicate:true},202);}
    const hash=await digest(`scores/${env.ADMIN_TOKEN}/${request.headers.get('CF-Connecting-IP')||'unknown'}/${Math.floor(now/600)}`),bucket=Array.from(hash,n=>n.toString(16).padStart(2,'0')).join('');
    await env.DB.prepare('DELETE FROM dialogue_rate_limits WHERE expires_at < ?').bind(now).run();
    await env.DB.prepare('INSERT INTO dialogue_rate_limits(bucket,count,expires_at) VALUES(?,0,?) ON CONFLICT(bucket) DO NOTHING').bind(bucket,now+1200).run();
    const rate=await env.DB.prepare('UPDATE dialogue_rate_limits SET count=count+1 WHERE bucket=? AND count<5 RETURNING count').bind(bucket).first();if(!rate)fail(429,'Příliš mnoho zápisů. Zkus to za 10 minut.');
-   await env.DB.batch([env.DB.prepare('INSERT INTO arcade_scores(request_id,name,score,elapsed_ms,created_at) VALUES(?,?,?,?,?) ON CONFLICT(request_id) DO NOTHING').bind(d.requestId,name,d.score,d.elapsedMs,now),env.DB.prepare('INSERT INTO arcade_score_avatars(request_id,avatar_id) VALUES(?,?) ON CONFLICT(request_id) DO NOTHING').bind(d.requestId,avatar)]);row=await lookup();if(!matches(row))fail(409,'Tento zápis již má jiný obsah.');return reply({id:row.id},202);
+   await env.DB.batch([env.DB.prepare('INSERT INTO arcade_scores(request_id,name,score,elapsed_ms,created_at) VALUES(?,?,?,?,?) ON CONFLICT(request_id) DO NOTHING').bind(d.requestId,name,d.score,d.elapsedMs,now),env.DB.prepare('INSERT INTO arcade_score_avatars(request_id,avatar_id) VALUES(?,?) ON CONFLICT(request_id) DO NOTHING').bind(d.requestId,avatar),env.DB.prepare('INSERT INTO arcade_score_modes(request_id,difficulty) VALUES(?,?) ON CONFLICT(request_id) DO NOTHING').bind(d.requestId,mode)]);row=await lookup();if(!matches(row))fail(409,'Tento zápis již má jiný obsah.');return reply({id:row.id},202);
   }
   if(url.pathname==='/v1/dialogue-suggestions'&&request.method==='POST'){
    if(!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'Použij application/json.');

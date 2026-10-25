@@ -25,11 +25,14 @@
     for(const route of routes){
       const floor=route.floor-1,ground=floors[floor];
       for(const spec of route.bridges||[]){
-        const bridge=scene.addStatic(scene.platforms,spec.x,ground-spec.rise,spec.width,8,0xc8c9b9,12);
+        const bridge=scene.addStatic(scene.platforms,spec.x,ground-spec.rise,spec.width,8,0xffdf82,12).setStrokeStyle(2,0x172f3b);
         bridge.body.checkCollision.down=false;bridge.body.checkCollision.left=false;bridge.body.checkCollision.right=false;
         bridge.setData('serviceBridge',true);bridges.push(bridge);
-        const g=scene.add.graphics().setDepth(13);g.fillStyle(0x475e58).fillRect(spec.x-spec.width/2,ground-spec.rise+4,spec.width,4);
-        for(let x=spec.x-spec.width/2+8;x<spec.x+spec.width/2;x+=20)g.fillStyle(0x91b5a3).fillRect(x,ground-spec.rise-1,9,2);
+        const left=spec.x-spec.width/2,top=bridge.body.top,g=scene.add.graphics().setDepth(13);
+        g.fillStyle(0xfff5c0).fillRect(left,top,spec.width,3);
+        g.fillStyle(0x2c5260).fillRect(left,top+6,spec.width,4);
+        for(let x=left+7;x<left+spec.width-4;x+=18)g.fillStyle(0xf1b74c).fillRect(x,top+4,7,2);
+        g.fillStyle(0xe4eff0).fillRect(left,top,3,8).fillRect(left+spec.width-3,top,3,8);
       }
       if(route.bridges)scene.add.text(490,ground-Math.max(...route.bridges.map(b=>b.rise))-21,'SERVISNÍ LÁVKA',{font:'bold 9px monospace',color:'#d7e3c9',backgroundColor:'#253e34',padding:{x:4,y:2}}).setOrigin(.5).setDepth(14);
       if(route.cart){

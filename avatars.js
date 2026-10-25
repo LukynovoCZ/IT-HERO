@@ -19,6 +19,6 @@
   for(let y=top;y<=headBottom;y++)for(let x=0;x<source.width;x++)if(data[(y*source.width+x)*4+3]>160){left=Math.min(left,x);right=Math.max(right,x);}
   const side=Math.max(right-left+1,headBottom-top+1)+6,x=(left+right-side)/2,y=top-3;c.drawImage(source,x,y,side,side,4,4,size-8,size-8);return canvas;
  }
- function cell(scene,row){const wrap=document.createElement('span');wrap.className='score-player';wrap.append(portrait(scene,row.avatar,40),document.createTextNode(row.name));return wrap;}
+ function cell(scene,row){const wrap=document.createElement('span');wrap.className='score-player';wrap.append(portrait(scene,row.avatar,40),document.createTextNode(row.name));const badge=window.ITHeroScores?.badge(row);if(badge)wrap.append(badge);return wrap;}
  window.ITHeroAvatars={choices,normalize,portrait,cell};
 })();

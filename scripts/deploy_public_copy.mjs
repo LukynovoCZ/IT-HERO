@@ -18,7 +18,7 @@ export async function deployPublicCopy(){
  async function api(route,method='GET',body){
   const response=await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}${route}`,{method,headers:{Authorization:`Bearer ${token}`,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(60000)});
   const data=await response.json().catch(()=>null);
-  if(!response.ok||!data?.success){const codes=(data?.errors||[]).map(x=>Number(x.code)).filter(Number.isFinite).join(',');let details=(data?.errors||[]).map(x=>String(x.message||'')).join(' ').slice(0,1000);for(const value of [token,account,admin,project])details=details.split(value).join('[redacted]');details=details.replace(/https?:\/\/\S+/g,'[URL omitted]');throw Error(`Cloudflare ${route.startsWith('/pages/')?'Pages':'D1'} ${method}: HTTP ${response.status}, codes ${codes||'none'}. ${details}${response.status===403?' The API token needs Account / Cloudflare Pages / Edit and Account / D1 / Read for the selected account.':''}`);}
+  if(!response.ok||!data?.success){const codes=(data?.errors||[]).map(x=>Number(x.code)).filter(Number.isFinite).join(',');let details=(data?.errors||[]).map(x=>String(x.message||'')).join(' ').slice(0,1000);for(const value of [token,account,admin,project])details=details.split(value).join('[redacted]');details=details.replace(/https?:\/\/\S+/g,'[URL omitted]');throw Error(`Cloudflare ${route.startsWith('/pages/')?'Pages':'D1'} ${method}: HTTP ${response.status}, codes ${codes||'none'}. ${details}${response.status===403?' The API token needs Account / Cloudflare Pages / Edit and Account / D1 / Edit for the selected account.':''}`);}
   return data.result;
  }
  // Check permissions before changing resources. Never change the existing web or Worker.
@@ -29,6 +29,10 @@ export async function deployPublicCopy(){
   const databases=await api(`/d1/database?per_page=100&page=${page}`);database=databases.find(d=>d.name==='it-hero-community');if(database||databases.length<100)break;
  }
  if(!database?.uuid)throw Error('Existing community database not found. No replacement database was created.');
+ const migrationNames=(await fs.readdir(path.join(root,'cloud-api/migrations'))).filter(n=>/^\d+_[a-z_]+\.sql$/.test(n)).sort();
+ const sql=(await Promise.all(migrationNames.map(n=>fs.readFile(path.join(root,'cloud-api/migrations',n),'utf8')))).join('\n');
+ const migrated=await api(`/d1/database/${database.uuid}/query`,'POST',{sql});
+ if(!Array.isArray(migrated)||migrated.some(r=>r.success===false))throw Error('Community migration failed; Pages was not deployed.');
  if(existing&&existing.deployment_configs?.production?.d1_databases?.DB?.id!==database.uuid)throw Error('The chosen project name already belongs to another website in this account. Nothing was overwritten.');
  const deployment={compatibility_date:'2026-10-01',d1_databases:{DB:{id:database.uuid}},env_vars:{ADMIN_TOKEN:{type:'secret_text',value:admin}}};
  const settings={deployment_configs:{production:deployment,preview:deployment}};

@@ -20,7 +20,7 @@
       if(raw&&raw.length>100000)throw Error('Invalid results');
       const rows=raw?JSON.parse(raw):[];
       if(!Array.isArray(rows))throw Error('Invalid results');
-      memory=rows.slice(0,100).filter(r=>r&&typeof r.name==='string'&&Number.isSafeInteger(r.score)&&r.score>=0&&r.score<=999999999).map(r=>({name:nameOf(r.name),score:r.score,avatar:ITHeroAvatars.normalize(r.avatar)})).sort((a,b)=>b.score-a.score).slice(0,limit);
+      memory=rows.slice(0,100).filter(r=>r&&typeof r.name==='string'&&Number.isSafeInteger(r.score)&&r.score>=0&&r.score<=999999999&&(r.difficulty===undefined||['normal','hard'].includes(r.difficulty))).map(r=>({name:nameOf(r.name),score:r.score,avatar:ITHeroAvatars.normalize(r.avatar),difficulty:r.difficulty||'hard'})).sort((a,b)=>b.score-a.score).slice(0,100);
     }catch(_){storageWarning=true;}
     return memory;
   }
@@ -36,15 +36,17 @@
     const requestId=crypto.randomUUID();
     if(active)return;
     const dialog=document.createElement('dialog');dialog.className='score-dialog';dialog.setAttribute('aria-labelledby','score-title');
-    dialog.innerHTML=`<section class="score-panel"><p class="score-eyebrow">MISSION COMPLETE</p><h2 id="score-title">HIGH SCORES</h2><p class="score-result"></p><p class="score-details"></p><form class="score-form"><label for="score-name">TVOJE JMÉNO</label><input id="score-name" name="name" maxlength="12" autocomplete="nickname" placeholder="AJŤÁK" enterkeyhint="done"><fieldset class="avatar-picker"><legend>VYBER SVÉHO AVATARA</legend><div class="avatar-options"></div></fieldset><button type="submit">ZAPSAT SKÓRE</button></form><p class="score-status" role="status"></p><div class="score-scroll"><table><caption>TOP 10 · V TOMTO PROHLÍŽEČI</caption><thead><tr><th scope="col">#</th><th scope="col">JMÉNO</th><th scope="col">SCORE</th></tr></thead><tbody data-score-list></tbody><tbody data-demo-list></tbody></table></div><button class="score-again" type="button">HRÁT ZNOVU</button></section>`;
+    dialog.innerHTML=`<section class="score-panel"><p class="score-eyebrow">MISSION COMPLETE</p><h2 id="score-title">HIGH SCORES</h2><p class="score-result"></p><p class="score-details"></p><form class="score-form"><label for="score-name">TVOJE JMÉNO</label><input id="score-name" name="name" maxlength="12" autocomplete="nickname" placeholder="AJŤÁK" enterkeyhint="done"><fieldset class="avatar-picker"><legend>VYBER SVÉHO AVATARA</legend><div class="avatar-options"></div></fieldset><button type="submit">ZAPSAT SKÓRE</button></form><p class="score-status" role="status"></p><label class="score-filter">Obtížnost <select data-score-filter><option value="">Všichni</option><option value="normal">Normal</option><option value="hard">Hard · zlatá disketa</option></select></label><div class="score-scroll"><table><caption>TOP 10 · V TOMTO PROHLÍŽEČI</caption><thead><tr><th scope="col">#</th><th scope="col">JMÉNO</th><th scope="col">SCORE</th></tr></thead><tbody data-score-list></tbody><tbody data-demo-list></tbody></table></div><button class="score-again" type="button">HRÁT ZNOVU</button></section>`;
     dialog.querySelector('.score-result').textContent=`TVOJE SCORE: ${score.toString().padStart(6,'0')}`;
-    dialog.querySelector('.score-details').textContent=`Čas ${elapsed} · bonus za rychlost +${bonus}`;
+    dialog.querySelector('.score-details').textContent=`${(scene.difficulty||'normal').toUpperCase()} · Čas ${elapsed} · bonus za rychlost +${bonus}`;
     const form=dialog.querySelector('form'),status=dialog.querySelector('.score-status'),body=dialog.querySelector('[data-score-list]');
     let selectedAvatar=ITHeroAvatars.normalize((()=>{try{return localStorage.getItem('it-hero-avatar')||(window.ITHeroPlayer?.state.id==='girl'?'hero_girl':'hero');}catch{return null;}})());
     const selectedLabel=document.createElement('p');selectedLabel.className='avatar-selected';const labelAvatar=()=>selectedLabel.textContent=ITHeroAvatars.choices.find(a=>a.id===selectedAvatar).name;labelAvatar();form.querySelector('.avatar-picker').append(selectedLabel);
     for(const avatar of ITHeroAvatars.choices){const label=document.createElement('label');label.className='avatar-option';const input=document.createElement('input');input.type='radio';input.name='avatar';input.value=avatar.id;input.checked=avatar.id===selectedAvatar;input.setAttribute('aria-label',avatar.name);input.onchange=()=>{selectedAvatar=avatar.id;labelAvatar();};label.append(input,ITHeroAvatars.portrait(scene,avatar.id,64));label.title=avatar.name;form.querySelector('.avatar-options').append(label);}
+    const filter=dialog.querySelector('[data-score-filter]');filter.onchange=()=>render(read());
     const render=rows=>{
       body.replaceChildren();
+      rows=rows.filter(r=>!filter.value||r.difficulty===filter.value).slice(0,limit);
       rows.forEach((row,i)=>{const tr=document.createElement('tr');for(const text of [String(i+1).padStart(2,'0'),row.name,String(row.score).padStart(6,'0')]){const cell=document.createElement('td');if(text===row.name)cell.append(ITHeroAvatars.cell(scene,row));else cell.textContent=text;tr.append(cell);}body.append(tr);});
       if(!rows.length){const tr=document.createElement('tr'),cell=document.createElement('td');cell.colSpan=3;cell.textContent='PRVNÍ REKORD ČEKÁ NA TEBE';tr.append(cell);body.append(tr);}
     };
@@ -60,13 +62,13 @@
     if(training){form.hidden=true;status.textContent='TRÉNINK S NESMRTELNOSTÍ • SKÓRE SE NEZAPÍŠE';}
     form.addEventListener('submit',async event=>{
       event.preventDefault();if(training||form.dataset.saved)return;form.dataset.saved='true';
-      const entry={name:nameOf(form.elements.name.value),score,avatar:selectedAvatar};try{localStorage.setItem('it-hero-avatar',selectedAvatar);}catch{}const rows=[...read(),entry].sort((a,b)=>b.score-a.score);const rank=rows.indexOf(entry)+1;memory=rows.slice(0,limit);
+      const entry={name:nameOf(form.elements.name.value),score,avatar:selectedAvatar,difficulty:scene.difficulty||'normal'};try{localStorage.setItem('it-hero-avatar',selectedAvatar);}catch{}const rows=[...read(),entry].sort((a,b)=>b.score-a.score);const rank=rows.indexOf(entry)+1;memory=rows.slice(0,100);
       try{localStorage.setItem(storageKey,JSON.stringify(memory));storageWarning=false;}catch(_){storageWarning=true;}
       render(memory);form.elements.name.value=entry.name;form.elements.name.disabled=true;form.querySelector('button').disabled=true;form.querySelectorAll('[name=avatar]').forEach(input=>input.disabled=true);
       window.dispatchEvent(new Event('it-hero-score'));
       status.textContent=(rank<=limit?`ZAPSÁNO · ${rank}. MÍSTO`:'DOKONČENO · TENTOKRÁT MIMO TOP 10')+(storageWarning?' · Jen pro tuto návštěvu; prohlížeč nepovolil uložení.':'');
       if(window.ITHeroCommunity?.apiBase()){
-        const publish=async()=>{try{await ITHeroCommunity.request('/v1/scores',{method:'POST',body:{requestId,name:entry.name,avatar:entry.avatar,score,elapsedMs:Math.floor(scene.pacing?.state.elapsed||0),training:false,completed:true,difficulty:scene.difficulty||'normal'}});status.textContent='SKÓRE ULOŽENO DO SPOLEČNÉHO ŽEBŘÍČKU';window.dispatchEvent(new Event('it-hero-score'));retry.remove();}catch(error){status.textContent='Lokálně uloženo. Společný zápis neprošel: '+error.message;retry.hidden=false;}};
+        const publish=async()=>{try{await ITHeroCommunity.request('/v1/scores',{method:'POST',body:{requestId,name:entry.name,avatar:entry.avatar,score,elapsedMs:Math.floor(scene.pacing?.state.elapsed||0),training:false,completed:true,rulesVersion:2,difficulty:entry.difficulty}});status.textContent='SKÓRE ULOŽENO DO SPOLEČNÉHO ŽEBŘÍČKU';window.dispatchEvent(new Event('it-hero-score'));retry.remove();}catch(error){status.textContent='Lokálně uloženo. Společný zápis neprošel: '+error.message;retry.hidden=false;}};
         const retry=document.createElement('button');retry.type='button';retry.textContent='Zopakovat společný zápis';retry.hidden=true;retry.onclick=()=>{retry.hidden=true;publish();};status.after(retry);await publish();
       }
     });
@@ -77,5 +79,6 @@
     // Avoid opening the phone keyboard before the player chooses to enter their name.
     dialog.querySelector('.score-again').focus({preventScroll:true});
   }
-  window.ITHeroScores={open,read,observeReset,isOpen:()=>!!active||!!window.ITHeroDifficulty?.isOpen(),storageKey,demoNames,demoRows};
+  function badge(row){if(row.difficulty!=='hard')return null;const c=document.createElement('canvas');c.width=c.height=16;c.className='hard-disk';c.setAttribute('role','img');c.setAttribute('aria-label','Dokončeno na Hard');c.title='Dokončeno na Hard';const x=c.getContext('2d');x.fillStyle='#5f4217';x.fillRect(1,1,14,14);x.fillStyle='#ffda63';x.fillRect(2,2,12,12);x.fillStyle='#fff0a0';x.fillRect(3,2,9,1);x.fillStyle='#76522a';x.fillRect(4,2,7,5);x.fillStyle='#e2ad38';x.fillRect(5,3,3,3);x.fillStyle='#fff1bb';x.fillRect(4,9,8,5);x.fillStyle='#a97127';x.fillRect(6,11,4,1);return c;}
+  window.ITHeroScores={open,read,observeReset,isOpen:()=>!!active||!!window.ITHeroDifficulty?.isOpen(),storageKey,demoNames,demoRows,badge};
 })();
