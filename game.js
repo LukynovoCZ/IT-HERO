@@ -1,5 +1,5 @@
 /*
- * IT HERO 0.26.9 – mini plošinovka v Phaser 3.
+ * IT HERO 0.27.0 – mini plošinovka v Phaser 3.
  * Lokální pixelové ilustrace v assets; střely generuje Phaser Graphics.
  * Edituj FLOORS, buildOffice(), makeTextures() a createActors() pro další obsah.
  */
@@ -62,6 +62,7 @@
       this.load.image('support-art', 'assets/support.png');
       this.load.image('character-art', 'assets/characters.png');
       this.load.image('floor-art', 'assets/floors.png');
+      this.load.image('reception-art', 'assets/reception.png?v=0.27.0');
       this.load.image('office-art', 'assets/office.png');
       this.load.image('exterior-art', 'assets/exterior.png');
     }
@@ -191,6 +192,11 @@
 
     drawRoomBackdrop(y, level) {
       const plan = FLOOR_PLANS[level];
+      if(level===0&&this.textures.exists('reception-art')){
+        this.add.image(0,y-414,'reception-art').setOrigin(0).setDisplaySize(WIDTH,414).setDepth(-10);
+        ITHeroOfficeDesks.shadeBackdrop(this,y,WIDTH,.16);
+        return plan;
+      }
       const kind = ['open','reception'].includes(plan.type) ? 0 : ['office','executive'].includes(plan.type) ? 1 : 2;
       const texture = this.textures.get('floor-art');
       const source = texture.getSourceImage();
@@ -247,13 +253,13 @@
       FLOORS.forEach((y, level) => {
         const plan = this.drawRoomBackdrop(y, level);
         g.fillStyle(0x253b36).fillRect(0, y, WIDTH, 38);
-        g.fillStyle(0xa7b1a5).fillRect(0, y, WIDTH, 6);
+        g.fillStyle(level===0?0xb6bdbe:0xa7b1a5).fillRect(0, y, WIDTH, 6);
         for (let x = 0; x < WIDTH; x += 32) g.fillStyle(0x4d6058).fillRect(x, y + 14, 28, 2);
         this.add.text(24, y - 348, `${String(level + 1).padStart(2, '0')}  /  ${plan.name}`, {
           fontFamily: 'monospace', fontSize: '14px', color: '#f4f0df',
           backgroundColor: '#064c37', padding: { x: 12, y: 7 }
         }).setDepth(-8);
-        this.addStatic(this.platforms, WIDTH / 2, y + 17, WIDTH, 30, 0x77877a, 11);
+        this.addStatic(this.platforms, WIDTH / 2, y + 17, WIDTH, 30, level===0?0x596268:0x77877a, 11);
       });
 
       // The rendered tabletop and the original 88×38 solid body share y=ground-38.

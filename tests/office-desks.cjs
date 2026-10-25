@@ -9,7 +9,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  const initial=await p.evaluate(()=>{
   const D=ITHeroOfficeDesks,list=s.officeDesks;
   const shades=s.children.list.filter(o=>o.getData?.('officeBackdrop'));
-  if(shades.length!==9||shades.some(o=>o.body||o.depth!==-8.5||o.fillAlpha!==.36))throw Error('background contrast layer');
+  if(shades.length!==9||shades.some(o=>o.body||o.depth!==-8.5||o.fillAlpha!==(o.y>4000?.16:.36)))throw Error('background contrast layer');
   for(const type of ['wood','modern']){const c=document.createElement('canvas');c.width=88;c.height=38;const ctx=c.getContext('2d');ctx.drawImage(s.textures.get('office-desk-'+type).getSourceImage(),0,0);const pixel=ctx.getImageData(8,24,1,1).data;if(pixel[0]+pixel[1]+pixel[2]<600||pixel[3]!==255)throw Error('dark desk legs in loaded PNG');}
   for(const d of list){const a=d.getBounds(),b=d.body;if(a.top!==b.top||a.left!==b.left||a.width!==88||b.height!==38)throw Error('visual/body mismatch');if(d.decorations.length<2||d.decorations.length>5)throw Error('count');if(d.decorations.some(i=>i.body||i.depth>=s.player.depth||i.y>=b.top))throw Error('decoration collision/depth');}
   for(let floor=0;floor<9;floor++)if(!list.some(d=>d.getData('officeDesk').floor===floor&&d.decorations.some(i=>i.getData('deskItem')==='monitor'&&i.displayWidth===28)))throw Error('missing full-size monitor on floor '+floor);

@@ -21,6 +21,7 @@ class Statement{
 let server,browser;
 try{
  const files=await buildPublicCopy(out);
+ assert(files.includes('assets/reception.png'),'Reception background must ship in public build');
  for(const name of await fs.readdir('assets/office-desks'))assert(files.includes('assets/office-desks/'+name),'Missing desk texture in public build: '+name);
  assert(files.includes('assets/outdoor/jarda-poses.png'));for(const icon of ['favicon.ico','site.webmanifest','assets/icons/game-512.png','assets/icons/game-192.png','assets/icons/apple-touch-icon.png','assets/icons/favicon-32.png'])assert(files.includes(icon),icon);const manifest=JSON.parse(await fs.readFile(path.join(out,'site.webmanifest'),'utf8'));for(const icon of manifest.icons){const png=await fs.readFile(path.join(out,icon.src));assert.equal(icon.sizes,`${png.readUInt32BE(16)}x${png.readUInt32BE(20)}`);}assert(!files.some(f=>/docs|tasks|README|source\.png|reference/.test(f)));
  const worker=(await import(pathToFileURL(path.join(out,'_worker.js')))).default;

@@ -105,7 +105,7 @@
   let cursor=desk.x-desk.displayWidth/2;
   return list.map((id,i)=>{const slot=wideIndex>=0&&list.length>2?(i===wideIndex?32:(desk.displayWidth-32)/(list.length-1)):desk.displayWidth/list.length;const texture='office-item-'+id,w=Math.min(28,slot-2),image=scene.add.image(cursor+slot/2,desk.body.top-1,texture).setOrigin(.5,1).setDisplaySize(w,30*w/28).setDepth(depth.decorations);image.setData('deskItem',id);cursor+=slot;return image;});
  }
- function shadeBackdrop(scene,ground,width){return scene.add.rectangle(width/2,ground-207,width,414,background.color,background.alpha).setDepth(background.depth).setData('officeBackdrop',true);}
+ function shadeBackdrop(scene,ground,width,alpha=background.alpha){return scene.add.rectangle(width/2,ground-207,width,414,background.color,alpha).setDepth(background.depth).setData('officeBackdrop',true);}
  function createDesk(scene,config){
   createDeskTextures(scene);
   const random=config.random||Math.random,type=config.type||(random()<(themes[config.floor||0]||themes[0]).wood?'wood':'modern');

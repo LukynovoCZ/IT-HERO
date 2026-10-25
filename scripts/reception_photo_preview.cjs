@@ -1,15 +1,10 @@
 /* Local architectural proposal; overrides are restricted to this browser session. */
-const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('node:fs');
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('node:fs'),{execFileSync}=require('node:child_process');
 (async()=>{const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});try{let baseline;
  for(const mode of ['before','after']){
   const p=await b.newPage({viewport:{width:1280,height:1000},deviceScaleFactor:1}),errors=[];p.on('pageerror',e=>errors.push(e.message));
   await p.route('**/community-config.js*',r=>r.fulfill({body:'window.ITHeroCommunityConfig={apiBaseUrl:""};',contentType:'text/javascript'}));
-  await p.route('**/game.js*',async r=>{const response=await r.fetch();let code=(await response.text()).replace('new Phaser.Game({','window.__reception=new Phaser.Game({').replace('this.buildOffice();',"this.registry.set('officeDeskSeed','reception-photo');this.buildOffice();");
-   if(mode==='after')code=code.replace('    preload() {',"    preload() {this.load.image('reception-photo-proposal','docs/reception-design/reception-background.png');").replace('      const plan = FLOOR_PLANS[level];',`      const plan = FLOOR_PLANS[level];
-      if(level===0){this.add.image(0,y-414,'reception-photo-proposal').setOrigin(0).setDisplaySize(WIDTH,414).setDepth(-10);this.add.rectangle(WIDTH/2,y-207,WIDTH,414,0x142c29,.16).setDepth(-8.5);return plan;}`);
-   if(mode==='after')code=code.replace('WIDTH, 30, 0x77877a, 11','WIDTH, 30, level===0?0x596268:0x77877a, 11').replace('g.fillStyle(0xa7b1a5).fillRect(0, y, WIDTH, 6)','g.fillStyle(level===0?0xb6bdbe:0xa7b1a5).fillRect(0, y, WIDTH, 6)');
-   await r.fulfill({response,body:code});
-  });
+  await p.route('**/game.js*',async r=>{const response=await r.fetch();const source=mode==='before'?execFileSync('git',['show','df4dada:game.js'],{encoding:'utf8'}):await response.text();const code=source.replace('new Phaser.Game({','window.__reception=new Phaser.Game({').replace('this.buildOffice();',"this.registry.set('officeDeskSeed','reception-photo');this.buildOffice();");await r.fulfill({response,body:code});});
   await p.goto(process.env.IT_HERO_PREVIEW_URL||'http://127.0.0.1:8000');await p.locator('#game-action').click();
   await p.evaluate(()=>{window.s=__reception.scene.getScene('ITGame');s.player.body.reset(230,4280);s.player.setVelocity(0);s.enemies.getChildren().forEach(e=>{e.lastAttack=Infinity;e.sapNextAttack=Infinity;});s.nextHelperAt=Infinity;s.colleague.state.nextAt=Infinity;s.oldBadger.state.nextAt=Infinity;s.genZ.state.nextAt=Infinity;s.founders.state.nextAt=Infinity;});
   await p.waitForFunction(()=>s.player.body.blocked.down);await p.waitForTimeout(300);

@@ -1,6 +1,6 @@
 # Návrh recepce podle fotografie
 
-Architektonický návrh pro přízemí, připravený na větvi `design/reception-photo`. Nejde o nasazení ani o změnu veřejné verze hry.
+Schválený architektonický návrh pro přízemí, zapracovaný do hry ve verzi 0.27.0. Produkce načítá `assets/reception.png`; změna se týká pouze přízemí.
 
 Vychází z dodané fotografie atria: bílé galerie s tmavými kancelářskými okny, vysoká skleněná stěna a světlík, větvené ocelové vzpěry, kruhové stropní prvky, recepční pult s medovými svislými lamelami, tmavě šedá dlažba a velké rostliny. Fotografie je reinterpretovaná jako pixel-art pozadí se zcela vodorovnou herní podlahou. Její původní snímek není do repozitáře kopírován.
 
@@ -18,7 +18,7 @@ Soubory:
 - `before.png` / `after.png`: stejný seed dekorací, stejné herní měřítko a poloha hráče.
 - `jump.png`: skutečný dopad hrdiny na první stůl v navržené scéně.
 - `mobile.png`: pohled při viewportu 844×390.
-- `scripts/reception_photo_preview.cjs`: reprodukovatelný lokální náhled. Úpravy aplikuje pouze v prohlížeči; produkční `game.js` ani HTML nepřepisuje.
+- `scripts/reception_photo_preview.cjs`: reprodukovatelný lokální náhled. Původní verzi načítá z revize `df4dada`, novou z aktuálního kódu. Srovnávací skript nepřepisuje produkční soubory.
 
 Spuštění při místním serveru: `IT_HERO_PREVIEW_URL=http://127.0.0.1:8005 node scripts/reception_photo_preview.cjs`.
 
@@ -29,3 +29,5 @@ Ověření proběhlo v Chromiu: původní a navržená scéna mají totožné po
 ![Dopad na stůl](jump.png)
 
 ![Mobil](mobile.png)
+
+Produkční kontrola: `tests/reception.cjs` ověřuje nové pozadí pouze v přízemí, původní rozměry a polohy, čtyři skutečné skoky s oběma hrdiny, přechod po schodech do dalšího patra a venkovní návštěvu s návratem. `tests/public-copy.mjs` kontroluje přibalení `assets/reception.png` a funkčnost veřejné distribuce.
