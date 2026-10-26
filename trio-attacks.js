@@ -55,10 +55,20 @@
     const direction = scene.player.x >= enemy.x ? 1 : -1;
     const shot = scene.enemyShots.create(enemy.x + direction * 28, enemy.body.bottom - (weapon.key==='golf-ball'?16:34), weapon.key).setDepth(25);
     shot.setFlipX(direction < 0).setVelocity(direction * (weapon.speed || 245), -30);
-    shot.body.setAllowGravity(false);
+    shot.body.setAllowGravity(weapon.key==='golf-ball');
+    if(weapon.key==='golf-ball'){
+      // A lob reaches the player's original position on the descending arc.
+      // Lift off above the tabletop; decorations remain purely visual.
+      const distance=Phaser.Math.Clamp(Math.abs(scene.player.x-shot.x),90,480);
+      const flight=Phaser.Math.Clamp(distance/230,.65,1.25),gravity=520;
+      shot.setY(enemy.body.bottom-48);
+      shot.body.reset(shot.x,shot.y);
+      shot.body.setGravityY(gravity-scene.physics.world.gravity.y);
+      shot.setVelocity(direction*distance/flight,-gravity*flight/2);
+    }
     shot.body.setSize(weapon.key==='golf-ball'?12:weapon.key === 'fireball' ? 22 : 20, weapon.key==='golf-ball'?12:22, true);
     if (weapon.spin) shot.setAngularVelocity(direction * weapon.spin);
-    shot.setData('killerId',enemy.kind).setData('expires', scene.time.now + 1900).setData('damage', enemy.profile.damage).setData('floor', enemy.floorIndex);
+    shot.setData('killerId',enemy.kind).setData('expires', scene.time.now + (weapon.key==='golf-ball'?2600:1900)).setData('damage', enemy.profile.damage).setData('floor', enemy.floorIndex);
     scene.tone(weapon.key === 'fireball' ? 110 : 210, 0.07, 'triangle');
   }
   function clear(enemy) {
