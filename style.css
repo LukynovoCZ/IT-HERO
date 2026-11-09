@@ -212,3 +212,6 @@ body{background:radial-gradient(ellipse at 50% -10%,#174c39 0%,transparent 65%),
 .hard-disk{width:20px;height:20px;image-rendering:pixelated;display:inline-block;vertical-align:middle;flex:none;margin-left:5px}
 .score-filter{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.score-filter select{color:#edf4e8;background:#173b31;border:1px solid #8cb47d;padding:8px;font:inherit}
 .employee-portraits .hard-disk{width:16px;height:16px;display:inline-block;border:0;background:transparent;margin-left:4px;vertical-align:middle}
+
+/* Collapsed results and complete counting details below the portrait galleries. */
+.score-results summary{min-height:44px;align-content:center}.score-results[open] summary{margin-bottom:12px}.stats-details>h2{margin-top:16px}.stats-details summary:focus-visible{outline:2px solid #ffda83;outline-offset:3px}
